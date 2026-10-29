@@ -1,222 +1,184 @@
 <script setup lang="ts">
-const props = withDefaults(
-  defineProps<{
-    limit?: number
-  }>(),
-  {
-    limit: 6,
-  },
-)
+const props = withDefaults(defineProps<{ limit?: number }>(), { limit: 6 })
 
-// Fetch testimonials using the dedicated composable
-const { testimonials, total, pending, errors, refresh } = await useTestimonials({
+const { testimonials } = await useTestimonials({
   limit: props.limit,
   order: 'sys_firstPublishedAt_DESC',
 })
+
+const MAX_RATING = 5
 </script>
 
 <template>
-  <section class="testimonios-container">
-    <header class="testimonios-header">
-      <h2>Testimonios ({{ total }})</h2>
-      <p class="subtitle">Lo que dicen nuestros clientes y atletas</p>
+  <section class="testimonials" aria-labelledby="testimonials-title">
+    <header class="testimonials__header">
+      <h2 id="testimonials-title" class="testimonials__title">Testimonios</h2>
+      <p class="testimonials__subtitle">Lo que dicen nuestros clientes y atletas</p>
     </header>
 
-    <!-- Loading State -->
-    <div v-if="pending" class="state-message">
-      <p>Cargando testimonios...</p>
-    </div>
-
-    <!-- Error State -->
-    <div v-else-if="errors && errors.length" class="error-box">
-      <p>Ocurrió un error al cargar los testimonios.</p>
-      <ul>
-        <li v-for="(err, index) in errors" :key="index">
-          {{ err.message }}
-        </li>
-      </ul>
-      <button class="btn" @click="() => refresh()">Reintentar</button>
-    </div>
-
-    <!-- Testimonials Grid -->
-    <div v-else-if="testimonials.length" class="grid">
-      <article v-for="item in testimonials" :key="item.sys.id" class="card">
-        <div class="card-header">
-          <img
-            v-if="item.foto"
-            :src="item.foto.url"
-            :alt="item.foto.title || item.nombre"
-            class="avatar"
+    <div v-if="testimonials.length" class="testimonials__grid">
+      <figure v-for="item in testimonials" :key="item.id" class="testimonial-card">
+        <figcaption class="testimonial-card__author">
+          <NuxtImg
+            v-if="item.photo"
+            :src="item.photo.url"
+            :alt="item.photo.alt"
+            width="48"
+            height="48"
+            fit="thumb"
+            loading="lazy"
+            class="testimonial-card__avatar"
           />
-          <div v-else class="avatar-placeholder">
-            {{ item.nombre.charAt(0).toUpperCase() }}
-          </div>
-
-          <div class="author-info">
-            <h3 class="author-name">{{ item.nombre }}</h3>
-            <span class="author-context">{{ item.contexto }}</span>
-          </div>
-        </div>
-
-        <div class="rating">
           <span
-            v-for="star in 5"
-            :key="star"
-            class="star"
-            :class="{ active: star <= item.valoracion }"
+            v-else
+            class="testimonial-card__avatar testimonial-card__avatar--initial"
+            aria-hidden="true"
           >
-            ★
+            {{ item.name.charAt(0).toUpperCase() }}
           </span>
-          <span class="rating-number">({{ item.valoracion }}/5)</span>
-        </div>
 
-        <p class="opinion">"{{ item.opinion }}"</p>
-      </article>
+          <span class="testimonial-card__author-info">
+            <span class="testimonial-card__name">{{ item.name }}</span>
+            <span class="testimonial-card__context">{{ item.context }}</span>
+          </span>
+        </figcaption>
+
+        <p class="testimonial-card__rating">
+          <span aria-hidden="true">
+            <span
+              v-for="star in MAX_RATING"
+              :key="star"
+              class="testimonial-card__star"
+              :class="{ 'testimonial-card__star--active': star <= item.rating }"
+            >
+              ★
+            </span>
+          </span>
+          <span class="testimonial-card__rating-text">
+            Valoración: {{ item.rating }} de {{ MAX_RATING }}
+          </span>
+        </p>
+
+        <blockquote class="testimonial-card__opinion">
+          <p>«{{ item.opinion }}»</p>
+        </blockquote>
+      </figure>
     </div>
 
-    <!-- Empty State -->
-    <div v-else class="state-message">
-      <p>No hay testimonios disponibles en este momento.</p>
-    </div>
+    <p v-else class="testimonials__empty">No hay testimonios disponibles en este momento.</p>
   </section>
 </template>
 
-<style scoped>
-.testimonios-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
+<style lang="scss" scoped>
+.testimonials {
+  @include container;
+  padding-block: $space-6;
 }
 
-.testimonios-header {
+.testimonials__header {
+  margin-bottom: $space-6;
   text-align: center;
-  margin-bottom: 2rem;
 }
 
-.testimonios-header h2 {
-  font-size: 2rem;
-  margin: 0;
-  color: #111827;
+.testimonials__title {
+  @include f-32-700;
 }
 
-.subtitle {
-  color: #6b7280;
-  margin-top: 0.5rem;
+.testimonials__subtitle {
+  margin-top: $space-2;
+  color: $color-text-muted;
 }
 
-.grid {
+.testimonials__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: 1fr;
+  gap: $space-5;
+
+  @include bp(tablet-portrait) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include bp(laptop) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
-.card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+.testimonials__empty {
+  padding-block: $space-7;
+  text-align: center;
+  color: $color-text-muted;
+}
+
+.testimonial-card {
   display: flex;
   flex-direction: column;
+  padding: $space-5;
+  background-color: $color-surface;
+  border: $border-width solid $color-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
 }
 
-.card-header {
+.testimonial-card__author {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: $space-4;
+  margin-bottom: $space-4;
 }
 
-.avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+.testimonial-card__avatar {
+  flex-shrink: 0;
+  width: $space-7;
+  height: $space-7;
   object-fit: cover;
+  border-radius: $radius-full;
 }
 
-.avatar-placeholder {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background-color: #3b82f6;
-  color: #ffffff;
+.testimonial-card__avatar--initial {
+  @include f-20-700;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
+  color: $color-on-primary;
+  background-color: $color-primary;
 }
 
-.author-info {
+.testimonial-card__author-info {
   display: flex;
   flex-direction: column;
 }
 
-.author-name {
-  font-size: 1.1rem;
-  margin: 0;
-  color: #1f2937;
+.testimonial-card__name {
+  @include f-18-600;
+  color: $color-heading;
 }
 
-.author-context {
-  font-size: 0.875rem;
-  color: #6b7280;
+.testimonial-card__context {
+  @include f-14-400;
+  color: $color-text-muted;
 }
 
-.rating {
+.testimonial-card__rating {
+  @include f-20-400;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  margin-bottom: 0.75rem;
+  gap: $space-2;
+  margin-bottom: $space-3;
 }
 
-.star {
-  color: #d1d5db;
-  font-size: 1.25rem;
+.testimonial-card__star {
+  color: $color-border;
 }
 
-.star.active {
-  color: #f59e0b;
+.testimonial-card__star--active {
+  color: $color-rating;
 }
 
-.rating-number {
-  font-size: 0.75rem;
-  color: #6b7280;
-  margin-left: 0.25rem;
+.testimonial-card__rating-text {
+  @include visually-hidden;
 }
 
-.opinion {
-  color: #374151;
-  line-height: 1.5;
+.testimonial-card__opinion {
   font-style: italic;
-  margin: 0;
-}
-
-.state-message {
-  text-align: center;
-  color: #6b7280;
-  padding: 3rem 0;
-}
-
-.error-box {
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.btn {
-  margin-top: 0.5rem;
-  background: #ef4444;
-  color: #fff;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  cursor: pointer;
 }
 </style>

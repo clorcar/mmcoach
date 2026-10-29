@@ -1,56 +1,21 @@
-import { computed, type ComputedRef } from 'vue'
 import { GET_TESTIMONIOS_QUERY } from '~/queries/testimonios'
 import type { GetContentfulOptions } from '~/types/contentful'
-import type { Testimonio, TestimoniosQueryResponse } from '~/types/testimonios'
-
-export { GET_TESTIMONIOS_QUERY } from '~/queries/testimonios'
-
-export interface UseTestimonialsReturn {
-  data: ComputedRef<TestimoniosQueryResponse | null>
-  testimonials: ComputedRef<Testimonio[]>
-  total: ComputedRef<number>
-  errors: ComputedRef<any[] | null>
-  pending: ComputedRef<boolean>
-  refresh: () => Promise<any>
-}
-
-export type AsyncUseTestimonialsReturn = UseTestimonialsReturn & Promise<UseTestimonialsReturn>
+import type { Testimonio } from '~/types/testimonios'
 
 /**
- * Composable to fetch testimonials ("Testimonios") from Contentful.
+ * Fetches testimonials from Contentful (capped at 100).
  *
- * Items are capped at 100.
- *
- * @param options Optional filters: limit, skip, and sort order.
- * @returns Clean reactive testimonials, total count, error state, and refresh action.
+ * @param options Optional limit, skip and sort order (the query does not support `where`).
  */
-export function useTestimonials(options?: GetContentfulOptions): AsyncUseTestimonialsReturn {
-  // The testimonios query has no $where variable
-  const { where: _where, ...collectionOptions } = options ?? {}
-
-  const queryResult = useContentfulCollection<TestimoniosQueryResponse>(
+export async function useTestimonials(options?: Omit<GetContentfulOptions, 'where'>) {
+  const { items, total } = await useContentfulCollection<Testimonio>(
     GET_TESTIMONIOS_QUERY,
     'testimoniosCollection',
-    collectionOptions,
+    options,
   )
 
-  const testimonials = computed<Testimonio[]>(
-    () => queryResult.data.value?.testimoniosCollection?.items ?? [],
-  )
-
-  const total = computed<number>(() => queryResult.data.value?.testimoniosCollection?.total ?? 0)
-
-  const result: UseTestimonialsReturn = {
-    data: queryResult.data,
-    testimonials,
+  return {
+    testimonials: computed(() => items.value.map(mapTestimonial)),
     total,
-    errors: queryResult.errors,
-    pending: queryResult.pending,
-    refresh: queryResult.refresh,
   }
-
-  const resultPromise = Promise.resolve(queryResult).then(() => result)
-  Object.assign(resultPromise, result)
-
-  return resultPromise as AsyncUseTestimonialsReturn
 }

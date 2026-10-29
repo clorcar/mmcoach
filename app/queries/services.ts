@@ -1,3 +1,15 @@
+const SERVICIO_FIELDS = `
+  sys {
+    id
+  }
+  titulo
+  url
+  subtitulo
+  duracion
+  modalidad
+  descripcion
+`
+
 export const GET_SERVICES_QUERY = `
   query GetServices($limit: Int = 50, $skip: Int, $order: [ServiciosOrder], $where: ServiciosFilter) {
     serviciosCollection(limit: $limit, skip: $skip, order: $order, where: $where) {
@@ -5,17 +17,7 @@ export const GET_SERVICES_QUERY = `
       limit
       skip
       items {
-        sys {
-          id
-          publishedAt
-          firstPublishedAt
-        }
-        titulo
-        url
-        subtitulo
-        duracion
-        modalidad
-        descripcion
+        ${SERVICIO_FIELDS}
       }
     }
   }
@@ -24,18 +26,11 @@ export const GET_SERVICES_QUERY = `
 export const GET_SERVICE_BY_URL_QUERY = `
   query GetServiceByUrl($url: String!) {
     serviciosCollection(where: { url: $url }, limit: 1) {
+      total
+      limit
+      skip
       items {
-        sys {
-          id
-          publishedAt
-          firstPublishedAt
-        }
-        titulo
-        url
-        subtitulo
-        duracion
-        modalidad
-        descripcion
+        ${SERVICIO_FIELDS}
       }
     }
   }

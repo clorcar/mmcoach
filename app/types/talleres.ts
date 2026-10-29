@@ -1,13 +1,12 @@
 import type {
-  ContentfulSys,
   ContentfulAsset,
   ContentfulCollection,
   ContentfulRichText,
-  GetContentfulOptions,
+  ContentfulSys,
 } from './contentful'
 
 /**
- * Contentful Content Type interface for "Talleres".
+ * Contentful Content Type "Talleres".
  */
 export interface Talleres {
   sys: ContentfulSys
@@ -20,13 +19,6 @@ export interface Talleres {
   descripcion: ContentfulRichText
 }
 
-// Convenient alias for singular usage
-export type Taller = Talleres
-
-export type TalleresCollection = ContentfulCollection<Talleres>
-
 export interface TalleresQueryResponse {
-  talleresCollection: TalleresCollection | null
+  talleresCollection: ContentfulCollection<Talleres> | null
 }
-
-export type GetTalleresOptions = GetContentfulOptions

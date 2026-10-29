@@ -1,10 +1,8 @@
-import type {
-  ContentfulSys,
-  ContentfulAsset,
-  ContentfulCollection,
-  GetContentfulOptions,
-} from './contentful'
+import type { ContentfulAsset, ContentfulCollection, ContentfulSys } from './contentful'
 
+/**
+ * Contentful Content Type "Testimonios".
+ */
 export interface Testimonio {
   sys: ContentfulSys
   nombre: string
@@ -14,10 +12,6 @@ export interface Testimonio {
   valoracion: number
 }
 
-export type TestimoniosCollection = ContentfulCollection<Testimonio>
-
 export interface TestimoniosQueryResponse {
-  testimoniosCollection: TestimoniosCollection | null
+  testimoniosCollection: ContentfulCollection<Testimonio> | null
 }
-
-export type GetTestimonialsOptions = GetContentfulOptions

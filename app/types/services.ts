@@ -1,9 +1,7 @@
-import type { ContentfulSys, ContentfulCollection, GetContentfulOptions } from './contentful'
-
-export type ServiceModalidad = 'Presencial' | 'Online'
+import type { ContentfulCollection, ContentfulSys } from './contentful'
 
 /**
- * Contentful Content Type interface for "Servicios".
+ * Contentful Content Type "Servicios".
  */
 export interface Servicios {
   sys: ContentfulSys
@@ -11,17 +9,10 @@ export interface Servicios {
   url: string
   subtitulo: string
   duracion?: number | null
-  modalidad: ServiceModalidad
+  modalidad: 'Presencial' | 'Online'
   descripcion: string
 }
 
-// English alias
-export type Service = Servicios
-
-export type ServiciosCollection = ContentfulCollection<Servicios>
-
 export interface ServiciosQueryResponse {
-  serviciosCollection: ServiciosCollection | null
+  serviciosCollection: ContentfulCollection<Servicios> | null
 }
-
-export type GetServicesOptions = GetContentfulOptions

@@ -1,216 +1,145 @@
 <script setup lang="ts">
-const props = withDefaults(
-  defineProps<{
-    limit?: number
-  }>(),
-  {
-    limit: 6,
-  },
-)
+const props = withDefaults(defineProps<{ limit?: number }>(), { limit: 6 })
 
-// Fetch services using the dedicated composable
-const { services, total, pending, errors, refresh } = await useServices({
-  limit: props.limit,
-  order: 'titulo_ASC',
-})
-
-// Helper to format duration
-function formatDuration(minutes?: number | null): string {
-  if (!minutes) return 'Duración personalizada'
-  if (minutes >= 60) {
-    const hours = Math.floor(minutes / 60)
-    const remainingMins = minutes % 60
-    return remainingMins > 0 ? `${hours}h ${remainingMins}min` : `${hours}h`
-  }
-  return `${minutes} min`
-}
+const { services } = await useServices({ limit: props.limit, order: 'titulo_ASC' })
 </script>
 
 <template>
-  <section class="services-container">
-    <header class="services-header">
-      <h2>Nuestros Servicios ({{ total }})</h2>
-      <p class="subtitle">Acompañamiento personalizado para alcanzar tus metas</p>
+  <section class="services" aria-labelledby="services-title">
+    <header class="services__header">
+      <h2 id="services-title" class="services__title">Servicios</h2>
+      <p class="services__subtitle">Acompañamiento personalizado para alcanzar tus metas</p>
     </header>
 
-    <!-- Loading State -->
-    <div v-if="pending" class="state-message">
-      <p>Cargando servicios...</p>
-    </div>
-
-    <!-- Error State -->
-    <div v-else-if="errors && errors.length" class="error-box">
-      <p>Ocurrió un error al cargar los servicios.</p>
-      <ul>
-        <li v-for="(err, index) in errors" :key="index">
-          {{ err.message }}
-        </li>
-      </ul>
-      <button class="btn" @click="() => refresh()">Reintentar</button>
-    </div>
-
-    <!-- Services Grid -->
-    <div v-else-if="services.length" class="grid">
-      <article v-for="service in services" :key="service.sys.id" class="card">
-        <div class="card-header">
-          <div class="badges">
-            <span class="badge modality" :class="service.modalidad.toLowerCase()">
-              {{ service.modalidad }}
-            </span>
-            <span v-if="service.duracion" class="badge duration">
-              ⏱ {{ formatDuration(service.duracion) }}
-            </span>
-          </div>
-
-          <h3 class="title">{{ service.titulo }}</h3>
-          <p class="subtitle-card">{{ service.subtitulo }}</p>
+    <div v-if="services.length" class="services__grid">
+      <article v-for="service in services" :key="service.id" class="service-card">
+        <div class="service-card__badges">
+          <span
+            class="service-card__badge"
+            :class="`service-card__badge--${service.modality.toLowerCase()}`"
+          >
+            {{ service.modality }}
+          </span>
+          <span v-if="service.durationMinutes" class="service-card__badge">
+            <span aria-hidden="true">⏱ </span>{{ formatDuration(service.durationMinutes) }}
+          </span>
         </div>
 
-        <p class="description">{{ service.descripcion }}</p>
+        <h3 class="service-card__title">{{ service.title }}</h3>
+        <p class="service-card__subtitle">{{ service.subtitle }}</p>
+        <p class="service-card__description">{{ service.description }}</p>
 
-        <NuxtLink :to="`/servicios/${service.url}`" class="link-btn"> Más detalles </NuxtLink>
+        <NuxtLink :to="`/servicios/${service.slug}`" class="service-card__link">
+          Más sobre {{ service.title }}
+        </NuxtLink>
       </article>
     </div>
 
-    <!-- Empty State -->
-    <div v-else class="state-message">
-      <p>No hay servicios disponibles actualmente.</p>
-    </div>
+    <p v-else class="services__empty">No hay servicios disponibles actualmente.</p>
   </section>
 </template>
 
-<style scoped>
-.services-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
+<style lang="scss" scoped>
+.services {
+  @include container;
+  padding-block: $space-6;
 }
 
-.services-header {
+.services__header {
+  margin-bottom: $space-6;
   text-align: center;
-  margin-bottom: 2rem;
 }
 
-.services-header h2 {
-  font-size: 2rem;
-  margin: 0;
-  color: #111827;
+.services__title {
+  @include f-32-700;
 }
 
-.subtitle {
-  color: #6b7280;
-  margin-top: 0.5rem;
+.services__subtitle {
+  margin-top: $space-2;
+  color: $color-text-muted;
 }
 
-.grid {
+.services__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: 1fr;
+  gap: $space-5;
+
+  @include bp(tablet-portrait) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include bp(laptop) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
-.card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+.services__empty {
+  padding-block: $space-7;
+  text-align: center;
+  color: $color-text-muted;
+}
+
+.service-card {
   display: flex;
   flex-direction: column;
+  padding: $space-5;
+  background-color: $color-surface;
+  border: $border-width solid $color-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
 }
 
-.card-header {
-  margin-bottom: 1rem;
-}
-
-.badges {
+.service-card__badges {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
+  gap: $space-2;
+  margin-bottom: $space-3;
 }
 
-.badge {
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
+.service-card__badge {
+  @include f-12-600;
+  padding: $space-1 $space-2;
+  color: $color-text;
+  background-color: $color-surface-alt;
+  border-radius: $radius-sm;
 }
 
-.badge.modality.online {
-  background-color: #ecfdf5;
-  color: #047857;
+.service-card__badge--online {
+  color: $color-success;
+  background-color: $color-success-soft;
 }
 
-.badge.modality.presencial {
-  background-color: #eff6ff;
-  color: #1d4ed8;
+.service-card__badge--presencial {
+  color: $color-primary-hover;
+  background-color: $color-primary-soft;
 }
 
-.badge.duration {
-  background-color: #f3f4f6;
-  color: #374151;
+.service-card__title {
+  @include f-20-700;
+  margin-bottom: $space-1;
 }
 
-.title {
-  font-size: 1.25rem;
-  margin: 0 0 0.25rem 0;
-  color: #111827;
+.service-card__subtitle {
+  @include f-14-400;
+  margin-bottom: $space-4;
+  color: $color-text-muted;
 }
 
-.subtitle-card {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
-}
-
-.description {
-  color: #4b5563;
-  line-height: 1.5;
-  margin: 0 0 1.25rem 0;
+.service-card__description {
   flex: 1;
+  margin-bottom: $space-5;
 }
 
-.link-btn {
-  margin-top: auto;
-  display: inline-block;
+.service-card__link {
+  @include f-16-500;
+  padding: $space-2 $space-4;
   text-align: center;
-  padding: 0.5rem 1rem;
-  background-color: #2563eb;
-  color: #ffffff;
-  border-radius: 0.375rem;
   text-decoration: none;
-  font-weight: 500;
-}
+  color: $color-on-primary;
+  background-color: $color-primary;
+  border-radius: $radius-md;
 
-.link-btn:hover {
-  background-color: #1d4ed8;
-}
-
-.state-message {
-  text-align: center;
-  color: #6b7280;
-  padding: 3rem 0;
-}
-
-.error-box {
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.btn {
-  margin-top: 0.5rem;
-  background: #ef4444;
-  color: #fff;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  cursor: pointer;
+  &:hover {
+    background-color: $color-primary-hover;
+  }
 }
 </style>

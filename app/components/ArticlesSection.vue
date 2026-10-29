@@ -1,203 +1,137 @@
 <script setup lang="ts">
-const props = withDefaults(
-  defineProps<{
-    limit?: number
-  }>(),
-  {
-    limit: 6,
-  },
-)
+const props = withDefaults(defineProps<{ limit?: number }>(), { limit: 6 })
 
-// Fetch articles sorted by publication date descending
-const { articles, total, pending, errors, refresh } = await useArticles({
-  limit: props.limit,
-  order: 'fechaPublicacion_DESC',
-})
-
-// Date formatter helper
-function formatDate(isoDate: string): string {
-  try {
-    return new Intl.DateTimeFormat('es-ES', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    }).format(new Date(isoDate))
-  } catch {
-    return isoDate
-  }
-}
+const { articles } = await useArticles({ limit: props.limit, order: 'fechaPublicacion_DESC' })
 </script>
 
 <template>
-  <section class="articles-container">
-    <header class="articles-header">
-      <h2>Artículos y Noticias ({{ total }})</h2>
-      <p class="subtitle">Consejos, reflexiones y recursos sobre coaching y desarrollo</p>
+  <section class="articles" aria-labelledby="articles-title">
+    <header class="articles__header">
+      <h2 id="articles-title" class="articles__title">Artículos</h2>
+      <p class="articles__subtitle">Consejos, reflexiones y recursos sobre coaching y desarrollo</p>
     </header>
 
-    <!-- Loading State -->
-    <div v-if="pending" class="state-message">
-      <p>Cargando artículos...</p>
-    </div>
+    <div v-if="articles.length" class="articles__grid">
+      <article v-for="article in articles" :key="article.id" class="article-card">
+        <NuxtImg
+          v-if="article.image"
+          :src="article.image.url"
+          :alt="article.image.alt"
+          :width="article.image.width"
+          :height="article.image.height"
+          sizes="100vw tablet-portrait:50vw laptop:400px"
+          loading="lazy"
+          class="article-card__image"
+        />
 
-    <!-- Error State -->
-    <div v-else-if="errors && errors.length" class="error-box">
-      <p>Ocurrió un error al cargar los artículos.</p>
-      <ul>
-        <li v-for="(err, index) in errors" :key="index">
-          {{ err.message }}
-        </li>
-      </ul>
-      <button class="btn" @click="() => refresh()">Reintentar</button>
-    </div>
+        <div class="article-card__body">
+          <time :datetime="article.publishedAt" class="article-card__date">
+            {{ formatDate(article.publishedAt) }}
+          </time>
+          <h3 class="article-card__title">{{ article.title }}</h3>
+          <p class="article-card__summary">{{ article.summary }}</p>
 
-    <!-- Articles Grid -->
-    <div v-else-if="articles.length" class="grid">
-      <article v-for="article in articles" :key="article.sys.id" class="card">
-        <div v-if="article.imagenPrincipal" class="image-wrapper">
-          <img
-            :src="article.imagenPrincipal.url"
-            :alt="article.imagenPrincipal.title || article.titulo"
-            class="cover-image"
-          />
-        </div>
-
-        <div class="card-body">
-          <time class="publish-date">{{ formatDate(article.fechaPublicacion) }}</time>
-          <h3 class="title">{{ article.titulo }}</h3>
-          <p class="summary">{{ article.resumen }}</p>
-
-          <NuxtLink :to="`/articulos/${article.url}`" class="link-btn"> Leer artículo </NuxtLink>
+          <NuxtLink :to="`/articulos/${article.slug}`" class="article-card__link">
+            Leer «{{ article.title }}»
+          </NuxtLink>
         </div>
       </article>
     </div>
 
-    <!-- Empty State -->
-    <div v-else class="state-message">
-      <p>No hay artículos publicados todavía.</p>
-    </div>
+    <p v-else class="articles__empty">No hay artículos publicados todavía.</p>
   </section>
 </template>
 
-<style scoped>
-.articles-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
+<style lang="scss" scoped>
+.articles {
+  @include container;
+  padding-block: $space-6;
 }
 
-.articles-header {
+.articles__header {
+  margin-bottom: $space-6;
   text-align: center;
-  margin-bottom: 2rem;
 }
 
-.articles-header h2 {
-  font-size: 2rem;
-  margin: 0;
-  color: #111827;
+.articles__title {
+  @include f-32-700;
 }
 
-.subtitle {
-  color: #6b7280;
-  margin-top: 0.5rem;
+.articles__subtitle {
+  margin-top: $space-2;
+  color: $color-text-muted;
 }
 
-.grid {
+.articles__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: 1fr;
+  gap: $space-5;
+
+  @include bp(tablet-portrait) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include bp(laptop) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
-.card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+.articles__empty {
+  padding-block: $space-7;
+  text-align: center;
+  color: $color-text-muted;
+}
+
+.article-card {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  background-color: $color-surface;
+  border: $border-width solid $color-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
 }
 
-.image-wrapper {
+.article-card__image {
   width: 100%;
   height: 200px;
-  overflow: hidden;
-}
-
-.cover-image {
-  width: 100%;
-  height: 100%;
   object-fit: cover;
 }
 
-.card-body {
-  padding: 1.25rem;
+.article-card__body {
   display: flex;
+  flex: 1;
   flex-direction: column;
+  padding: $space-5;
+}
+
+.article-card__date {
+  @include f-12-500;
+  margin-bottom: $space-2;
+  color: $color-text-muted;
+}
+
+.article-card__title {
+  @include f-20-700;
+  margin-bottom: $space-2;
+}
+
+.article-card__summary {
   flex: 1;
+  margin-bottom: $space-5;
 }
 
-.publish-date {
-  font-size: 0.8rem;
-  color: #6b7280;
-  margin-bottom: 0.5rem;
-}
-
-.title {
-  font-size: 1.25rem;
-  margin: 0 0 0.5rem 0;
-  color: #111827;
-}
-
-.summary {
-  color: #4b5563;
-  line-height: 1.5;
-  margin: 0 0 1.25rem 0;
-  flex: 1;
-}
-
-.link-btn {
-  margin-top: auto;
-  display: inline-block;
+.article-card__link {
+  @include f-16-500;
+  padding: $space-2 $space-4;
   text-align: center;
-  padding: 0.5rem 1rem;
-  background-color: #2563eb;
-  color: #ffffff;
-  border-radius: 0.375rem;
   text-decoration: none;
-  font-weight: 500;
-}
+  color: $color-on-primary;
+  background-color: $color-primary;
+  border-radius: $radius-md;
 
-.link-btn:hover {
-  background-color: #1d4ed8;
-}
-
-.state-message {
-  text-align: center;
-  color: #6b7280;
-  padding: 3rem 0;
-}
-
-.error-box {
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.btn {
-  margin-top: 0.5rem;
-  background: #ef4444;
-  color: #fff;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  cursor: pointer;
+  &:hover {
+    background-color: $color-primary-hover;
+  }
 }
 </style>

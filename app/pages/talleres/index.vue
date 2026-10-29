@@ -1,311 +1,202 @@
 <script setup lang="ts">
-/**
- * Default placeholder image when a workshop doesn't have an image assigned in Contentful.
- * Can be customized or replaced with another asset path as needed.
- */
-const DEFAULT_IMAGE = '/images/default-workshop.svg'
+const { workshops, total } = await useWorkshops({ order: 'fecha_ASC' })
 
-// Fetch workshops from Contentful (ordered by date ascending)
-const { workshops, total, pending, errors, refresh } = await useWorkshops({
-  order: 'fecha_ASC',
+usePageSeo({
+  title: 'Talleres',
+  description:
+    'Próximos talleres y actividades de formación: fechas, lugares y toda la información para apuntarte.',
 })
 
-// Format ISO date to human-readable Spanish locale string
-function formatDate(isoDate: string): string {
-  if (!isoDate) return ''
-  try {
-    const formatted = new Intl.DateTimeFormat('es-ES', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    }).format(new Date(isoDate))
-
-    return formatted.charAt(0).toUpperCase() + formatted.slice(1)
-  } catch {
-    return isoDate
-  }
-}
+useSchemaOrg([
+  defineBreadcrumb({
+    itemListElement: [{ name: 'Inicio', item: '/' }, { name: 'Talleres' }],
+  }),
+])
 </script>
 
 <template>
-  <main class="hub-container">
-    <header class="hub-header">
-      <h1 class="hub-title">Talleres</h1>
-      <p class="hub-subtitle">
-        Descubre nuestros próximos talleres y actividades de formación
+  <div class="talleres">
+    <header class="talleres__header">
+      <h1 class="talleres__title">Talleres</h1>
+      <p class="talleres__summary">
+        Descubre los próximos talleres y actividades de formación
         <span v-if="total"> ({{ total }})</span>
       </p>
     </header>
 
-    <!-- Loading State -->
-    <div v-if="pending" class="state-box loading">
-      <div class="spinner" />
-      <p>Cargando talleres...</p>
-    </div>
-
-    <!-- Error State -->
-    <div v-else-if="errors && errors.length" class="state-box error">
-      <h2>No se pudieron cargar los talleres</h2>
-      <ul>
-        <li v-for="(err, index) in errors" :key="index">
-          {{ err.message }}
-        </li>
-      </ul>
-      <button class="retry-btn" @click="() => refresh()">Reintentar</button>
-    </div>
-
-    <!-- Workshops List -->
-    <section v-else-if="workshops.length" class="workshops-list">
-      <article v-for="workshop in workshops" :key="workshop.sys.id" class="workshop-card">
-        <!-- Left: Image (Contentful image or default fallback) -->
-        <div class="card-image-wrapper">
-          <img
-            :src="workshop.imagen?.url || DEFAULT_IMAGE"
-            :alt="workshop.imagen?.title || workshop.titulo"
-            class="card-image"
-            loading="lazy"
-          />
+    <section v-if="workshops.length" class="talleres__list" aria-label="Próximos talleres">
+      <article v-for="workshop in workshops" :key="workshop.id" class="workshop-card">
+        <div class="workshop-card__image">
+          <WorkshopImage :image="workshop.image" sizes="100vw tablet-portrait:280px" />
         </div>
 
-        <!-- Right: Workshop Data -->
-        <div class="card-content">
-          <div class="meta-row">
-            <span class="meta-item date"> 📅 {{ formatDate(workshop.fecha) }} </span>
-            <span class="meta-item location"> 📍 {{ workshop.localizacion }} </span>
+        <div class="workshop-card__content">
+          <div class="workshop-card__meta">
+            <time :datetime="workshop.date" class="workshop-card__date">
+              <span aria-hidden="true">📅 </span>{{ formatLongDate(workshop.date) }}
+            </time>
+            <span class="workshop-card__location">
+              <span aria-hidden="true">📍 </span>{{ workshop.location }}
+            </span>
           </div>
 
-          <h2 class="card-title">
-            {{ workshop.titulo }}
-          </h2>
+          <h2 class="workshop-card__title">{{ workshop.title }}</h2>
 
-          <!-- Link to Details Page: talleres/[slug] -->
-          <NuxtLink :to="`/talleres/${workshop.url}`" class="details-link">
-            <span>Ver detalles del taller</span>
-            <span aria-hidden="true" class="arrow">&rarr;</span>
+          <NuxtLink :to="`/talleres/${workshop.slug}`" class="workshop-card__link">
+            Ver detalles de {{ workshop.title }}
+            <span aria-hidden="true" class="workshop-card__arrow">&rarr;</span>
           </NuxtLink>
         </div>
       </article>
     </section>
 
-    <!-- Empty State -->
-    <div v-else class="state-box empty">
-      <p>Actualmente no hay talleres programados. Vuelve pronto para nuevas fechas.</p>
-    </div>
-  </main>
+    <p v-else class="talleres__empty">
+      Actualmente no hay talleres programados. Vuelve pronto para nuevas fechas.
+    </p>
+  </div>
 </template>
 
-<style scoped>
-.hub-container {
-  max-width: 1080px;
-  margin: 0 auto;
-  padding: 3rem 1.5rem;
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
-  color: #1f2937;
+<style lang="scss" scoped>
+.talleres {
+  @include container($container-width-narrow);
+  padding-block: $space-6;
+
+  @include bp(tablet-portrait) {
+    padding-block: $space-7;
+  }
 }
 
-.hub-header {
+.talleres__header {
+  margin-bottom: $space-6;
   text-align: center;
-  margin-bottom: 3rem;
+
+  @include bp(tablet-portrait) {
+    margin-bottom: $space-7;
+  }
 }
 
-.hub-title {
-  font-size: 2.5rem;
-  font-weight: 800;
-  color: #111827;
-  margin: 0 0 0.5rem 0;
-  letter-spacing: -0.025em;
+.talleres__title {
+  @include f-32-700;
+  margin-bottom: $space-2;
+
+  @include bp(tablet-portrait) {
+    @include f-40-700;
+  }
 }
 
-.hub-subtitle {
-  font-size: 1.125rem;
-  color: #4b5563;
-  margin: 0;
+.talleres__summary {
+  @include f-18-400;
+  color: $color-text-muted;
 }
 
-/* Card List Layout */
-.workshops-list {
+.talleres__list {
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  gap: $space-5;
 }
 
-/* Horizontal Card: Image on Left, Content on Right */
+.talleres__empty {
+  padding: $space-8 $space-6;
+  text-align: center;
+  background-color: $color-surface-alt;
+  border: $border-width dashed $color-border;
+  border-radius: $radius-xl;
+}
+
 .workshop-card {
   display: flex;
-  flex-direction: row;
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 1rem;
+  flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
+  background-color: $color-surface;
+  border: $border-width solid $color-border;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-sm;
+
+  @include motion-safe {
+    transition:
+      transform $duration-base ease,
+      box-shadow $duration-base ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+    }
+  }
+
+  @include bp(tablet-portrait) {
+    flex-direction: row;
+  }
 }
 
-.workshop-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  border-color: #cbd5e1;
-}
-
-/* Left Image Section */
-.card-image-wrapper {
+.workshop-card__image {
   flex-shrink: 0;
-  width: 280px;
-  min-height: 200px;
-  background-color: #f3f4f6;
-  position: relative;
-  overflow: hidden;
+  height: 180px;
+  background-color: $color-surface-alt;
+
+  @include bp(tablet-portrait) {
+    width: 280px;
+    height: auto;
+    min-height: 200px;
+  }
 }
 
-.card-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* Right Content Section */
-.card-content {
-  flex: 1;
-  padding: 1.75rem;
+.workshop-card__content {
   display: flex;
+  flex: 1;
   flex-direction: column;
   justify-content: space-between;
+  padding: $space-5;
 }
 
-.meta-row {
+.workshop-card__meta {
+  @include f-14-500;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 1.25rem;
-  margin-bottom: 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 500;
+  gap: $space-3 $space-5;
+  margin-bottom: $space-3;
 }
 
-.meta-item.date {
-  color: #1d4ed8;
-  background-color: #eff6ff;
-  padding: 0.25rem 0.625rem;
-  border-radius: 9999px;
+.workshop-card__date {
+  padding: $space-1 $space-3;
+  color: $color-primary-hover;
+  background-color: $color-primary-soft;
+  border-radius: $radius-full;
 }
 
-.meta-item.location {
-  color: #4b5563;
+.workshop-card__location {
+  color: $color-text-muted;
 }
 
-.card-title {
-  font-size: 1.375rem;
-  font-weight: 700;
-  line-height: 1.35;
-  color: #111827;
-  margin: 0 0 1.25rem 0;
+.workshop-card__title {
+  @include f-20-700;
+  margin-bottom: $space-5;
 }
 
-/* Link to Details */
-.details-link {
-  align-self: flex-start;
+.workshop-card__link {
+  @include f-14-600;
   display: inline-flex;
+  align-self: flex-start;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #1f2937;
-  color: #ffffff;
-  font-size: 0.875rem;
-  font-weight: 600;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  color: $color-on-primary;
   text-decoration: none;
-  border-radius: 0.5rem;
-  transition:
-    background-color 0.2s ease,
-    transform 0.15s ease;
-}
+  background-color: $color-heading;
+  border-radius: $radius-md;
 
-.details-link:hover {
-  background-color: #2563eb;
-}
-
-.details-link .arrow {
-  transition: transform 0.2s ease;
-}
-
-.details-link:hover .arrow {
-  transform: translateX(3px);
-}
-
-/* States */
-.state-box {
-  text-align: center;
-  padding: 4rem 2rem;
-  background-color: #f9fafb;
-  border: 1px dashed #d1d5db;
-  border-radius: 1rem;
-}
-
-.state-box.error {
-  background-color: #fef2f2;
-  border-color: #fca5a5;
-  color: #991b1b;
-}
-
-.retry-btn {
-  margin-top: 1rem;
-  padding: 0.5rem 1.25rem;
-  background-color: #ef4444;
-  color: #ffffff;
-  border: none;
-  border-radius: 0.375rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.retry-btn:hover {
-  background-color: #dc2626;
-}
-
-.spinner {
-  width: 2rem;
-  height: 2rem;
-  border: 3px solid #e5e7eb;
-  border-top-color: #2563eb;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin: 0 auto 1rem auto;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+  &:hover {
+    background-color: $color-primary;
   }
 }
 
-/* Responsive: Stack vertically on small screens */
-@media (max-width: 640px) {
-  .workshop-card {
-    flex-direction: column;
-  }
+.workshop-card__arrow {
+  @include motion-safe {
+    transition: transform $duration-base ease;
 
-  .card-image-wrapper {
-    width: 100%;
-    height: 180px;
-    min-height: unset;
-  }
-
-  .card-content {
-    padding: 1.25rem;
-  }
-
-  .hub-title {
-    font-size: 2rem;
+    .workshop-card__link:hover & {
+      transform: translateX(3px);
+    }
   }
 }
 </style>

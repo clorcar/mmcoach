@@ -1,232 +1,158 @@
 <script setup lang="ts">
-const props = withDefaults(
-  defineProps<{
-    limit?: number
-  }>(),
-  {
-    limit: 6,
-  },
-)
+const props = withDefaults(defineProps<{ limit?: number }>(), { limit: 6 })
 
-// Fetch upcoming workshops sorted by date ascending
-const { workshops, total, pending, errors, refresh } = await useWorkshops({
-  limit: props.limit,
-  order: 'fecha_ASC',
-})
-
-// Date formatter helper
-function formatDate(isoDate: string): string {
-  try {
-    return new Intl.DateTimeFormat('es-ES', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    }).format(new Date(isoDate))
-  } catch {
-    return isoDate
-  }
-}
-
-// Price formatter helper
-function formatPrice(precio?: number | null): string {
-  if (precio === undefined || precio === null || precio === 0) {
-    return 'Gratuito'
-  }
-  return `${precio} €`
-}
+const { workshops } = await useWorkshops({ limit: props.limit, order: 'fecha_ASC' })
 </script>
 
 <template>
-  <section class="talleres-container">
-    <header class="talleres-header">
-      <h2>Próximos Talleres ({{ total }})</h2>
-      <p class="subtitle">Formación y talleres presenciales y online</p>
+  <section class="workshops" aria-labelledby="workshops-title">
+    <header class="workshops__header">
+      <h2 id="workshops-title" class="workshops__title">Próximos talleres</h2>
+      <p class="workshops__subtitle">Formación y talleres presenciales y online</p>
     </header>
 
-    <!-- Loading State -->
-    <div v-if="pending" class="state-message">
-      <p>Cargando talleres...</p>
-    </div>
-
-    <!-- Error State -->
-    <div v-else-if="errors && errors.length" class="error-box">
-      <p>Error al cargar los talleres.</p>
-      <ul>
-        <li v-for="(err, index) in errors" :key="index">
-          {{ err.message }}
-        </li>
-      </ul>
-      <button class="btn" @click="() => refresh()">Reintentar</button>
-    </div>
-
-    <!-- Workshops Grid -->
-    <div v-else-if="workshops.length" class="grid">
-      <article v-for="workshop in workshops" :key="workshop.sys.id" class="card">
-        <div v-if="workshop.imagen" class="image-wrapper">
-          <img
-            :src="workshop.imagen.url"
-            :alt="workshop.imagen.title || workshop.titulo"
-            class="cover-image"
-          />
+    <div v-if="workshops.length" class="workshops__grid">
+      <article v-for="workshop in workshops" :key="workshop.id" class="workshop-card">
+        <div class="workshop-card__image">
+          <WorkshopImage :image="workshop.image" sizes="100vw tablet-portrait:50vw laptop:400px" />
         </div>
 
-        <div class="card-body">
-          <div class="meta">
-            <span class="badge date">{{ formatDate(workshop.fecha) }}</span>
-            <span class="badge price">{{ formatPrice(workshop.precio) }}</span>
+        <div class="workshop-card__body">
+          <div class="workshop-card__badges">
+            <time :datetime="workshop.date" class="workshop-card__badge workshop-card__badge--date">
+              {{ formatDate(workshop.date) }}
+            </time>
+            <span
+              v-if="workshop.price !== null"
+              class="workshop-card__badge workshop-card__badge--price"
+            >
+              {{ formatPrice(workshop.price) }}
+            </span>
           </div>
 
-          <h3 class="title">{{ workshop.titulo }}</h3>
+          <h3 class="workshop-card__title">{{ workshop.title }}</h3>
+          <p class="workshop-card__location">
+            <span aria-hidden="true">📍 </span>{{ workshop.location }}
+          </p>
 
-          <p class="location">📍 {{ workshop.localizacion }}</p>
-
-          <NuxtLink :to="`/talleres/${workshop.url}`" class="link-btn"> Más información </NuxtLink>
+          <NuxtLink :to="`/talleres/${workshop.slug}`" class="workshop-card__link">
+            Más sobre {{ workshop.title }}
+          </NuxtLink>
         </div>
       </article>
     </div>
 
-    <!-- Empty State -->
-    <div v-else class="state-message">
-      <p>No hay talleres programados próximamente.</p>
-    </div>
+    <p v-else class="workshops__empty">No hay talleres programados próximamente.</p>
   </section>
 </template>
 
-<style scoped>
-.talleres-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
+<style lang="scss" scoped>
+.workshops {
+  @include container;
+  padding-block: $space-6;
 }
 
-.talleres-header {
+.workshops__header {
+  margin-bottom: $space-6;
   text-align: center;
-  margin-bottom: 2rem;
 }
 
-.talleres-header h2 {
-  font-size: 2rem;
-  margin: 0;
-  color: #111827;
+.workshops__title {
+  @include f-32-700;
 }
 
-.subtitle {
-  color: #6b7280;
-  margin-top: 0.5rem;
+.workshops__subtitle {
+  margin-top: $space-2;
+  color: $color-text-muted;
 }
 
-.grid {
+.workshops__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: 1fr;
+  gap: $space-5;
+
+  @include bp(tablet-portrait) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include bp(laptop) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
-.card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+.workshops__empty {
+  padding-block: $space-7;
+  text-align: center;
+  color: $color-text-muted;
+}
+
+.workshop-card {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  background-color: $color-surface;
+  border: $border-width solid $color-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
 }
 
-.image-wrapper {
-  width: 100%;
+.workshop-card__image {
   height: 200px;
-  overflow: hidden;
+  background-color: $color-surface-alt;
 }
 
-.cover-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.card-body {
-  padding: 1.25rem;
+.workshop-card__body {
   display: flex;
-  flex-direction: column;
   flex: 1;
+  flex-direction: column;
+  padding: $space-5;
 }
 
-.meta {
+.workshop-card__badges {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
+  gap: $space-2;
+  margin-bottom: $space-3;
 }
 
-.badge {
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
+.workshop-card__badge {
+  @include f-12-600;
+  padding: $space-1 $space-2;
+  border-radius: $radius-sm;
 }
 
-.badge.date {
-  background-color: #eff6ff;
-  color: #1d4ed8;
+.workshop-card__badge--date {
+  color: $color-primary-hover;
+  background-color: $color-primary-soft;
 }
 
-.badge.price {
-  background-color: #ecfdf5;
-  color: #047857;
+.workshop-card__badge--price {
+  color: $color-success;
+  background-color: $color-success-soft;
 }
 
-.title {
-  font-size: 1.25rem;
-  margin: 0 0 0.5rem 0;
-  color: #111827;
+.workshop-card__title {
+  @include f-20-700;
+  margin-bottom: $space-2;
 }
 
-.location {
-  color: #4b5563;
-  font-size: 0.875rem;
-  margin: 0 0 1rem 0;
+.workshop-card__location {
+  @include f-14-400;
+  margin-bottom: $space-4;
+  color: $color-text-muted;
 }
 
-.link-btn {
+.workshop-card__link {
+  @include f-16-500;
   margin-top: auto;
-  display: inline-block;
+  padding: $space-2 $space-4;
   text-align: center;
-  padding: 0.5rem 1rem;
-  background-color: #2563eb;
-  color: #ffffff;
-  border-radius: 0.375rem;
   text-decoration: none;
-  font-weight: 500;
-}
+  color: $color-on-primary;
+  background-color: $color-primary;
+  border-radius: $radius-md;
 
-.link-btn:hover {
-  background-color: #1d4ed8;
-}
-
-.state-message {
-  text-align: center;
-  color: #6b7280;
-  padding: 3rem 0;
-}
-
-.error-box {
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.btn {
-  margin-top: 0.5rem;
-  background: #ef4444;
-  color: #fff;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  cursor: pointer;
+  &:hover {
+    background-color: $color-primary-hover;
+  }
 }
 </style>

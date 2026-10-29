@@ -1,13 +1,12 @@
 import type {
-  ContentfulSys,
   ContentfulAsset,
   ContentfulCollection,
   ContentfulRichText,
-  GetContentfulOptions,
+  ContentfulSys,
 } from './contentful'
 
 /**
- * Contentful Content Type interface for "Articulos".
+ * Contentful Content Type "Articulos".
  */
 export interface Articulos {
   sys: ContentfulSys
@@ -19,13 +18,6 @@ export interface Articulos {
   contenido: ContentfulRichText
 }
 
-// English alias
-export type Article = Articulos
-
-export type ArticulosCollection = ContentfulCollection<Articulos>
-
 export interface ArticulosQueryResponse {
-  articulosCollection: ArticulosCollection | null
+  articulosCollection: ContentfulCollection<Articulos> | null
 }
-
-export type GetArticlesOptions = GetContentfulOptions

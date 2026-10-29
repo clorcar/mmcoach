@@ -1,3 +1,5 @@
+import { IMAGE_FIELDS } from './fragments'
+
 export const GET_TESTIMONIOS_QUERY = `
   query GetTestimonios($limit: Int = 10, $skip: Int, $order: [TestimoniosOrder]) {
     testimoniosCollection(limit: $limit, skip: $skip, order: $order) {
@@ -7,20 +9,11 @@ export const GET_TESTIMONIOS_QUERY = `
       items {
         sys {
           id
-          publishedAt
-          firstPublishedAt
         }
         nombre
         contexto
         foto {
-          title
-          description
-          contentType
-          fileName
-          size
-          url
-          width
-          height
+          ${IMAGE_FIELDS}
         }
         opinion
         valoracion

@@ -1,3 +1,9 @@
+import type { Document } from '@contentful/rich-text-types'
+
+/**
+ * Raw Contentful GraphQL shapes. Only composables and mappers use these;
+ * components consume the lean types in `~/types/content`.
+ */
 export interface ContentfulSys {
   id: string
   publishedAt?: string
@@ -5,28 +11,24 @@ export interface ContentfulSys {
 }
 
 export interface ContentfulAsset {
-  title?: string
-  description?: string
-  contentType?: string
-  fileName?: string
-  size?: number
+  title?: string | null
+  description?: string | null
+  contentType?: string | null
+  fileName?: string | null
+  size?: number | null
   url: string
-  width?: number
-  height?: number
+  width?: number | null
+  height?: number | null
 }
 
 /**
  * Contentful RichText field data structure returned by GraphQL.
  */
 export interface ContentfulRichText {
-  json: Record<string, any>
+  json: Document
   links?: {
     assets?: {
       block?: (ContentfulAsset & { sys: { id: string } })[]
-    }
-    entries?: {
-      inline?: any[]
-      block?: any[]
     }
   }
 }
@@ -46,7 +48,7 @@ export interface ContentfulCollection<T> {
  */
 export interface GetContentfulOptions {
   /**
-   * Maximum number of items to return.
+   * Maximum number of items to return (capped at 100).
    */
   limit?: number
   /**
@@ -60,9 +62,5 @@ export interface GetContentfulOptions {
   /**
    * Optional filter object.
    */
-  where?: Record<string, any>
-  /**
-   * Whether to fetch from preview API (draft content).
-   */
-  preview?: boolean
+  where?: Record<string, unknown>
 }

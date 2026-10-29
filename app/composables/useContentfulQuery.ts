@@ -1,40 +1,13 @@
-import { computed, type ComputedRef } from 'vue'
-
-export interface GraphQLErrorLocation {
-  line: number
-  column: number
-}
+import type { Ref } from 'vue'
 
 export interface GraphQLError {
   message: string
-  locations?: GraphQLErrorLocation[]
-  path?: (string | number)[]
-  extensions?: Record<string, any>
-  [key: string]: any
 }
 
-export interface GraphQLResponse<T = any> {
+export interface GraphQLResponse<T> {
   data?: T | null
   errors?: GraphQLError[]
 }
-
-export interface UseContentfulQueryOptions {
-  /**
-   * Optional custom cache key for Nuxt payload caching and SSG hydration.
-   * If omitted, a stable deterministic key is generated from the query and variables.
-   */
-  key?: string
-}
-
-export interface ContentfulQueryResult<T> {
-  data: ComputedRef<T | null>
-  errors: ComputedRef<GraphQLError[] | null>
-  pending: ComputedRef<boolean>
-  refresh: () => Promise<any>
-}
-
-export type AsyncContentfulQueryResult<T> = ContentfulQueryResult<T> &
-  Promise<ContentfulQueryResult<T>>
 
 /**
  * Server route that proxies Contentful's GraphQL API (see server/api/contentful.post.ts).
@@ -44,96 +17,65 @@ export const CONTENTFUL_API_ROUTE = '/api/contentful'
 /**
  * Generates a stable deterministic cache key for Nuxt SSG hydration and payload deduplication.
  */
-export function createQueryKey(query?: string, variables?: Record<string, any>): string {
-  const serialized = `${query || ''}:${JSON.stringify(variables ?? {})}`
+export function createQueryKey(query: string, variables: Record<string, unknown> = {}): string {
+  const serialized = `${query}:${JSON.stringify(variables)}`
   let hash = 0
   for (let i = 0; i < serialized.length; i++) {
-    const char = serialized.charCodeAt(i)
-    hash = (hash << 5) - hash + char
+    hash = (hash << 5) - hash + serialized.charCodeAt(i)
     hash |= 0
   }
   return `contentful-${Math.abs(hash).toString(36)}`
 }
 
 /**
- * Normalizes a fetch error into GraphQL errors: either the GraphQL errors returned with
- * an HTTP 4xx payload (e.g. query validation failure), or a single network/HTTP error.
+ * Sends one GraphQL request through the proxy and returns its data.
+ * Throws on network, HTTP or GraphQL errors (including 4xx payloads such as complexity errors).
  */
-export function toGraphQLErrors(fetchError: any): GraphQLError[] {
-  const errPayload = fetchError?.data as GraphQLResponse | undefined
-  if (errPayload?.errors && errPayload.errors.length > 0) {
-    return errPayload.errors
+export async function fetchContentfulData<T>(
+  query: string,
+  variables: Record<string, unknown> = {},
+): Promise<T> {
+  let response: GraphQLResponse<T>
+  try {
+    response = await $fetch<GraphQLResponse<T>>(CONTENTFUL_API_ROUTE, {
+      method: 'POST',
+      body: { query, variables },
+    })
+  } catch (error) {
+    const payload = (error as { data?: GraphQLResponse<T> }).data
+    const message = payload?.errors?.map((e) => e.message).join('; ')
+    throw createError({
+      statusCode: 502,
+      statusMessage: `Contentful request failed: ${message || (error as Error).message}`,
+    })
   }
 
-  const errDetails = fetchError?.data as Record<string, any> | undefined
-  return [
-    {
-      message:
-        errDetails?.message ||
-        fetchError?.message ||
-        'An unexpected error occurred while querying Contentful.',
-      extensions: {
-        statusCode: fetchError?.statusCode,
-        statusMessage: fetchError?.statusMessage,
-        details: errDetails,
-      },
-    },
-  ]
+  if (response.errors?.length || !response.data) {
+    const message = response.errors?.map((e) => e.message).join('; ') || 'empty response'
+    throw createError({ statusCode: 502, statusMessage: `Contentful query failed: ${message}` })
+  }
+
+  return response.data
 }
 
 /**
- * Nuxt 4 composable for querying Contentful's GraphQL API through the server proxy route.
- * Compatible with SSR and SSG prerendering.
+ * Runs a Contentful GraphQL query at build time (SSG) and returns its data.
+ * Errors are rethrown as fatal so prerendering fails instead of shipping a broken page.
  *
  * @param query GraphQL query string
- * @param variables Optional GraphQL variables dictionary
- * @param options Optional configuration (e.g., custom cache key)
- * @returns Clean reactive object `{ data, errors, pending, refresh }`
+ * @param variables Optional GraphQL variables
  */
-export function useContentfulQuery<T = any>(
+export async function useContentfulQuery<T>(
   query: string,
-  variables?: Record<string, any>,
-  options?: UseContentfulQueryOptions,
-): AsyncContentfulQueryResult<T> {
-  const cacheKey = options?.key || createQueryKey(query, variables)
+  variables: Record<string, unknown> = {},
+): Promise<Ref<T | undefined>> {
+  const { data, error } = await useAsyncData(createQueryKey(query, variables), () =>
+    fetchContentfulData<T>(query, variables),
+  )
 
-  const fetchResult = useFetch<GraphQLResponse<T>>(CONTENTFUL_API_ROUTE, {
-    key: cacheKey,
-    method: 'POST',
-    body: {
-      query,
-      variables,
-    },
-  })
-
-  const { data: responseData, error: fetchError, pending, refresh } = fetchResult
-
-  // Clean, reactive unwrapped GraphQL data
-  const data = computed<T | null>(() => responseData.value?.data ?? null)
-
-  // Clean, reactive error array extracted from GraphQL body or network/HTTP errors
-  const errors = computed<GraphQLError[] | null>(() => {
-    // 1. Errors returned in the GraphQL JSON response body
-    if (responseData.value?.errors && responseData.value.errors.length > 0) {
-      return responseData.value.errors
-    }
-
-    // 2. HTTP 4xx GraphQL payloads, network, authorization (401), or unexpected server errors
-    return fetchError.value ? toGraphQLErrors(fetchError.value) : null
-  })
-
-  const isPending = computed<boolean>(() => pending.value)
-
-  const result: ContentfulQueryResult<T> = {
-    data,
-    errors,
-    pending: isPending,
-    refresh,
+  if (error.value) {
+    throw createError({ ...error.value, fatal: true })
   }
 
-  // Support both `await useContentfulQuery(...)` and `const { ... } = useContentfulQuery(...)`
-  const resultPromise = Promise.resolve(fetchResult).then(() => result)
-  Object.assign(resultPromise, result)
-
-  return resultPromise as AsyncContentfulQueryResult<T>
+  return data
 }
