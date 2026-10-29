@@ -11,7 +11,6 @@ export { GET_TALLERES_QUERY, GET_TALLER_BY_URL_QUERY } from '~/queries/talleres'
 export interface UseWorkshopsReturn {
   data: ComputedRef<TalleresQueryResponse | null>
   workshops: ComputedRef<Talleres[]>
-  talleres: ComputedRef<Talleres[]>
   total: ComputedRef<number>
   errors: ComputedRef<any[] | null>
   pending: ComputedRef<boolean>
@@ -23,7 +22,6 @@ export type AsyncUseWorkshopsReturn = UseWorkshopsReturn & Promise<UseWorkshopsR
 export interface UseWorkshopReturn {
   data: ComputedRef<TalleresQueryResponse | null>
   workshop: ComputedRef<Talleres | null>
-  taller: ComputedRef<Talleres | null>
   errors: ComputedRef<any[] | null>
   pending: ComputedRef<boolean>
   refresh: () => Promise<any>
@@ -69,7 +67,6 @@ export function useWorkshops(options?: GetContentfulOptions): AsyncUseWorkshopsR
   const result: UseWorkshopsReturn = {
     data: queryResult.data,
     workshops,
-    talleres: workshops,
     total,
     errors: queryResult.errors,
     pending: queryResult.pending,
@@ -103,7 +100,6 @@ export function useWorkshopByUrl(url: MaybeRefOrGetter<string>): AsyncUseWorksho
   const result: UseWorkshopReturn = {
     data: queryResult.data,
     workshop,
-    taller: workshop,
     errors: queryResult.errors,
     pending: queryResult.pending,
     refresh: queryResult.refresh,
@@ -114,7 +110,3 @@ export function useWorkshopByUrl(url: MaybeRefOrGetter<string>): AsyncUseWorksho
 
   return resultPromise as AsyncUseWorkshopReturn
 }
-
-// Aliases for compatibility
-export const useTalleres = useWorkshops
-export const useTallerByUrl = useWorkshopByUrl
