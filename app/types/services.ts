@@ -1,8 +1,4 @@
-import type {
-  ContentfulSys,
-  ContentfulCollection,
-  GetContentfulOptions,
-} from './contentful'
+import type { ContentfulSys, ContentfulCollection, GetContentfulOptions } from './contentful'
 
 export type ServiceModalidad = 'Presencial' | 'Online'
 

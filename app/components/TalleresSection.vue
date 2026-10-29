@@ -5,7 +5,7 @@ const props = withDefaults(
   }>(),
   {
     limit: 6,
-  }
+  },
 )
 
 // Fetch upcoming workshops sorted by date ascending
@@ -61,11 +61,7 @@ function formatPrice(precio?: number | null): string {
 
     <!-- Workshops Grid -->
     <div v-else-if="workshops.length" class="grid">
-      <article
-        v-for="workshop in workshops"
-        :key="workshop.sys.id"
-        class="card"
-      >
+      <article v-for="workshop in workshops" :key="workshop.sys.id" class="card">
         <div v-if="workshop.imagen" class="image-wrapper">
           <img
             :src="workshop.imagen.url"
@@ -82,13 +78,9 @@ function formatPrice(precio?: number | null): string {
 
           <h3 class="title">{{ workshop.titulo }}</h3>
 
-          <p class="location">
-            📍 {{ workshop.localizacion }}
-          </p>
+          <p class="location">📍 {{ workshop.localizacion }}</p>
 
-          <NuxtLink :to="`/talleres/${workshop.url}`" class="link-btn">
-            Más información
-          </NuxtLink>
+          <NuxtLink :to="`/talleres/${workshop.url}`" class="link-btn"> Más información </NuxtLink>
         </div>
       </article>
     </div>
@@ -105,7 +97,10 @@ function formatPrice(precio?: number | null): string {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 .talleres-header {

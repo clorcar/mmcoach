@@ -5,7 +5,7 @@ const props = withDefaults(
   }>(),
   {
     limit: 6,
-  }
+  },
 )
 
 // Fetch testimonials using the dedicated composable
@@ -40,11 +40,7 @@ const { testimonials, total, pending, errors, refresh } = await useTestimonials(
 
     <!-- Testimonials Grid -->
     <div v-else-if="testimonials.length" class="grid">
-      <article
-        v-for="item in testimonials"
-        :key="item.sys.id"
-        class="card"
-      >
+      <article v-for="item in testimonials" :key="item.sys.id" class="card">
         <div class="card-header">
           <img
             v-if="item.foto"
@@ -90,7 +86,10 @@ const { testimonials, total, pending, errors, refresh } = await useTestimonials(
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 .testimonios-header {

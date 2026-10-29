@@ -22,7 +22,7 @@ export interface ContentfulRichText {
   json: Record<string, any>
   links?: {
     assets?: {
-      block?: ContentfulAsset[]
+      block?: (ContentfulAsset & { sys: { id: string } })[]
     }
     entries?: {
       inline?: any[]

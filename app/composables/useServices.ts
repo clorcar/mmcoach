@@ -1,10 +1,7 @@
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from 'vue'
 import { GET_SERVICES_QUERY, GET_SERVICE_BY_URL_QUERY } from '~/queries/services'
 import type { GetContentfulOptions } from '~/types/contentful'
-import type {
-  Servicios,
-  ServiciosQueryResponse,
-} from '~/types/services'
+import type { Servicios, ServiciosQueryResponse } from '~/types/services'
 
 export { GET_SERVICES_QUERY, GET_SERVICE_BY_URL_QUERY } from '~/queries/services'
 
@@ -32,37 +29,23 @@ export type AsyncUseServiceReturn = UseServiceReturn & Promise<UseServiceReturn>
 /**
  * Composable to fetch a list of services from Contentful.
  *
+ * Items are capped at 100.
+ *
  * @param options Optional query options (limit, skip, order, where).
  * @returns Clean reactive services list, total count, error state, and refresh action.
  */
 export function useServices(options?: GetContentfulOptions): AsyncUseServicesReturn {
-  const variables: Record<string, any> = {}
-
-  if (options?.limit !== undefined) {
-    variables.limit = options.limit
-  }
-  if (options?.skip !== undefined) {
-    variables.skip = options.skip
-  }
-  if (options?.order !== undefined) {
-    variables.order = Array.isArray(options.order) ? options.order : [options.order]
-  }
-  if (options?.where !== undefined) {
-    variables.where = options.where
-  }
-
-  const queryResult = useContentfulQuery<ServiciosQueryResponse>(
+  const queryResult = useContentfulCollection<ServiciosQueryResponse>(
     GET_SERVICES_QUERY,
-    variables
+    'serviciosCollection',
+    options,
   )
 
   const services = computed<Servicios[]>(
-    () => queryResult.data.value?.serviciosCollection?.items ?? []
+    () => queryResult.data.value?.serviciosCollection?.items ?? [],
   )
 
-  const total = computed<number>(
-    () => queryResult.data.value?.serviciosCollection?.total ?? 0
-  )
+  const total = computed<number>(() => queryResult.data.value?.serviciosCollection?.total ?? 0)
 
   const result: UseServicesReturn = {
     data: queryResult.data,
@@ -88,13 +71,12 @@ export function useServices(options?: GetContentfulOptions): AsyncUseServicesRet
 export function useServiceByUrl(url: MaybeRefOrGetter<string>): AsyncUseServiceReturn {
   const resolvedUrl = toValue(url)
 
-  const queryResult = useContentfulQuery<ServiciosQueryResponse>(
-    GET_SERVICE_BY_URL_QUERY,
-    { url: resolvedUrl }
-  )
+  const queryResult = useContentfulQuery<ServiciosQueryResponse>(GET_SERVICE_BY_URL_QUERY, {
+    url: resolvedUrl,
+  })
 
   const service = computed<Servicios | null>(
-    () => queryResult.data.value?.serviciosCollection?.items?.[0] ?? null
+    () => queryResult.data.value?.serviciosCollection?.items?.[0] ?? null,
   )
 
   const result: UseServiceReturn = {

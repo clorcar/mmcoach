@@ -5,7 +5,7 @@ const props = withDefaults(
   }>(),
   {
     limit: 6,
-  }
+  },
 )
 
 // Fetch articles sorted by publication date descending
@@ -53,11 +53,7 @@ function formatDate(isoDate: string): string {
 
     <!-- Articles Grid -->
     <div v-else-if="articles.length" class="grid">
-      <article
-        v-for="article in articles"
-        :key="article.sys.id"
-        class="card"
-      >
+      <article v-for="article in articles" :key="article.sys.id" class="card">
         <div v-if="article.imagenPrincipal" class="image-wrapper">
           <img
             :src="article.imagenPrincipal.url"
@@ -71,9 +67,7 @@ function formatDate(isoDate: string): string {
           <h3 class="title">{{ article.titulo }}</h3>
           <p class="summary">{{ article.resumen }}</p>
 
-          <NuxtLink :to="`/articulos/${article.url}`" class="link-btn">
-            Leer artículo
-          </NuxtLink>
+          <NuxtLink :to="`/articulos/${article.url}`" class="link-btn"> Leer artículo </NuxtLink>
         </div>
       </article>
     </div>
@@ -90,7 +84,10 @@ function formatDate(isoDate: string): string {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 .articles-header {

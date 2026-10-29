@@ -1,10 +1,7 @@
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from 'vue'
 import { GET_ARTICLES_QUERY, GET_ARTICLE_BY_URL_QUERY } from '~/queries/articles'
 import type { GetContentfulOptions } from '~/types/contentful'
-import type {
-  Articulos,
-  ArticulosQueryResponse,
-} from '~/types/articles'
+import type { Articulos, ArticulosQueryResponse } from '~/types/articles'
 
 export { GET_ARTICLES_QUERY, GET_ARTICLE_BY_URL_QUERY } from '~/queries/articles'
 
@@ -32,37 +29,25 @@ export type AsyncUseArticleReturn = UseArticleReturn & Promise<UseArticleReturn>
 /**
  * Composable to fetch a list of articles from Contentful.
  *
+ * Items are fetched in pages of 10 (rich text links cost ~1000 query complexity per article)
+ * and capped at 100.
+ *
  * @param options Optional query options (limit, skip, order, where).
  * @returns Clean reactive articles list, total count, error state, and refresh action.
  */
 export function useArticles(options?: GetContentfulOptions): AsyncUseArticlesReturn {
-  const variables: Record<string, any> = {}
-
-  if (options?.limit !== undefined) {
-    variables.limit = options.limit
-  }
-  if (options?.skip !== undefined) {
-    variables.skip = options.skip
-  }
-  if (options?.order !== undefined) {
-    variables.order = Array.isArray(options.order) ? options.order : [options.order]
-  }
-  if (options?.where !== undefined) {
-    variables.where = options.where
-  }
-
-  const queryResult = useContentfulQuery<ArticulosQueryResponse>(
+  const queryResult = useContentfulCollection<ArticulosQueryResponse>(
     GET_ARTICLES_QUERY,
-    variables
+    'articulosCollection',
+    options,
+    { pageSize: 10 },
   )
 
   const articles = computed<Articulos[]>(
-    () => queryResult.data.value?.articulosCollection?.items ?? []
+    () => queryResult.data.value?.articulosCollection?.items ?? [],
   )
 
-  const total = computed<number>(
-    () => queryResult.data.value?.articulosCollection?.total ?? 0
-  )
+  const total = computed<number>(() => queryResult.data.value?.articulosCollection?.total ?? 0)
 
   const result: UseArticlesReturn = {
     data: queryResult.data,
@@ -88,13 +73,12 @@ export function useArticles(options?: GetContentfulOptions): AsyncUseArticlesRet
 export function useArticleByUrl(url: MaybeRefOrGetter<string>): AsyncUseArticleReturn {
   const resolvedUrl = toValue(url)
 
-  const queryResult = useContentfulQuery<ArticulosQueryResponse>(
-    GET_ARTICLE_BY_URL_QUERY,
-    { url: resolvedUrl }
-  )
+  const queryResult = useContentfulQuery<ArticulosQueryResponse>(GET_ARTICLE_BY_URL_QUERY, {
+    url: resolvedUrl,
+  })
 
   const article = computed<Articulos | null>(
-    () => queryResult.data.value?.articulosCollection?.items?.[0] ?? null
+    () => queryResult.data.value?.articulosCollection?.items?.[0] ?? null,
   )
 
   const result: UseArticleReturn = {

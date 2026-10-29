@@ -6,10 +6,9 @@ export default defineNuxtConfig({
   // Enable SSR for Nuxt 4 Static Site Generation (SSG) mode compatibility
   ssr: true,
 
+  // Server-only: Contentful is queried through /api/contentful, so credentials never reach the client
   runtimeConfig: {
-    public: {
-      contentfulSpaceId: process.env.CONTENTFUL_SPACE_ID || '',
-      contentfulAccessToken: process.env.CONTENTFUL_ACCESS_TOKEN || ''
-    }
-  }
+    contentfulSpaceId: process.env.CONTENTFUL_SPACE_ID || '',
+    contentfulAccessToken: process.env.CONTENTFUL_ACCESS_TOKEN || '',
+  },
 })

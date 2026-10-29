@@ -1,5 +1,5 @@
 export const GET_TESTIMONIOS_QUERY = `
-  query GetTestimonios($limit: Int, $skip: Int, $order: [TestimoniosOrder]) {
+  query GetTestimonios($limit: Int = 10, $skip: Int, $order: [TestimoniosOrder]) {
     testimoniosCollection(limit: $limit, skip: $skip, order: $order) {
       total
       limit

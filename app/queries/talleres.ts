@@ -1,5 +1,5 @@
 export const GET_TALLERES_QUERY = `
-  query GetTalleres($limit: Int, $skip: Int, $order: [TalleresOrder], $where: TalleresFilter) {
+  query GetTalleres($limit: Int = 10, $skip: Int, $order: [TalleresOrder], $where: TalleresFilter) {
     talleresCollection(limit: $limit, skip: $skip, order: $order, where: $where) {
       total
       limit

@@ -30,7 +30,8 @@ const HOMEPAGE_QUERY = `
 `
 
 // Invoke the composable (compatible with both `await` and direct invocation)
-const { data, errors, pending, refresh } = await useContentfulQuery<HomepageCollectionData>(HOMEPAGE_QUERY)
+const { data, errors, pending, refresh } =
+  await useContentfulQuery<HomepageCollectionData>(HOMEPAGE_QUERY)
 
 // Extract the first homepage entry reactively
 const homepage = computed(() => data.value?.homepageCollection?.items?.[0] ?? null)

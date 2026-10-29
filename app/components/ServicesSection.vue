@@ -5,7 +5,7 @@ const props = withDefaults(
   }>(),
   {
     limit: 6,
-  }
+  },
 )
 
 // Fetch services using the dedicated composable
@@ -51,17 +51,10 @@ function formatDuration(minutes?: number | null): string {
 
     <!-- Services Grid -->
     <div v-else-if="services.length" class="grid">
-      <article
-        v-for="service in services"
-        :key="service.sys.id"
-        class="card"
-      >
+      <article v-for="service in services" :key="service.sys.id" class="card">
         <div class="card-header">
           <div class="badges">
-            <span
-              class="badge modality"
-              :class="service.modalidad.toLowerCase()"
-            >
+            <span class="badge modality" :class="service.modalidad.toLowerCase()">
               {{ service.modalidad }}
             </span>
             <span v-if="service.duracion" class="badge duration">
@@ -75,9 +68,7 @@ function formatDuration(minutes?: number | null): string {
 
         <p class="description">{{ service.descripcion }}</p>
 
-        <NuxtLink :to="`/servicios/${service.url}`" class="link-btn">
-          Más detalles
-        </NuxtLink>
+        <NuxtLink :to="`/servicios/${service.url}`" class="link-btn"> Más detalles </NuxtLink>
       </article>
     </div>
 
@@ -93,7 +84,10 @@ function formatDuration(minutes?: number | null): string {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 .services-header {

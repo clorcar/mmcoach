@@ -33,13 +33,19 @@ export interface ContentfulQueryResult<T> {
   refresh: () => Promise<any>
 }
 
-export type AsyncContentfulQueryResult<T> = ContentfulQueryResult<T> & Promise<ContentfulQueryResult<T>>
+export type AsyncContentfulQueryResult<T> = ContentfulQueryResult<T> &
+  Promise<ContentfulQueryResult<T>>
+
+/**
+ * Server route that proxies Contentful's GraphQL API (see server/api/contentful.post.ts).
+ */
+export const CONTENTFUL_API_ROUTE = '/api/contentful'
 
 /**
  * Generates a stable deterministic cache key for Nuxt SSG hydration and payload deduplication.
  */
-function createQueryKey(spaceId?: string, query?: string, variables?: Record<string, any>): string {
-  const serialized = `${spaceId || ''}:${query || ''}:${JSON.stringify(variables ?? {})}`
+export function createQueryKey(query?: string, variables?: Record<string, any>): string {
+  const serialized = `${query || ''}:${JSON.stringify(variables ?? {})}`
   let hash = 0
   for (let i = 0; i < serialized.length; i++) {
     const char = serialized.charCodeAt(i)
@@ -50,7 +56,33 @@ function createQueryKey(spaceId?: string, query?: string, variables?: Record<str
 }
 
 /**
- * Nuxt 4 composable for querying Contentful's GraphQL API.
+ * Normalizes a fetch error into GraphQL errors: either the GraphQL errors returned with
+ * an HTTP 4xx payload (e.g. query validation failure), or a single network/HTTP error.
+ */
+export function toGraphQLErrors(fetchError: any): GraphQLError[] {
+  const errPayload = fetchError?.data as GraphQLResponse | undefined
+  if (errPayload?.errors && errPayload.errors.length > 0) {
+    return errPayload.errors
+  }
+
+  const errDetails = fetchError?.data as Record<string, any> | undefined
+  return [
+    {
+      message:
+        errDetails?.message ||
+        fetchError?.message ||
+        'An unexpected error occurred while querying Contentful.',
+      extensions: {
+        statusCode: fetchError?.statusCode,
+        statusMessage: fetchError?.statusMessage,
+        details: errDetails,
+      },
+    },
+  ]
+}
+
+/**
+ * Nuxt 4 composable for querying Contentful's GraphQL API through the server proxy route.
  * Compatible with SSR and SSG prerendering.
  *
  * @param query GraphQL query string
@@ -61,28 +93,13 @@ function createQueryKey(spaceId?: string, query?: string, variables?: Record<str
 export function useContentfulQuery<T = any>(
   query: string,
   variables?: Record<string, any>,
-  options?: UseContentfulQueryOptions
+  options?: UseContentfulQueryOptions,
 ): AsyncContentfulQueryResult<T> {
-  const config = useRuntimeConfig()
-  const spaceId = config.public.contentfulSpaceId as string | undefined
-  const accessToken = config.public.contentfulAccessToken as string | undefined
+  const cacheKey = options?.key || createQueryKey(query, variables)
 
-  if (!spaceId || !accessToken) {
-    console.warn(
-      '[useContentfulQuery] Contentful credentials missing: Ensure CONTENTFUL_SPACE_ID and CONTENTFUL_ACCESS_TOKEN are defined in your environment.'
-    )
-  }
-
-  const endpoint = `https://graphql.contentful.com/content/v1/spaces/${spaceId || ''}`
-  const cacheKey = options?.key || createQueryKey(spaceId, query, variables)
-
-  const fetchResult = useFetch<GraphQLResponse<T>>(endpoint, {
+  const fetchResult = useFetch<GraphQLResponse<T>>(CONTENTFUL_API_ROUTE, {
     key: cacheKey,
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${accessToken || ''}`,
-      'Content-Type': 'application/json',
-    },
     body: {
       query,
       variables,
@@ -101,31 +118,8 @@ export function useContentfulQuery<T = any>(
       return responseData.value.errors
     }
 
-    // 2. Errors returned with HTTP 4xx error payloads (e.g., query validation failure)
-    const errPayload = fetchError.value?.data as GraphQLResponse<T> | undefined
-    if (errPayload?.errors && errPayload.errors.length > 0) {
-      return errPayload.errors
-    }
-
-    // 3. Network, authorization (401), or unexpected server errors
-    if (fetchError.value) {
-      const errDetails = fetchError.value.data as Record<string, any> | undefined
-      return [
-        {
-          message:
-            errDetails?.message ||
-            fetchError.value.message ||
-            'An unexpected error occurred while querying Contentful.',
-          extensions: {
-            statusCode: fetchError.value.statusCode,
-            statusMessage: fetchError.value.statusMessage,
-            details: errDetails,
-          },
-        },
-      ]
-    }
-
-    return null
+    // 2. HTTP 4xx GraphQL payloads, network, authorization (401), or unexpected server errors
+    return fetchError.value ? toGraphQLErrors(fetchError.value) : null
   })
 
   const isPending = computed<boolean>(() => pending.value)

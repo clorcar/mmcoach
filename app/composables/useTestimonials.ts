@@ -1,10 +1,7 @@
 import { computed, type ComputedRef } from 'vue'
 import { GET_TESTIMONIOS_QUERY } from '~/queries/testimonios'
 import type { GetContentfulOptions } from '~/types/contentful'
-import type {
-  Testimonio,
-  TestimoniosQueryResponse,
-} from '~/types/testimonios'
+import type { Testimonio, TestimoniosQueryResponse } from '~/types/testimonios'
 
 export { GET_TESTIMONIOS_QUERY } from '~/queries/testimonios'
 
@@ -22,34 +19,26 @@ export type AsyncUseTestimonialsReturn = UseTestimonialsReturn & Promise<UseTest
 /**
  * Composable to fetch testimonials ("Testimonios") from Contentful.
  *
+ * Items are capped at 100.
+ *
  * @param options Optional filters: limit, skip, and sort order.
  * @returns Clean reactive testimonials, total count, error state, and refresh action.
  */
 export function useTestimonials(options?: GetContentfulOptions): AsyncUseTestimonialsReturn {
-  const variables: Record<string, any> = {}
+  // The testimonios query has no $where variable
+  const { where: _where, ...collectionOptions } = options ?? {}
 
-  if (options?.limit !== undefined) {
-    variables.limit = options.limit
-  }
-  if (options?.skip !== undefined) {
-    variables.skip = options.skip
-  }
-  if (options?.order !== undefined) {
-    variables.order = Array.isArray(options.order) ? options.order : [options.order]
-  }
-
-  const queryResult = useContentfulQuery<TestimoniosQueryResponse>(
+  const queryResult = useContentfulCollection<TestimoniosQueryResponse>(
     GET_TESTIMONIOS_QUERY,
-    variables
+    'testimoniosCollection',
+    collectionOptions,
   )
 
   const testimonials = computed<Testimonio[]>(
-    () => queryResult.data.value?.testimoniosCollection?.items ?? []
+    () => queryResult.data.value?.testimoniosCollection?.items ?? [],
   )
 
-  const total = computed<number>(
-    () => queryResult.data.value?.testimoniosCollection?.total ?? 0
-  )
+  const total = computed<number>(() => queryResult.data.value?.testimoniosCollection?.total ?? 0)
 
   const result: UseTestimonialsReturn = {
     data: queryResult.data,

@@ -1,5 +1,5 @@
 export const GET_ARTICLES_QUERY = `
-  query GetArticles($limit: Int, $skip: Int, $order: [ArticulosOrder], $where: ArticulosFilter) {
+  query GetArticles($limit: Int = 50, $skip: Int, $order: [ArticulosOrder], $where: ArticulosFilter) {
     articulosCollection(limit: $limit, skip: $skip, order: $order, where: $where) {
       total
       limit
