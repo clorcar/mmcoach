@@ -1,0 +1,22 @@
+@use 'sass:map';
+@use '../abstracts' as *;
+
+// Exposes tokens as CSS custom properties. A future theme (e.g. dark mode) only needs to
+// redefine the semantic --color-* properties, mapping them to other palette tones.
+:root {
+  @each $name, $value in $palette {
+    --#{$name}: #{$value};
+  }
+
+  @each $name, $tone in $semantic-colors {
+    --color-#{$name}: var(--#{$tone});
+  }
+
+  @each $size, $values in $font-scale {
+    --font-size-#{$size}: #{map.get($values, size)};
+    --line-height-#{$size}: #{map.get($values, line-height)};
+  }
+
+  --font-family-base: #{$font-family-base};
+  --font-family-heading: #{$font-family-heading};
+}

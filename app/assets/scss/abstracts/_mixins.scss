@@ -1,0 +1,196 @@
+@use 'sass:map';
+@use 'sass:list';
+@use 'tokens' as *;
+
+// ---------------------------------------------------------------------------
+// Responsive: mobile first. Usage: @include bp(tablet-portrait) { ... }
+// ---------------------------------------------------------------------------
+@mixin bp($name) {
+  @if not map.has-key($breakpoints, $name) {
+    @error 'Unknown breakpoint "#{$name}". Use one of: #{map.keys($breakpoints)}';
+  }
+
+  @media (min-width: map.get($breakpoints, $name)) {
+    @content;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Typography: font size, weight and line height from the scale in one call
+// ---------------------------------------------------------------------------
+@mixin font($size, $weight: 400) {
+  @if not map.has-key($font-scale, $size) {
+    @error 'Unknown font size #{$size}. Use one of: #{map.keys($font-scale)}';
+  }
+  @if not list.index($font-weights, $weight) {
+    @error 'Unknown font weight #{$weight}. Use one of: #{$font-weights}';
+  }
+
+  font-size: var(--font-size-#{$size});
+  font-weight: $weight;
+  line-height: var(--line-height-#{$size});
+}
+
+// Sass cannot generate mixin names in a loop, so each size/weight pair is declared explicitly
+@mixin f-12-300 {
+  @include font(12, 300);
+}
+@mixin f-12-400 {
+  @include font(12, 400);
+}
+@mixin f-12-500 {
+  @include font(12, 500);
+}
+@mixin f-12-600 {
+  @include font(12, 600);
+}
+@mixin f-12-700 {
+  @include font(12, 700);
+}
+@mixin f-14-300 {
+  @include font(14, 300);
+}
+@mixin f-14-400 {
+  @include font(14, 400);
+}
+@mixin f-14-500 {
+  @include font(14, 500);
+}
+@mixin f-14-600 {
+  @include font(14, 600);
+}
+@mixin f-14-700 {
+  @include font(14, 700);
+}
+@mixin f-16-300 {
+  @include font(16, 300);
+}
+@mixin f-16-400 {
+  @include font(16, 400);
+}
+@mixin f-16-500 {
+  @include font(16, 500);
+}
+@mixin f-16-600 {
+  @include font(16, 600);
+}
+@mixin f-16-700 {
+  @include font(16, 700);
+}
+@mixin f-18-300 {
+  @include font(18, 300);
+}
+@mixin f-18-400 {
+  @include font(18, 400);
+}
+@mixin f-18-500 {
+  @include font(18, 500);
+}
+@mixin f-18-600 {
+  @include font(18, 600);
+}
+@mixin f-18-700 {
+  @include font(18, 700);
+}
+@mixin f-20-300 {
+  @include font(20, 300);
+}
+@mixin f-20-400 {
+  @include font(20, 400);
+}
+@mixin f-20-500 {
+  @include font(20, 500);
+}
+@mixin f-20-600 {
+  @include font(20, 600);
+}
+@mixin f-20-700 {
+  @include font(20, 700);
+}
+@mixin f-24-300 {
+  @include font(24, 300);
+}
+@mixin f-24-400 {
+  @include font(24, 400);
+}
+@mixin f-24-500 {
+  @include font(24, 500);
+}
+@mixin f-24-600 {
+  @include font(24, 600);
+}
+@mixin f-24-700 {
+  @include font(24, 700);
+}
+@mixin f-32-300 {
+  @include font(32, 300);
+}
+@mixin f-32-400 {
+  @include font(32, 400);
+}
+@mixin f-32-500 {
+  @include font(32, 500);
+}
+@mixin f-32-600 {
+  @include font(32, 600);
+}
+@mixin f-32-700 {
+  @include font(32, 700);
+}
+@mixin f-40-300 {
+  @include font(40, 300);
+}
+@mixin f-40-400 {
+  @include font(40, 400);
+}
+@mixin f-40-500 {
+  @include font(40, 500);
+}
+@mixin f-40-600 {
+  @include font(40, 600);
+}
+@mixin f-40-700 {
+  @include font(40, 700);
+}
+
+// ---------------------------------------------------------------------------
+// Motion: animations and transforms only for users who have not asked to reduce motion
+// ---------------------------------------------------------------------------
+@mixin motion-safe {
+  @media (prefers-reduced-motion: no-preference) {
+    @content;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Accessibility
+// ---------------------------------------------------------------------------
+@mixin focus-ring {
+  outline: $focus-ring-width solid $color-primary;
+  outline-offset: 2px;
+}
+
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Layout
+// ---------------------------------------------------------------------------
+@mixin container($max-width: $container-width) {
+  max-width: $max-width;
+  margin-inline: auto;
+  padding-inline: $space-4;
+
+  @include bp(tablet-portrait) {
+    padding-inline: $space-5;
+  }
+}

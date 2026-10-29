@@ -1,0 +1,23 @@
+@use '../abstracts' as *;
+
+body {
+  @include f-16-400;
+  font-family: var(--font-family-base);
+  color: $color-text;
+  background-color: $color-surface;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-family-heading);
+  color: $color-heading;
+  overflow-wrap: break-word;
+}
+
+a {
+  color: $color-primary;
+}
