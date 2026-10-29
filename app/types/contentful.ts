@@ -16,6 +16,22 @@ export interface ContentfulAsset {
 }
 
 /**
+ * Contentful RichText field data structure returned by GraphQL.
+ */
+export interface ContentfulRichText {
+  json: Record<string, any>
+  links?: {
+    assets?: {
+      block?: ContentfulAsset[]
+    }
+    entries?: {
+      inline?: any[]
+      block?: any[]
+    }
+  }
+}
+
+/**
  * Generic Contentful Collection wrapper representing Contentful's GraphQL collection schema.
  */
 export interface ContentfulCollection<T> {
@@ -38,7 +54,7 @@ export interface GetContentfulOptions {
    */
   skip?: number
   /**
-   * Sort order (e.g. 'sys_firstPublishedAt_DESC', 'valoracion_DESC').
+   * Sort order (e.g. 'sys_firstPublishedAt_DESC', 'valoracion_DESC', 'fecha_ASC').
    */
   order?: string[] | string
   /**
