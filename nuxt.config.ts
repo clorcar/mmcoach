@@ -108,6 +108,8 @@ export default defineNuxtConfig({
   },
 
   nitro: {
+    // Netlify would otherwise auto-select netlify-static and write to dist/ instead of .output/public
+    preset: 'static',
     prerender: {
       routes: ['/robots.txt', '/llms.txt'],
       failOnError: true,
