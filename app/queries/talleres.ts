@@ -12,6 +12,7 @@ const TALLER_FIELDS = `
   imagen {
     ${IMAGE_FIELDS}
   }
+  resumen
   descripcion {
     json
     ${RICH_TEXT_IMAGE_LINKS}

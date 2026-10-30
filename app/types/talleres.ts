@@ -16,6 +16,7 @@ export interface Talleres {
   localizacion: string
   precio?: number | null
   imagen?: ContentfulAsset | null
+  resumen?: string | null
   descripcion: ContentfulRichText
 }
 

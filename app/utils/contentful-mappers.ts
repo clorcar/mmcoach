@@ -71,6 +71,7 @@ export function mapWorkshop(entry: Talleres): Workshop {
     location: entry.localizacion,
     price: entry.precio ?? null,
     image: mapImage(entry.imagen, entry.titulo),
+    summary: entry.resumen ?? '',
     description,
     descriptionText: richTextToPlainText(description.document),
   }
@@ -99,7 +100,6 @@ export function mapService(entry: Servicios): Service {
   return {
     id: entry.sys.id,
     title: entry.titulo,
-    slug: entry.url,
     subtitle: entry.subtitulo,
     durationMinutes: entry.duracion ?? null,
     price: entry.precio ?? null,

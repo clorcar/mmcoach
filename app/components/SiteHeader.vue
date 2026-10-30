@@ -14,7 +14,7 @@ const site = useSiteConfig()
         <li><NuxtLink to="/talleres" class="site-header__link">Talleres</NuxtLink></li>
         <li><NuxtLink to="/articulos" class="site-header__link">Artículos</NuxtLink></li>
         <li><NuxtLink to="/servicios" class="site-header__link">Servicios</NuxtLink></li>
-        <li><a href="#contacta" class="site-header__cta">Contacta</a></li>
+        <li><NuxtLink :to="contactLink()" class="site-header__cta">Contacta</NuxtLink></li>
       </ul>
     </nav>
   </header>
@@ -76,5 +76,9 @@ const site = useSiteConfig()
   @include button(primary);
   @include f-16-500;
   padding: $space-3 $space-5;
+
+  &[aria-current='page'] {
+    background-color: $color-heading;
+  }
 }
 </style>

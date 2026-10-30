@@ -43,6 +43,16 @@ export function formatPrice(price: number | null): string {
   return new Intl.NumberFormat(LOCALE, { style: 'currency', currency: 'EUR' }).format(price)
 }
 
+/**
+ * Whether a date is less than `days` days before `now` (a future date counts as recent).
+ */
+export function isRecent(isoDate: string, now: number, days: number): boolean {
+  const published = new Date(isoDate).getTime()
+  if (Number.isNaN(published)) return false
+
+  return now - published < days * 24 * 60 * 60 * 1000
+}
+
 export function formatDuration(minutes: number | null): string {
   if (!minutes) return 'Duración personalizada'
   if (minutes < 60) return `${minutes} min`

@@ -11,6 +11,10 @@ const COACH_FIRST_NAME = process.env.NUXT_PUBLIC_COACH_FIRST_NAME || '[Nombre]'
 const INSTAGRAM_URL = process.env.NUXT_PUBLIC_INSTAGRAM_URL || ''
 const FACEBOOK_URL = process.env.NUXT_PUBLIC_FACEBOOK_URL || ''
 
+// Contact form endpoint (Web3Forms). The access key is meant to be public: it only identifies the form
+const WEB3FORMS_URL = process.env.NUXT_PUBLIC_WEB3FORMS_URL || 'https://api.web3forms.com/submit'
+const WEB3FORMS_ACCESS_KEY = process.env.NUXT_PUBLIC_WEB3FORMS_ACCESS_KEY || ''
+
 const SITE_DESCRIPTION = 'Coaching personal en autoexigencia y gestión emocional.'
 
 export default defineNuxtConfig({
@@ -111,6 +115,8 @@ export default defineNuxtConfig({
       coachFirstName: COACH_FIRST_NAME,
       instagramUrl: INSTAGRAM_URL,
       facebookUrl: FACEBOOK_URL,
+      web3formsUrl: WEB3FORMS_URL,
+      web3formsAccessKey: WEB3FORMS_ACCESS_KEY,
     },
   },
 })

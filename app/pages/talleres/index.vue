@@ -16,64 +16,44 @@ useSchemaOrg([
 
 <template>
   <div class="talleres">
-    <header class="talleres__header">
-      <p class="talleres__eyebrow">Próximos talleres</p>
-      <h1 class="talleres__title">Talleres</h1>
-      <p class="talleres__summary">
-        Espacios para bajar el ritmo: descubre los próximos talleres y actividades de formación.
-      </p>
-    </header>
+    <PageHeader
+      eyebrow="Talleres"
+      title="Aprender en grupo, a un ritmo amable"
+      summary="Encuentros prácticos para entender tu exigencia, escuchar tus emociones y llevarte herramientas para el día a día."
+    />
 
-    <div v-if="workshops.length" class="talleres__grid">
-      <WorkshopCard
-        v-for="workshop in workshops"
-        :key="workshop.id"
-        :workshop="workshop"
-        heading-level="h2"
-      />
-    </div>
-    <p v-else class="talleres__empty">
-      Actualmente no hay talleres programados. Vuelve pronto para nuevas fechas.
-    </p>
+    <section class="talleres__list" aria-label="Próximos talleres">
+      <div v-if="workshops.length" class="talleres__items">
+        <WorkshopListCard v-for="workshop in workshops" :key="workshop.id" :workshop="workshop" />
+      </div>
+      <p v-else class="talleres__empty">
+        Actualmente no hay talleres programados. Vuelve pronto para nuevas fechas.
+      </p>
+    </section>
+
+    <PageCta
+      title="¿Quieres un taller para tu grupo o empresa?"
+      summary="Diseño talleres a medida según las necesidades de cada equipo."
+      action="Hablemos"
+      reason="talleres"
+    />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .talleres {
-  @include container;
-  padding-block: $space-7 $space-10;
-
-  @include bp(tablet-portrait) {
-    padding-top: $space-9;
-  }
+  padding-bottom: $space-10;
 }
 
-.talleres__header {
+.talleres__list {
+  @include container;
+  padding-block: $space-8 $space-5;
+}
+
+.talleres__items {
   display: flex;
   flex-direction: column;
-  gap: $space-2;
-  margin-bottom: $space-7;
-}
-
-.talleres__eyebrow {
-  @include eyebrow;
-}
-
-.talleres__title {
-  @include f-32-500;
-
-  @include bp(tablet-portrait) {
-    @include f-40-500;
-  }
-}
-
-.talleres__summary {
-  max-width: $text-measure;
-  color: $color-text-muted;
-}
-
-.talleres__grid {
-  @include auto-grid;
+  gap: $space-6;
 }
 
 .talleres__empty {

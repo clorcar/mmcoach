@@ -202,6 +202,7 @@ $container-width-narrow: 800px;
 
 // Minimum card widths for auto-fit grids (cards reflow without breakpoints)
 $card-min-width: 17.5rem;
+$card-min-width-wide: 20rem;
 
 // Comfortable line lengths for running text
 $text-measure-sm: 21.25rem;
@@ -214,8 +215,27 @@ $site-banner-height: 250px;
 // Share of the palette colors kept over the home banner photo (the rest lets the photo through)
 $logo-size: 56px;
 $avatar-size-sm: 48px;
+$avatar-size-md: 96px;
+$article-image-height: 25rem;
 $avatar-size-lg: 180px;
 $card-image-height: 190px;
+// Workshop list cards place image and text side by side when both bases fit
+$workshop-list-image-basis: 18.75rem;
+$workshop-list-body-basis: 27.5rem;
+$workshop-list-image-min-height: 15rem;
+$date-badge-width: 4.5rem;
+$input-height: 3.125rem;
+$form-field-min-width: 12.5rem;
+// The contact intro and form wrap onto separate rows when both bases do not fit
+$contact-intro-basis: 21.25rem;
+$contact-form-basis: 28.75rem;
+// Workshop detail: text column next to the booking card, wrapping when both do not fit
+$workshop-main-basis: 35rem;
+$workshop-aside-basis: 18.75rem;
+$content-measure: 45rem;
+// The featured article places image and text side by side when both bases fit
+$featured-basis: 26.25rem;
+$featured-image-min-height: 20rem;
 
 $focus-ring-width: 3px;
 

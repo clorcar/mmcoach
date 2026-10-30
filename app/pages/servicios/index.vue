@@ -16,59 +16,42 @@ useSchemaOrg([
 
 <template>
   <div class="services-page">
-    <header class="services-page__header">
-      <p class="services-page__eyebrow">Servicios</p>
-      <h1 class="services-page__title">Cómo puedo acompañarte</h1>
-      <p class="services-page__summary">
-        Formas de trabajar juntas la autoexigencia y la gestión emocional, a tu ritmo.
-      </p>
-    </header>
+    <PageHeader
+      eyebrow="Servicios"
+      title="Formas de acompañarte, a tu ritmo"
+      summary="Elige el formato que mejor encaje contigo. Si tienes dudas, escríbeme y lo vemos juntas sin compromiso."
+    />
 
-    <div v-if="services.length" class="services-page__grid">
-      <ServiceCard v-for="service in services" :key="service.id" :service="service" />
-    </div>
-    <p v-else class="services-page__empty">
-      Muy pronto encontrarás aquí mis servicios. Mientras tanto, escríbeme y lo hablamos.
-    </p>
+    <section class="services-page__list" aria-label="Listado de servicios">
+      <div v-if="services.length" class="services-page__grid">
+        <ServiceCard v-for="service in services" :key="service.id" :service="service" />
+      </div>
+      <p v-else class="services-page__empty">
+        Muy pronto encontrarás aquí mis servicios. Mientras tanto, escríbeme y lo hablamos.
+      </p>
+    </section>
+
+    <PageCta
+      title="¿No sabes por dónde empezar?"
+      summary="Cuéntame qué te está pasando y te recomiendo el formato que mejor puede ayudarte."
+      action="Escríbeme"
+      reason="servicios"
+    />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .services-page {
+  padding-bottom: $space-10;
+}
+
+.services-page__list {
   @include container;
-  padding-block: $space-7 $space-10;
-
-  @include bp(tablet-portrait) {
-    padding-top: $space-9;
-  }
-}
-
-.services-page__header {
-  display: flex;
-  flex-direction: column;
-  gap: $space-2;
-  margin-bottom: $space-7;
-}
-
-.services-page__eyebrow {
-  @include eyebrow;
-}
-
-.services-page__title {
-  @include f-32-500;
-
-  @include bp(tablet-portrait) {
-    @include f-40-500;
-  }
-}
-
-.services-page__summary {
-  max-width: $text-measure;
-  color: $color-text-muted;
+  padding-block: $space-8 $space-5;
 }
 
 .services-page__grid {
-  @include auto-grid;
+  @include auto-grid($card-min-width-wide);
 }
 
 .services-page__empty {

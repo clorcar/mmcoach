@@ -29,7 +29,9 @@ const site = useSiteConfig()
           <NuxtLink to="/servicios" class="intro__button intro__button--primary"
             >Conoce mis servicios</NuxtLink
           >
-          <a href="#contacta" class="intro__button intro__button--outline">Escríbeme</a>
+          <NuxtLink :to="contactLink()" class="intro__button intro__button--outline"
+            >Escríbeme</NuxtLink
+          >
         </div>
       </div>
     </div>

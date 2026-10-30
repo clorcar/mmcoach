@@ -272,6 +272,24 @@
   }
 }
 
+// Small pill for facts on a card (duration, place, date). Variants: soft (filled) and outline
+@mixin chip($variant: soft) {
+  @include f-14-400;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-1 $space-3;
+  border-radius: $radius-full;
+
+  @if $variant == soft {
+    background-color: $color-primary-soft;
+  } @else if $variant == outline {
+    border: $border-width solid $color-border-strong;
+  } @else {
+    @error 'Unknown chip variant "#{$variant}". Use soft or outline';
+  }
+}
+
 // Text link followed by an arrow ("Leer artículo →")
 @mixin link-arrow {
   @include f-17-600;

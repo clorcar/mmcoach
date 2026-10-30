@@ -1,4 +1,4 @@
-import type { ContentfulCollection, ContentfulSys } from './contentful'
+import type { ContentfulSys } from './contentful'
 
 /**
  * Contentful Content Type "Servicios".
@@ -6,14 +6,9 @@ import type { ContentfulCollection, ContentfulSys } from './contentful'
 export interface Servicios {
   sys: ContentfulSys
   titulo: string
-  url: string
   subtitulo: string
   duracion?: number | null
   precio?: number | null
   modalidad: 'Presencial' | 'Online'
   descripcion: string
-}
-
-export interface ServiciosQueryResponse {
-  serviciosCollection: ContentfulCollection<Servicios> | null
 }

@@ -26,6 +26,9 @@ export interface Workshop {
   location: string
   price: number | null
   image: Image | null
+  /** Markdown, shown on cards */
+  summary: string
+  /** Full rich text, shown on the detail page */
   description: RichTextContent
   /** Plain-text description, for meta descriptions and structured data */
   descriptionText: string
@@ -50,7 +53,6 @@ export type ServiceModality = 'Presencial' | 'Online'
 export interface Service {
   id: string
   title: string
-  slug: string
   subtitle: string
   durationMinutes: number | null
   price: number | null
@@ -66,3 +68,12 @@ export interface Testimonial {
   opinion: string
   rating: number
 }
+
+export interface MarkdownInline {
+  text: string
+  bold: boolean
+  italic: boolean
+}
+
+export type MarkdownBlock =
+  { type: 'paragraph'; content: MarkdownInline[] } | { type: 'list'; items: MarkdownInline[][] }

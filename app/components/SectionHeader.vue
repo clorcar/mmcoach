@@ -2,7 +2,7 @@
 defineProps<{
   /** id of the <h2>, referenced by the section's aria-labelledby */
   titleId: string
-  eyebrow: string
+  eyebrow?: string
   title: string
   link?: { to: string; label: string }
 }>()
@@ -11,7 +11,7 @@ defineProps<{
 <template>
   <div class="section-header">
     <div class="section-header__text">
-      <p class="section-header__eyebrow">{{ eyebrow }}</p>
+      <p v-if="eyebrow" class="section-header__eyebrow">{{ eyebrow }}</p>
       <h2 :id="titleId" class="section-header__title">{{ title }}</h2>
     </div>
     <NuxtLink v-if="link" :to="link.to" class="section-header__link">

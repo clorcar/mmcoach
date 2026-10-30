@@ -71,6 +71,7 @@ export default defineEventHandler(async (event) => {
     `- [Artículos](${url}/articulos): artículos sobre autoexigencia y gestión emocional`,
     `- [Servicios](${url}/servicios): servicios de coaching personal`,
     `- [Testimonios](${url}/testimonios): opiniones de personas que han trabajado conmigo`,
+    `- [Contacto](${url}/contacto): formulario para pedir información o hacer una consulta`,
     '',
     '## Talleres',
     '',

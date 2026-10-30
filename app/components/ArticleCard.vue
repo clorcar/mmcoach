@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import type { Article } from '~/types/content'
 
-defineProps<{
-  article: Article
-  /** Heading level: h3 inside a home section, h2 on the articles page */
-  headingLevel?: 'h2' | 'h3'
-}>()
+defineProps<{ article: Article }>()
 </script>
 
 <template>
@@ -23,10 +19,8 @@ defineProps<{
         <time :datetime="article.publishedAt">{{ formatDate(article.publishedAt) }}</time>
         · {{ article.readingMinutes }} min de lectura
       </p>
-      <component :is="headingLevel ?? 'h3'" class="article-card__title">
-        {{ article.title }}
-      </component>
-      <p class="article-card__summary">{{ article.summary }}</p>
+      <h3 class="article-card__title">{{ article.title }}</h3>
+      <MarkdownContent :source="article.summary" class="article-card__summary" />
       <NuxtLink :to="`/articulos/${article.slug}`" class="article-card__link">
         Leer artículo<span class="article-card__link-context">: {{ article.title }}</span>
         <span aria-hidden="true"> →</span>

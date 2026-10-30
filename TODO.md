@@ -15,6 +15,7 @@ Pending work agreed during the CLAUDE.md review. Remove items as they are done.
 
 ## Routes
 
+- [ ] **Contact form key.** Set `NUXT_PUBLIC_WEB3FORMS_ACCESS_KEY` in the Cloudflare Pages build environment (the form is sent through Web3Forms).
 - [ ] **Prerender all dynamic routes** from Contentful slugs (`nitro.prerender.routes` or a build hook). Today detail pages are only found by the crawler through links.
 - [ ] **Workshop modality.** The design shows "Online / Presencial" on workshop cards, but `Talleres` has no such field; the cards show the location instead (content model change: agree first).
 
