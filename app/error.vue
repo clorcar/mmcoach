@@ -6,7 +6,9 @@ const props = defineProps<{ error: NuxtError }>()
 const isNotFound = computed(() => props.error.statusCode === 404)
 
 const title = computed(() =>
-  isNotFound.value ? 'Respira: esto no es el fin del mundo' : 'Algo no ha ido como esperábamos',
+  isNotFound.value
+    ? 'Error 404: no pasa nada por no encontrar algo a la primera'
+    : 'Algo no ha ido como esperábamos',
 )
 const summary = computed(() =>
   isNotFound.value
