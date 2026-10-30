@@ -9,6 +9,7 @@ export interface Servicios {
   url: string
   subtitulo: string
   duracion?: number | null
+  precio?: number | null
   modalidad: 'Presencial' | 'Online'
   descripcion: string
 }

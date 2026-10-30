@@ -102,6 +102,7 @@ export function mapService(entry: Servicios): Service {
     slug: entry.url,
     subtitle: entry.subtitulo,
     durationMinutes: entry.duracion ?? null,
+    price: entry.precio ?? null,
     modality: entry.modalidad,
     description: entry.descripcion,
   }

@@ -53,6 +53,7 @@ export interface Service {
   slug: string
   subtitle: string
   durationMinutes: number | null
+  price: number | null
   modality: ServiceModality
   description: string
 }

@@ -17,7 +17,6 @@ Pending work agreed during the CLAUDE.md review. Remove items as they are done.
 ## Routes
 
 - [ ] **Prerender all dynamic routes** from Contentful slugs (`nitro.prerender.routes` or a build hook). Today detail pages are only found by the crawler through links.
-- [ ] **Services page.** Services only exist as a home section (`/#servicios`); cards have no link until there is a `/servicios` page or detail pages.
 - [ ] **Workshop modality.** The design shows "Online / Presencial" on workshop cards, but `Talleres` has no such field; the cards show the location instead (content model change: agree first).
 
 ## GEO

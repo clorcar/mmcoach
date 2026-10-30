@@ -14,7 +14,7 @@ const site = useSiteConfig()
       <ul class="site-header__links">
         <li><NuxtLink to="/talleres" class="site-header__link">Talleres</NuxtLink></li>
         <li><NuxtLink to="/articulos" class="site-header__link">Artículos</NuxtLink></li>
-        <li><NuxtLink to="/#servicios" class="site-header__link">Servicios</NuxtLink></li>
+        <li><NuxtLink to="/servicios" class="site-header__link">Servicios</NuxtLink></li>
         <li><a href="#contacta" class="site-header__cta">Contacta</a></li>
       </ul>
     </nav>

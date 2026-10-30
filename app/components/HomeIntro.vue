@@ -26,7 +26,9 @@ const site = useSiteConfig()
           amable contigo.
         </p>
         <div class="intro__actions">
-          <a href="#servicios" class="intro__button intro__button--primary">Conoce mis servicios</a>
+          <NuxtLink to="/servicios" class="intro__button intro__button--primary"
+            >Conoce mis servicios</NuxtLink
+          >
           <a href="#contacta" class="intro__button intro__button--outline">Escríbeme</a>
         </div>
       </div>

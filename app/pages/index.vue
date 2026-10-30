@@ -19,7 +19,7 @@ usePageSeo({
     <HomeIntro />
     <TalleresSection />
     <ArticlesSection />
-    <ServicesSection />
+    <TestimoniosSection />
   </div>
 </template>
 

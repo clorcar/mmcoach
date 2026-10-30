@@ -6,6 +6,7 @@ const SERVICIO_FIELDS = `
   url
   subtitulo
   duracion
+  precio
   modalidad
   descripcion
 `

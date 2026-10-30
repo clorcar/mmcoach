@@ -23,7 +23,8 @@ const year = new Date().getFullYear()
         <p id="footer-explore" class="site-footer__title">Explora</p>
         <NuxtLink to="/talleres" class="site-footer__link">Talleres</NuxtLink>
         <NuxtLink to="/articulos" class="site-footer__link">Artículos</NuxtLink>
-        <NuxtLink to="/#servicios" class="site-footer__link">Servicios</NuxtLink>
+        <NuxtLink to="/servicios" class="site-footer__link">Servicios</NuxtLink>
+        <NuxtLink to="/testimonios" class="site-footer__link">Testimonios</NuxtLink>
         <a href="#contacta" class="site-footer__link">Contacta</a>
       </nav>
 
