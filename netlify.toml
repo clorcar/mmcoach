@@ -1,0 +1,7 @@
+[build]
+  command = "pnpm generate"
+  publish = ".output/public"
+
+[build.environment]
+  # Public site config is meant to appear in the HTML; only the Contentful token stays secret
+  SECRETS_SCAN_OMIT_KEYS = "NUXT_PUBLIC_WEB3FORMS_URL,NUXT_PUBLIC_WEB3FORMS_ACCESS_KEY,NUXT_PUBLIC_WEBSITE_NAME,NUXT_PUBLIC_COACH_DESCRIPTION,NUXT_PUBLIC_COACH_FIRST_NAME,NUXT_PUBLIC_COACH_FULL_NAME,NUXT_PUBLIC_INSTAGRAM_URL,NUXT_PUBLIC_FACEBOOK_URL,CONTENTFUL_SPACE_ID"
