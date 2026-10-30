@@ -14,7 +14,7 @@ defineProps<{
       <ContentImage
         :image="article.image"
         placeholder="article"
-        sizes="100vw tablet-portrait:50vw laptop:240px"
+        sizes="100vw tablet-portrait:50vw laptop:380px"
       />
     </div>
 
@@ -39,21 +39,19 @@ defineProps<{
 .article-card {
   @include card;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
 }
 
 .article-card__image {
-  flex: 1 1 $article-card-image-basis;
-  height: $article-card-image-height;
+  height: $card-image-height;
   background-color: $color-surface-alt;
 }
 
 .article-card__body {
   display: flex;
-  flex: 999 1 $article-card-body-basis;
+  flex-grow: 1;
   flex-direction: column;
   gap: $space-2;
-  min-width: 0;
   padding: $space-5;
 }
 

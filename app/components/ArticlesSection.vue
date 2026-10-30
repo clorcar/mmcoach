@@ -27,7 +27,7 @@ const { articles } = await useArticles({ limit: props.limit, order: 'fechaPublic
 }
 
 .articles__grid {
-  @include auto-grid($card-min-width-wide);
+  @include auto-grid;
 }
 
 .articles__empty {

@@ -71,7 +71,7 @@ useSchemaOrg([
 }
 
 .articles-page__grid {
-  @include auto-grid($card-min-width-wide);
+  @include auto-grid;
 }
 
 .articles-page__empty {
