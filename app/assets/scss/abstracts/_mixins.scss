@@ -47,6 +47,21 @@
 @mixin f-12-700 {
   @include font(12, 700);
 }
+@mixin f-13-300 {
+  @include font(13, 300);
+}
+@mixin f-13-400 {
+  @include font(13, 400);
+}
+@mixin f-13-500 {
+  @include font(13, 500);
+}
+@mixin f-13-600 {
+  @include font(13, 600);
+}
+@mixin f-13-700 {
+  @include font(13, 700);
+}
 @mixin f-14-300 {
   @include font(14, 300);
 }
@@ -77,6 +92,21 @@
 @mixin f-16-700 {
   @include font(16, 700);
 }
+@mixin f-17-300 {
+  @include font(17, 300);
+}
+@mixin f-17-400 {
+  @include font(17, 400);
+}
+@mixin f-17-500 {
+  @include font(17, 500);
+}
+@mixin f-17-600 {
+  @include font(17, 600);
+}
+@mixin f-17-700 {
+  @include font(17, 700);
+}
 @mixin f-18-300 {
   @include font(18, 300);
 }
@@ -106,6 +136,21 @@
 }
 @mixin f-20-700 {
   @include font(20, 700);
+}
+@mixin f-22-300 {
+  @include font(22, 300);
+}
+@mixin f-22-400 {
+  @include font(22, 400);
+}
+@mixin f-22-500 {
+  @include font(22, 500);
+}
+@mixin f-22-600 {
+  @include font(22, 600);
+}
+@mixin f-22-700 {
+  @include font(22, 700);
 }
 @mixin f-24-300 {
   @include font(24, 300);
@@ -183,6 +228,58 @@
 }
 
 // ---------------------------------------------------------------------------
+// Shared text and controls
+// ---------------------------------------------------------------------------
+
+// Small uppercase label above headings ("Próximos talleres", "Del blog"...)
+@mixin eyebrow($color: $color-primary) {
+  @include f-14-600;
+  letter-spacing: $letter-spacing-wide;
+  text-transform: uppercase;
+  color: $color;
+}
+
+// Pill-shaped call to action. Variants: primary (filled) and outline
+@mixin button($variant: primary) {
+  @include f-16-600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-3 $space-5;
+  text-decoration: none;
+  border-radius: $radius-full;
+
+  @if $variant == primary {
+    color: $color-on-primary;
+    background-color: $color-primary;
+
+    &:hover {
+      color: $color-on-primary;
+      text-decoration: none;
+      background-color: $color-primary-hover;
+    }
+  } @else if $variant == outline {
+    color: $color-text;
+    border: $border-width-strong solid $color-border-strong;
+
+    &:hover {
+      color: $color-text;
+      text-decoration: none;
+      background-color: $color-surface;
+    }
+  } @else {
+    @error 'Unknown button variant "#{$variant}". Use primary or outline';
+  }
+}
+
+// Text link followed by an arrow ("Leer artículo →")
+@mixin link-arrow {
+  @include f-17-600;
+  align-self: flex-start;
+  padding-block: $space-2;
+}
+
+// ---------------------------------------------------------------------------
 // Layout
 // ---------------------------------------------------------------------------
 @mixin container($max-width: $container-width) {
@@ -193,4 +290,19 @@
   @include bp(tablet-portrait) {
     padding-inline: $space-5;
   }
+}
+
+// Cards that reflow on their own: as many columns of at least $min-width as fit. auto-fill keeps
+// the column width when there are fewer cards than columns (one card does not stretch)
+@mixin auto-grid($min-width: $card-min-width) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min($min-width, 100%), 1fr));
+  gap: $space-5;
+}
+
+@mixin card {
+  overflow: hidden;
+  background-color: $color-surface;
+  border: $border-width solid $color-border;
+  border-radius: $radius-2xl;
 }

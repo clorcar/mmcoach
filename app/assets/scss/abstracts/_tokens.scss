@@ -4,79 +4,104 @@
 
 // ---------------------------------------------------------------------------
 // Palette: up to 5 tones per color, 10 = lightest, higher = darker
-// Text pairs are checked against WCAG 2.2 AA (4.5:1), e.g. grey30 on grey10 is 4.75:1
+// Text pairs are checked against WCAG 2.2 AA (4.5:1). terracotta20 is the design accent
+// (#A5603F) darkened slightly so it passes as 14px text on sand20 (4.55:1).
 // ---------------------------------------------------------------------------
 $palette: (
   'white': #ffffff,
-  'grey10': #f3f4f6,
-  'grey20': #e5e7eb,
-  'grey30': #646d7b,
-  'grey40': #374151,
-  'grey50': #111827,
-  'blue10': #eff6ff,
-  'blue20': #2563eb,
-  'blue30': #1d4ed8,
+  'sand10': #fffbf6,
+  'sand20': #f6efe6,
+  'sand30': #e8d8c4,
+  'sand40': #ead3be,
+  'sand50': #b98c6e,
+  'brown10': #f3e6d8,
+  'brown20': #7a5e50,
+  'brown30': #6b5044,
+  'brown40': #4a3328,
+  'brown50': #3f2a21,
+  'terracotta10': #f3dcc4,
+  'terracotta20': #9e5c3c,
+  'terracotta30': #7a4a33,
+  'gold20': #e0b97c,
   'green10': #ecfdf5,
-  'green20': #10b981,
   'green30': #047857,
   'red10': #fef2f2,
-  'red20': #ef4444,
   'red30': #991b1b,
-  'amber10': #fffbeb,
-  'amber20': #f59e0b,
-  'amber30': #b45309,
 );
 
 $white: var(--white);
-$grey10: var(--grey10);
-$grey20: var(--grey20);
-$grey30: var(--grey30);
-$grey40: var(--grey40);
-$grey50: var(--grey50);
-$blue10: var(--blue10);
-$blue20: var(--blue20);
-$blue30: var(--blue30);
+$sand10: var(--sand10);
+$sand20: var(--sand20);
+$sand30: var(--sand30);
+$sand40: var(--sand40);
+$sand50: var(--sand50);
+$brown10: var(--brown10);
+$brown20: var(--brown20);
+$brown30: var(--brown30);
+$brown40: var(--brown40);
+$brown50: var(--brown50);
+$terracotta10: var(--terracotta10);
+$terracotta20: var(--terracotta20);
+$terracotta30: var(--terracotta30);
+$gold20: var(--gold20);
 $green10: var(--green10);
-$green20: var(--green20);
 $green30: var(--green30);
 $red10: var(--red10);
-$red20: var(--red20);
 $red30: var(--red30);
-$amber10: var(--amber10);
-$amber20: var(--amber20);
-$amber30: var(--amber30);
 
 // ---------------------------------------------------------------------------
 // Semantic colors: what components use. Themes remap these to other palette tones.
 // ---------------------------------------------------------------------------
 $semantic-colors: (
-  'primary': 'blue20',
-  'primary-hover': 'blue30',
-  'primary-soft': 'blue10',
+  'primary': 'terracotta20',
+  'primary-hover': 'terracotta30',
+  'primary-soft': 'terracotta10',
   'on-primary': 'white',
-  'text': 'grey40',
-  'text-muted': 'grey30',
-  'heading': 'grey50',
-  'surface': 'white',
-  'surface-alt': 'grey10',
-  'border': 'grey20',
+  'link': 'terracotta30',
+  'link-hover': 'brown40',
+  'text': 'brown40',
+  'text-muted': 'brown30',
+  'text-subtle': 'brown20',
+  'heading': 'brown50',
+  'background': 'sand20',
+  'surface': 'sand10',
+  'surface-alt': 'sand40',
+  'border': 'sand30',
+  'border-strong': 'sand50',
+  'inverse-surface': 'brown40',
+  'inverse-heading': 'sand10',
+  'inverse-text': 'brown10',
+  'inverse-text-muted': 'sand40',
+  'inverse-accent': 'gold20',
+  'inverse-border': 'brown30',
   'success': 'green30',
   'success-soft': 'green10',
   'danger': 'red30',
   'danger-soft': 'red10',
-  'rating': 'amber20',
+  'rating': 'gold20',
 );
 
 $color-primary: var(--color-primary);
 $color-primary-hover: var(--color-primary-hover);
 $color-primary-soft: var(--color-primary-soft);
 $color-on-primary: var(--color-on-primary);
+$color-link: var(--color-link);
+$color-link-hover: var(--color-link-hover);
 $color-text: var(--color-text);
 $color-text-muted: var(--color-text-muted);
+$color-text-subtle: var(--color-text-subtle);
 $color-heading: var(--color-heading);
+$color-background: var(--color-background);
 $color-surface: var(--color-surface);
 $color-surface-alt: var(--color-surface-alt);
 $color-border: var(--color-border);
+$color-border-strong: var(--color-border-strong);
+$color-inverse-surface: var(--color-inverse-surface);
+$color-inverse-heading: var(--color-inverse-heading);
+$color-inverse-text: var(--color-inverse-text);
+$color-inverse-text-muted: var(--color-inverse-text-muted);
+$color-inverse-accent: var(--color-inverse-accent);
+$color-inverse-border: var(--color-inverse-border);
 $color-success: var(--color-success);
 $color-success-soft: var(--color-success-soft);
 $color-danger: var(--color-danger);
@@ -84,20 +109,19 @@ $color-danger-soft: var(--color-danger-soft);
 $color-rating: var(--color-rating);
 
 // ---------------------------------------------------------------------------
-// Typography: keyed by pixel size, used through the f-<size>-<weight> mixins
+// Typography: keyed by pixel size, used through the f-<size>-<weight> mixins.
+// Fonts are self-hosted by @nuxt/fonts (configured in nuxt.config.ts).
 // ---------------------------------------------------------------------------
-$font-family-base:
-  system-ui,
-  -apple-system,
-  BlinkMacSystemFont,
-  'Segoe UI',
-  Roboto,
-  sans-serif;
-$font-family-heading: $font-family-base;
+$font-family-base: 'Karla', system-ui, sans-serif;
+$font-family-heading: 'Lora', Georgia, serif;
 
 $font-scale: (
   12: (
     size: 0.75rem,
+    line-height: 1.5,
+  ),
+  13: (
+    size: 0.8125rem,
     line-height: 1.5,
   ),
   14: (
@@ -108,6 +132,10 @@ $font-scale: (
     size: 1rem,
     line-height: 1.6,
   ),
+  17: (
+    size: 1.0625rem,
+    line-height: 1.6,
+  ),
   18: (
     size: 1.125rem,
     line-height: 1.5,
@@ -116,21 +144,27 @@ $font-scale: (
     size: 1.25rem,
     line-height: 1.4,
   ),
+  22: (
+    size: 1.375rem,
+    line-height: 1.35,
+  ),
   24: (
     size: 1.5rem,
     line-height: 1.3,
   ),
   32: (
     size: 2rem,
-    line-height: 1.2,
+    line-height: 1.25,
   ),
   40: (
     size: 2.5rem,
-    line-height: 1.15,
+    line-height: 1.2,
   ),
 );
 
 $font-weights: (300, 400, 500, 600, 700);
+
+$letter-spacing-wide: 0.08em;
 
 // ---------------------------------------------------------------------------
 // Spacing, radii, shadows, motion, layout
@@ -141,16 +175,21 @@ $space-3: 0.75rem;
 $space-4: 1rem;
 $space-5: 1.5rem;
 $space-6: 2rem;
-$space-7: 3rem;
-$space-8: 4rem;
+$space-7: 2.5rem;
+$space-8: 3.5rem;
+$space-9: 4rem;
+$space-10: 4.5rem;
 
 $radius-sm: 0.25rem;
 $radius-md: 0.5rem;
 $radius-lg: 0.75rem;
 $radius-xl: 1rem;
+$radius-2xl: 1.25rem;
+$radius-3xl: 1.5rem;
 $radius-full: 9999px;
 
 $border-width: 1px;
+$border-width-strong: 1.5px;
 
 $shadow-sm: 0 1px 3px rgb(0 0 0 / 5%);
 $shadow-md: 0 8px 20px rgb(0 0 0 / 8%);
@@ -158,8 +197,29 @@ $shadow-md: 0 8px 20px rgb(0 0 0 / 8%);
 $duration-fast: 0.15s;
 $duration-base: 0.2s;
 
-$container-width: 1200px;
+$container-width: 1160px;
 $container-width-narrow: 800px;
+
+// Minimum card widths for auto-fit grids (cards reflow without breakpoints)
+$card-min-width: 17.5rem;
+$card-min-width-wide: 26rem;
+
+// Comfortable line lengths for running text
+$text-measure-sm: 21.25rem;
+$text-measure: 40rem;
+
+$footer-column-width: 13.75rem;
+$footer-column-width-narrow: 12.5rem;
+
+$site-banner-height: 240px;
+$logo-size: 44px;
+$avatar-size-sm: 48px;
+$avatar-size-lg: 180px;
+$card-image-height: 190px;
+$article-card-image-height: 220px;
+// Article cards place image and text side by side when both bases fit
+$article-card-image-basis: 12.5rem;
+$article-card-body-basis: 15rem;
 
 $focus-ring-width: 3px;
 

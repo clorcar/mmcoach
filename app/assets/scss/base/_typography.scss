@@ -1,10 +1,10 @@
 @use '../abstracts' as *;
 
 body {
-  @include f-16-400;
+  @include f-17-400;
   font-family: var(--font-family-base);
   color: $color-text;
-  background-color: $color-surface;
+  background-color: $color-background;
 }
 
 h1,
@@ -14,10 +14,17 @@ h4,
 h5,
 h6 {
   font-family: var(--font-family-heading);
+  font-weight: 500;
   color: $color-heading;
   overflow-wrap: break-word;
 }
 
 a {
-  color: $color-primary;
+  color: $color-link;
+  text-decoration: none;
+
+  &:hover {
+    color: $color-link-hover;
+    text-decoration: underline;
+  }
 }
