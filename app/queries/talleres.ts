@@ -7,7 +7,18 @@ const TALLER_FIELDS = `
   titulo
   url
   fecha
-  localizacion
+  duracion
+  direccion {
+    titulo
+    direccion
+    ciudad
+    codigoPostal
+    pais
+    coordenadas {
+      lat
+      lon
+    }
+  }
   precio
   imagen {
     ${IMAGE_FIELDS}

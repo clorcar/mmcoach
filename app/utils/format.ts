@@ -1,3 +1,5 @@
+import type { Address } from '~/types/content'
+
 const LOCALE = 'es-ES'
 
 // Pages are rendered at build time on a UTC machine; dates must show Spanish local time
@@ -53,6 +55,14 @@ export function isRecent(isoDate: string, now: number, days: number): boolean {
   return now - published < days * 24 * 60 * 60 * 1000
 }
 
+/**
+ * ISO 8601 date-time `minutes` after `isoDate`, or undefined when the length is unknown.
+ */
+export function addMinutes(isoDate: string, minutes: number | null): string | undefined {
+  if (!minutes) return undefined
+  return new Date(new Date(isoDate).getTime() + minutes * 60 * 1000).toISOString()
+}
+
 export function formatDuration(minutes: number | null): string {
   if (!minutes) return 'Duración personalizada'
   if (minutes < 60) return `${minutes} min`
@@ -70,4 +80,16 @@ export function truncate(text: string, maxLength: number): string {
 
   const cut = text.slice(0, maxLength - 1)
   return `${cut.slice(0, cut.lastIndexOf(' ')) || cut}…`
+}
+
+/**
+ * Single-line postal address, e.g. "Calle Mayor 1, 28013 Madrid, España".
+ */
+export function formatAddress(address: Address): string {
+  return `${address.street}, ${address.postalCode} ${address.city}, ${address.country}`
+}
+
+export function buildMapsLink(address: Address): string {
+  const query = encodeURIComponent(`${address.name}, ${formatAddress(address)}`)
+  return `https://www.google.com/maps/search/?api=1&query=${query}`
 }

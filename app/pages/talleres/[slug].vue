@@ -3,6 +3,7 @@ const OTHER_WORKSHOPS = 3
 
 const route = useRoute()
 const site = useSiteConfig()
+const { coachFullName } = useRuntimeConfig().public
 const { workshop } = await useWorkshopByUrl(route.params.slug as string)
 
 // Unknown slugs render a 404 (and fail prerendering instead of shipping an empty page)
@@ -46,8 +47,26 @@ useSchemaOrg([
     name: workshop.value.title,
     description: workshop.value.descriptionText,
     startDate: workshop.value.date,
+    endDate: addMinutes(workshop.value.date, workshop.value.durationMinutes),
+    eventAttendanceMode: 'OfflineEventAttendanceMode',
+    eventStatus: 'EventScheduled',
+    organizer: { '@type': 'Person', name: coachFullName, url: site.url },
     image: workshop.value.image?.url,
-    location: { '@type': 'Place', name: workshop.value.location },
+    location: {
+      '@type': 'Place',
+      name: workshop.value.location.name,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: workshop.value.location.street,
+        addressLocality: workshop.value.location.city,
+        postalCode: workshop.value.location.postalCode,
+        addressCountry: workshop.value.location.country,
+      },
+      geo: workshop.value.location.coordinates && {
+        '@type': 'GeoCoordinates',
+        ...workshop.value.location.coordinates,
+      },
+    },
     offers:
       workshop.value.price === null
         ? undefined
@@ -109,7 +128,7 @@ useSchemaOrg([
                 <path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z" />
                 <circle cx="12" cy="10" r="2.5" />
               </svg>
-              {{ workshop.location }}
+              {{ workshop.location.name }}
             </span>
           </p>
         </header>
@@ -169,7 +188,12 @@ useSchemaOrg([
               </svg>
               <div>
                 <dt>Hora de inicio</dt>
-                <dd>{{ startTime }} h</dd>
+                <dd>
+                  {{ startTime }} h
+                  <template v-if="workshop.durationMinutes"
+                    >· {{ formatDuration(workshop.durationMinutes) }}</template
+                  >
+                </dd>
               </div>
             </div>
             <div class="workshop__fact">
@@ -189,7 +213,22 @@ useSchemaOrg([
               </svg>
               <div>
                 <dt>Lugar</dt>
-                <dd>{{ workshop.location }}</dd>
+                <dd>
+                  {{ workshop.location.name }}<br />
+                  <address class="workshop__address">
+                    {{ formatAddress(workshop.location) }}
+                  </address>
+                  <a
+                    :href="buildMapsLink(workshop.location)"
+                    class="workshop__map"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    Ver en Google Maps<span class="workshop__sr">
+                      (se abre en una pestaña nueva)</span
+                    >
+                  </a>
+                </dd>
               </div>
             </div>
           </dl>
@@ -362,6 +401,20 @@ useSchemaOrg([
     margin: 0;
     color: $color-text-muted;
   }
+}
+
+.workshop__address {
+  font-style: normal;
+}
+
+.workshop__map {
+  @include f-14-400;
+  color: $color-link;
+  text-decoration: underline;
+}
+
+.workshop__sr {
+  @include visually-hidden;
 }
 
 .workshop__cta {

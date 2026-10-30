@@ -17,13 +17,25 @@ export interface RichTextContent {
   images: Record<string, Image>
 }
 
+export interface Address {
+  /** Venue name, shown on cards */
+  name: string
+  street: string
+  city: string
+  postalCode: string
+  country: string
+  coordinates: { latitude: number; longitude: number } | null
+}
+
 export interface Workshop {
   id: string
   title: string
   slug: string
   /** ISO 8601 date-time */
   date: string
-  location: string
+  /** Length in minutes */
+  durationMinutes: number | null
+  location: Address
   price: number | null
   image: Image | null
   /** Markdown, shown on cards */
@@ -43,6 +55,8 @@ export interface Article {
   /** ISO 8601 date-time of the last published change */
   updatedAt: string | null
   summary: string
+  /** Plain-text summary, for meta descriptions and structured data */
+  summaryText: string
   image: Image | null
   content: RichTextContent
   readingMinutes: number

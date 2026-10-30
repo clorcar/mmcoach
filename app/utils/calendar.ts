@@ -22,13 +22,14 @@ function toUtcStamp(isoDate: string): string {
 
 /**
  * Builds a `data:` link to an .ics file for a workshop, so "add to calendar" works in the static
- * HTML without JavaScript. The workshop has no end time, so the event only has a start.
+ * HTML without JavaScript. The event has an end only when the workshop has a duration.
  *
  * @param workshop The workshop to add.
  * @param pageUrl Absolute URL of the workshop page (omitted from the file when empty).
  */
 export function buildCalendarLink(workshop: Workshop, pageUrl: string): string {
   const start = toUtcStamp(workshop.date)
+  const end = addMinutes(workshop.date, workshop.durationMinutes)
 
   const lines = [
     'BEGIN:VCALENDAR',
@@ -39,8 +40,9 @@ export function buildCalendarLink(workshop: Workshop, pageUrl: string): string {
     // Same value as the start so the link is identical in the static HTML and after hydration
     `DTSTAMP:${start}`,
     `DTSTART:${start}`,
+    ...(end ? [`DTEND:${toUtcStamp(end)}`] : []),
     `SUMMARY:${escapeText(workshop.title)}`,
-    `LOCATION:${escapeText(workshop.location)}`,
+    `LOCATION:${escapeText(`${workshop.location.name}, ${formatAddress(workshop.location)}`)}`,
     ...(pageUrl ? [`URL:${pageUrl}`] : []),
     'END:VEVENT',
     'END:VCALENDAR',

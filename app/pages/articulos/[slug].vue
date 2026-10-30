@@ -3,6 +3,7 @@ const MORE_ARTICLES = 3
 
 const route = useRoute()
 const site = useSiteConfig()
+const { coachFullName, coachDescription } = useRuntimeConfig().public
 const { article } = await useArticleByUrl(route.params.slug as string)
 
 // Unknown slugs render a 404 (and fail prerendering instead of shipping an empty page)
@@ -27,7 +28,7 @@ const updatedAt = computed(() => {
 
 usePageSeo(() => ({
   title: article.value?.title ?? 'Artículo',
-  description: article.value?.summary,
+  description: article.value?.summaryText,
   image: article.value?.image,
   type: 'article',
 }))
@@ -44,7 +45,7 @@ useSchemaOrg([
   defineArticle({
     '@type': 'BlogPosting',
     headline: article.value.title,
-    description: article.value.summary,
+    description: article.value.summaryText,
     image: article.value.image?.url,
     datePublished: article.value.publishedAt,
     dateModified: updatedAt.value ?? article.value.publishedAt,
@@ -78,7 +79,7 @@ useSchemaOrg([
             class="article__author-photo"
           />
           <span>
-            Por <strong>{{ site.name }}</strong> · {{ article.readingMinutes }} min de lectura
+            Por <strong>{{ coachFullName }}</strong> · {{ article.readingMinutes }} min de lectura
             <template v-if="updatedAt">
               · Actualizado el <time :datetime="updatedAt">{{ formatDate(updatedAt) }}</time>
             </template>
@@ -114,9 +115,9 @@ useSchemaOrg([
           class="article__about-photo"
         />
         <div class="article__about-text">
-          <p class="article__about-name">{{ site.name }}</p>
+          <p class="article__about-name">{{ coachFullName }}</p>
           <p class="article__about-bio">
-            {{ site.description }} Si este artículo te ha resonado, podemos hablarlo con calma.
+            {{ coachDescription }} Si este artículo te ha resonado, podemos hablarlo con calma.
           </p>
           <NuxtLink to="/servicios" class="article__about-cta">Ver servicios</NuxtLink>
         </div>

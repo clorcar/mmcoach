@@ -1,6 +1,5 @@
 <script setup lang="ts">
-const { coachFirstName } = useRuntimeConfig().public
-const site = useSiteConfig()
+const { coachFirstName, coachFullName } = useRuntimeConfig().public
 </script>
 
 <template>
@@ -8,7 +7,7 @@ const site = useSiteConfig()
     <div class="intro__card">
       <img
         src="/images/coach.webp"
-        :alt="`Retrato de ${site.name}`"
+        :alt="`Retrato de ${coachFullName}`"
         width="540"
         height="540"
         class="intro__photo"

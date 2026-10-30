@@ -17,7 +17,7 @@ defineProps<{ workshop: Workshop }>()
     <div class="workshop-card__body">
       <p class="workshop-card__meta">
         <time :datetime="workshop.date">{{ formatDate(workshop.date) }}</time>
-        · {{ workshop.location }}
+        · {{ workshop.location.name }}
       </p>
       <h3 class="workshop-card__title">{{ workshop.title }}</h3>
       <MarkdownContent :source="workshop.summary" class="workshop-card__excerpt" />

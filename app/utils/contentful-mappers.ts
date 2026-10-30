@@ -10,7 +10,9 @@ import type { Articulos } from '~/types/articles'
 import type { Servicios } from '~/types/services'
 import type { Talleres } from '~/types/talleres'
 import type { Testimonio } from '~/types/testimonios'
+import type { Direcciones } from '~/types/direcciones'
 import type {
+  Address,
   Article,
   Image,
   RichTextContent,
@@ -60,6 +62,19 @@ export function richTextToPlainText(document: Document): string {
   return document.content.map(collect).join(' ').replace(/\s+/g, ' ').trim()
 }
 
+export function mapAddress(entry: Direcciones): Address {
+  return {
+    name: entry.titulo,
+    street: entry.direccion,
+    city: entry.ciudad,
+    postalCode: entry.codigoPostal,
+    country: entry.pais,
+    coordinates: entry.coordenadas
+      ? { latitude: entry.coordenadas.lat, longitude: entry.coordenadas.lon }
+      : null,
+  }
+}
+
 export function mapWorkshop(entry: Talleres): Workshop {
   const description = mapRichText(entry.descripcion)
 
@@ -68,7 +83,8 @@ export function mapWorkshop(entry: Talleres): Workshop {
     title: entry.titulo,
     slug: entry.url,
     date: entry.fecha,
-    location: entry.localizacion,
+    durationMinutes: entry.duracion ?? null,
+    location: mapAddress(entry.direccion),
     price: entry.precio ?? null,
     image: mapImage(entry.imagen, entry.titulo),
     summary: entry.resumen ?? '',
@@ -90,6 +106,7 @@ export function mapArticle(entry: Articulos): Article {
     publishedAt: entry.fechaPublicacion,
     updatedAt: entry.sys.publishedAt ?? null,
     summary: entry.resumen,
+    summaryText: markdownToPlainText(entry.resumen),
     image: mapImage(entry.imagenPrincipal, entry.titulo),
     content,
     readingMinutes: Math.max(1, Math.round(wordCount / READING_WORDS_PER_MINUTE)),

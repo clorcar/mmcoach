@@ -5,7 +5,10 @@ const LLMS_QUERY = `
         titulo
         url
         fecha
-        localizacion
+        direccion {
+          titulo
+          ciudad
+        }
       }
     }
     articulosCollection(limit: 100, order: [fechaPublicacion_DESC]) {
@@ -22,7 +25,12 @@ const LLMS_QUERY = `
 interface LlmsResponse {
   data?: {
     talleresCollection: {
-      items: { titulo: string; url: string; fecha: string; localizacion: string }[]
+      items: {
+        titulo: string
+        url: string
+        fecha: string
+        direccion: { titulo: string; ciudad: string }
+      }[]
     } | null
     articulosCollection: {
       items: { titulo: string; url: string; fechaPublicacion: string; resumen: string }[]
@@ -52,7 +60,7 @@ export default defineEventHandler(async (event) => {
   })
   const workshops = (body?.data?.talleresCollection?.items ?? []).map(
     (w) =>
-      `- [${w.titulo}](${url}/talleres/${w.url}): ${dateFormatter.format(new Date(w.fecha))}, ${w.localizacion}`,
+      `- [${w.titulo}](${url}/talleres/${w.url}): ${dateFormatter.format(new Date(w.fecha))}, ${w.direccion.titulo} (${w.direccion.ciudad})`,
   )
 
   const articles = (body?.data?.articulosCollection?.items ?? []).map(

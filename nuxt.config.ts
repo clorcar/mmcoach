@@ -4,10 +4,14 @@ import { fileURLToPath } from 'node:url'
 // Absolute so the styles resolve the same way when this project is used as a Nuxt layer
 const scssDir = fileURLToPath(new URL('./app/assets/scss', import.meta.url))
 
-// Identity values come from the environment (see .env.example). The name defaults to the design
-// placeholders so the site still builds without them; social profiles are omitted when empty.
-const COACH_NAME = process.env.NUXT_PUBLIC_COACH_NAME || '[Nombre Apellido]'
+// Identity values come from the environment (see .env.example). Names default to placeholders so
+// the site still builds without them; social profiles are omitted when empty.
+const WEBSITE_NAME = process.env.NUXT_PUBLIC_WEBSITE_NAME || 'MM Coach'
+const COACH_FULL_NAME = process.env.NUXT_PUBLIC_COACH_FULL_NAME || '[Nombre Apellido]'
 const COACH_FIRST_NAME = process.env.NUXT_PUBLIC_COACH_FIRST_NAME || '[Nombre]'
+const COACH_DESCRIPTION =
+  process.env.NUXT_PUBLIC_COACH_DESCRIPTION ||
+  'Coach personal especializada en autoexigencia y gestión emocional. Acompaño a personas que sienten que nada es suficiente a construir un ritmo más amable consigo mismas.'
 const INSTAGRAM_URL = process.env.NUXT_PUBLIC_INSTAGRAM_URL || ''
 const FACEBOOK_URL = process.env.NUXT_PUBLIC_FACEBOOK_URL || ''
 
@@ -38,9 +42,9 @@ export default defineNuxtConfig({
   },
 
   // Site identity shared by sitemap, Schema.org and SEO meta.
-  // `url` comes from NUXT_PUBLIC_SITE_URL; static values until SEO data comes from Contentful (see TODO.md)
+  // `url` comes from NUXT_PUBLIC_SITE_URL
   site: {
-    name: COACH_NAME,
+    name: WEBSITE_NAME,
     description: SITE_DESCRIPTION,
     defaultLocale: 'es',
   },
@@ -48,10 +52,16 @@ export default defineNuxtConfig({
   schemaOrg: {
     identity: {
       type: 'Person',
-      name: COACH_NAME,
-      description: SITE_DESCRIPTION,
+      name: COACH_FULL_NAME,
+      description: COACH_DESCRIPTION,
+      image: '/images/coach.webp',
       sameAs: [INSTAGRAM_URL, FACEBOOK_URL].filter(Boolean),
     },
+  },
+
+  // Workshop and article detail pages come from Contentful (see server/api/__sitemap__/urls.ts)
+  sitemap: {
+    sources: ['/api/__sitemap__/urls'],
   },
 
   // Self-hosted at build time (no requests to Google from the browser)
@@ -112,7 +122,9 @@ export default defineNuxtConfig({
 
     // Public, non-secret values rendered into the static pages
     public: {
+      coachFullName: COACH_FULL_NAME,
       coachFirstName: COACH_FIRST_NAME,
+      coachDescription: COACH_DESCRIPTION,
       instagramUrl: INSTAGRAM_URL,
       facebookUrl: FACEBOOK_URL,
       web3formsUrl: WEB3FORMS_URL,

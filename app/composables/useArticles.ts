@@ -15,7 +15,7 @@ export async function useArticles(options?: GetContentfulOptions) {
     GET_ARTICLES_QUERY,
     'articulosCollection',
     options,
-    { pageSize: 10 },
+    { pageSize: 50 },
   )
 
   return {

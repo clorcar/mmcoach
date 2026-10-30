@@ -62,3 +62,16 @@ export function parseMarkdown(source: string): MarkdownBlock[] {
 
   return blocks
 }
+
+/**
+ * Plain text of a Markdown string, with blocks separated by spaces.
+ */
+export function markdownToPlainText(source: string): string {
+  const text = (parts: MarkdownInline[]) => parts.map((part) => part.text).join('')
+
+  return parseMarkdown(source)
+    .map((block) =>
+      block.type === 'paragraph' ? text(block.content) : block.items.map(text).join(' '),
+    )
+    .join(' ')
+}
