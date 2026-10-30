@@ -6,8 +6,7 @@ const site = useSiteConfig()
   <header class="site-header">
     <nav aria-label="Principal" class="site-header__nav">
       <NuxtLink to="/" class="site-header__brand">
-        <!-- Logo placeholder until the real logo exists (see TODO.md) -->
-        <span class="site-header__logo" aria-hidden="true" />
+        <img src="/images/logo.webp" alt="" width="42" height="56" class="site-header__logo" />
         <span class="site-header__name">{{ site.name }}</span>
       </NuxtLink>
 
@@ -48,10 +47,8 @@ const site = useSiteConfig()
 }
 
 .site-header__logo {
-  width: $logo-size;
+  width: auto;
   height: $logo-size;
-  border: $border-width-strong dashed $color-border-strong;
-  border-radius: $radius-full;
 }
 
 .site-header__name {

@@ -6,7 +6,6 @@ Pending work agreed during the CLAUDE.md review. Remove items as they are done.
 
 - [ ] **Make SEO dynamic.** Add `seoTitle`, `seoDescription` and `seoImage` fields in Contentful (content model change: agree first) and pass them to `usePageSeo`. Today titles and descriptions are static in the pages, and the workshop description falls back to the rich text excerpt.
 - [ ] **Real site identity.** Set `NUXT_PUBLIC_COACH_NAME` and `NUXT_PUBLIC_COACH_FIRST_NAME` in `.env` and in the Cloudflare Pages build environment (they still hold the design placeholders), and replace `SITE_DESCRIPTION` in `nuxt.config.ts`.
-- [ ] **Logo.** Replace the placeholder circle in `SiteHeader.vue`.
 - [ ] **Photo in structured data.** Add `/images/coach.webp` (absolute URL) as `image` of the Person identity in `schemaOrg.identity`.
 - [ ] **Social profiles.** Set `NUXT_PUBLIC_INSTAGRAM_URL` and `NUXT_PUBLIC_FACEBOOK_URL` in `.env` and in the Cloudflare Pages build environment (they still hold placeholder URLs).
 - [ ] **Home copy from Contentful.** The intro text is static in `HomeIntro.vue`.
