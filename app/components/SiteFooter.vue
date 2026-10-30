@@ -1,18 +1,12 @@
 <script setup lang="ts">
 const site = useSiteConfig()
-const { instagramUrl, facebookUrl } = useRuntimeConfig().public
-
-// A profile without a URL in the environment is not shown
-const socialLinks = [
-  { name: 'Instagram', url: instagramUrl, icon: 'instagram' },
-  { name: 'Facebook', url: facebookUrl, icon: 'facebook' },
-].filter((social) => social.url)
+const socialLinks = useSocialLinks()
 
 const year = new Date().getFullYear()
 </script>
 
 <template>
-  <footer id="contacta" class="site-footer">
+  <footer class="site-footer">
     <div class="site-footer__content">
       <div class="site-footer__about">
         <p class="site-footer__name">{{ site.name }}</p>
@@ -23,8 +17,9 @@ const year = new Date().getFullYear()
         <p id="footer-explore" class="site-footer__title">Explora</p>
         <NuxtLink to="/talleres" class="site-footer__link">Talleres</NuxtLink>
         <NuxtLink to="/articulos" class="site-footer__link">Artículos</NuxtLink>
-        <NuxtLink to="/#servicios" class="site-footer__link">Servicios</NuxtLink>
-        <a href="#contacta" class="site-footer__link">Contacta</a>
+        <NuxtLink to="/servicios" class="site-footer__link">Servicios</NuxtLink>
+        <NuxtLink to="/testimonios" class="site-footer__link">Testimonios</NuxtLink>
+        <NuxtLink :to="contactLink()" class="site-footer__link">Contacta</NuxtLink>
       </nav>
 
       <div v-if="socialLinks.length" class="site-footer__group">
@@ -36,27 +31,7 @@ const year = new Date().getFullYear()
           class="site-footer__link site-footer__link--social"
           rel="me noopener"
         >
-          <svg
-            aria-hidden="true"
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <template v-if="social.icon === 'instagram'">
-              <rect x="3" y="3" width="18" height="18" rx="5" />
-              <circle cx="12" cy="12" r="4" />
-              <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" />
-            </template>
-            <path
-              v-else
-              d="M15 3h-2.5A3.5 3.5 0 0 0 9 6.5V10H6.5v3.5H9V21h3.5v-7.5H15l.5-3.5h-3V7a1 1 0 0 1 1-1H15z"
-            />
-          </svg>
+          <SocialIcon :name="social.icon" />
           {{ social.name }}
         </a>
       </div>

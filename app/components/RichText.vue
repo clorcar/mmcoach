@@ -58,16 +58,20 @@ function renderEmbeddedImage(node: Block): VNodeChild {
   const image = props.content.images[node.data.target?.sys?.id]
   if (!image) return null
 
+  // The caption carries the alt text, so the image itself stays empty to avoid reading it twice.
   // NuxtImg's generic provider typing doesn't fit h()'s overloads; the props below are valid
-  return h(NuxtImg as Component, {
-    src: image.url,
-    alt: image.alt,
-    width: image.width,
-    height: image.height,
-    sizes: '100vw tablet-portrait:800px',
-    loading: 'lazy',
-    class: 'rich-text__image',
-  })
+  return h('figure', { class: 'rich-text__figure' }, [
+    h(NuxtImg as Component, {
+      src: image.url,
+      alt: '',
+      width: image.width,
+      height: image.height,
+      sizes: '100vw tablet-portrait:800px',
+      loading: 'lazy',
+      class: 'rich-text__image',
+    }),
+    image.alt ? h('figcaption', { class: 'rich-text__caption' }, image.alt) : null,
+  ])
 }
 
 function renderNode(node: Block | Inline | Text): VNodeChild {
@@ -100,8 +104,8 @@ const RichTextContent = () => props.content.document.content.map(renderNode)
 
 <style lang="scss" scoped>
 .rich-text {
-  @include f-17-400;
-  color: $color-text;
+  @include f-18-400;
+  color: $color-text-muted;
 
   :deep(:where(p, ul, ol, blockquote, table)) {
     margin-bottom: $space-4;
@@ -113,27 +117,58 @@ const RichTextContent = () => props.content.document.content.map(renderNode)
 
   :deep(h2) {
     @include f-24-500;
+    color: $color-heading;
   }
 
   :deep(h3) {
     @include f-22-500;
+    color: $color-heading;
   }
 
   :deep(:where(ul, ol)) {
     padding-left: $space-5;
   }
 
+  :deep(strong) {
+    font-weight: 600;
+    color: $color-heading;
+  }
+
+  :deep(a) {
+    text-decoration: underline;
+  }
+
   :deep(blockquote) {
-    padding-left: $space-4;
-    border-left: $focus-ring-width solid $color-border;
-    color: $color-text-muted;
+    @include f-20-400;
+    padding: $space-5 $space-6;
+    font-family: var(--font-family-heading);
+    font-style: italic;
+    color: $color-heading;
+    background-color: $color-primary-soft;
+    border-radius: $radius-xl;
+  }
+
+  :deep(hr) {
+    margin-block: $space-5;
+    border: 0;
+    border-top: $border-width solid $color-border;
+  }
+
+  :deep(.rich-text__figure) {
+    margin: $space-5 0;
   }
 
   :deep(.rich-text__image) {
     width: 100%;
     height: auto;
-    margin: $space-5 0;
     border-radius: $radius-lg;
+  }
+
+  :deep(.rich-text__caption) {
+    @include f-14-400;
+    margin-top: $space-2;
+    color: $color-text-subtle;
+    text-align: center;
   }
 }
 </style>

@@ -8,18 +8,20 @@ usePageSeo({
 
 <template>
   <div class="home">
-    <img
-      src="/images/hero.svg"
-      alt="Una persona camina por un sendero hacia la cima de una montaña al amanecer"
-      width="1440"
-      height="240"
-      fetchpriority="high"
-      class="home__banner"
-    />
+    <div class="home__banner">
+      <img
+        src="/images/hero.webp"
+        alt="Un excursionista contempla las montañas entre la bruma al amanecer"
+        width="2000"
+        height="1286"
+        fetchpriority="high"
+        class="home__banner-image"
+      />
+    </div>
     <HomeIntro />
     <TalleresSection />
     <ArticlesSection />
-    <ServicesSection />
+    <TestimoniosSection />
   </div>
 </template>
 
@@ -29,9 +31,28 @@ usePageSeo({
 }
 
 .home__banner {
-  width: 100%;
+  position: relative;
   height: $site-banner-height;
-  object-fit: cover;
   background-color: $color-primary-soft;
+
+  // Sand, terracotta and brown wash that softens the photo to match the page palette
+  &::after {
+    position: absolute;
+    inset: 0;
+    content: '';
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, $sand10 70%, transparent),
+      color-mix(in srgb, $terracotta10 45%, transparent),
+      color-mix(in srgb, $brown30 25%, transparent)
+    );
+  }
+}
+
+.home__banner-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: right bottom;
 }
 </style>

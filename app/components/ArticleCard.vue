@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import type { Article } from '~/types/content'
 
-defineProps<{
-  article: Article
-  /** Heading level: h3 inside a home section, h2 on the articles page */
-  headingLevel?: 'h2' | 'h3'
-}>()
+defineProps<{ article: Article }>()
 </script>
 
 <template>
@@ -14,7 +10,7 @@ defineProps<{
       <ContentImage
         :image="article.image"
         placeholder="article"
-        sizes="100vw tablet-portrait:50vw laptop:240px"
+        sizes="100vw tablet-portrait:50vw laptop:380px"
       />
     </div>
 
@@ -23,10 +19,8 @@ defineProps<{
         <time :datetime="article.publishedAt">{{ formatDate(article.publishedAt) }}</time>
         · {{ article.readingMinutes }} min de lectura
       </p>
-      <component :is="headingLevel ?? 'h3'" class="article-card__title">
-        {{ article.title }}
-      </component>
-      <p class="article-card__summary">{{ article.summary }}</p>
+      <h3 class="article-card__title">{{ article.title }}</h3>
+      <MarkdownContent :source="article.summary" class="article-card__summary" />
       <NuxtLink :to="`/articulos/${article.slug}`" class="article-card__link">
         Leer artículo<span class="article-card__link-context">: {{ article.title }}</span>
         <span aria-hidden="true"> →</span>
@@ -39,21 +33,19 @@ defineProps<{
 .article-card {
   @include card;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
 }
 
 .article-card__image {
-  flex: 1 1 $article-card-image-basis;
-  height: $article-card-image-height;
+  height: $card-image-height;
   background-color: $color-surface-alt;
 }
 
 .article-card__body {
   display: flex;
-  flex: 999 1 $article-card-body-basis;
+  flex-grow: 1;
   flex-direction: column;
   gap: $space-2;
-  min-width: 0;
   padding: $space-5;
 }
 

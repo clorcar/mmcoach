@@ -99,7 +99,8 @@ nuxt.config.ts
 - **GraphQL** Content Delivery API, no SDK. Queries live in `app/queries/`; request only the fields the mappers use.
 - Requests go through `server/api/contentful.post.ts` so the token stays server-side. With `nuxt generate` everything is fetched while prerendering; the static site only ships payloads.
 - Credentials are **server-only** `runtimeConfig` (see `.env.example`): `CONTENTFUL_SPACE_ID`, `CONTENTFUL_ENVIRONMENT` (default `master`), `CONTENTFUL_DELIVERY_TOKEN`. No preview API for now. `NUXT_PUBLIC_SITE_URL` sets the public site URL. Never commit secrets.
-- Coach identity is public, non-secret env config (no hard-coded names or profile URLs in components): `NUXT_PUBLIC_COACH_NAME` (becomes `site.name`, so `useSiteConfig().name`), `NUXT_PUBLIC_COACH_FIRST_NAME`, `NUXT_PUBLIC_INSTAGRAM_URL`, `NUXT_PUBLIC_FACEBOOK_URL` (empty hides the link). Read them with `useRuntimeConfig().public`; they also feed `schemaOrg.identity` (`sameAs`).
+- Coach identity is public, non-secret env config (no hard-coded names or profile URLs in components): `NUXT_PUBLIC_WEBSITE_NAME` (becomes `site.name`, so `useSiteConfig().name`), `NUXT_PUBLIC_COACH_FULL_NAME` (article author, Person identity), `NUXT_PUBLIC_COACH_DESCRIPTION` (author bio, Person description), `NUXT_PUBLIC_COACH_FIRST_NAME`, `NUXT_PUBLIC_INSTAGRAM_URL`, `NUXT_PUBLIC_FACEBOOK_URL` (empty hides the link). Read them with `useRuntimeConfig().public`; they also feed `schemaOrg.identity` (`sameAs`).
+- The contact form is sent to Web3Forms from the browser. Endpoint and access key are public env config: `NUXT_PUBLIC_WEB3FORMS_URL` (defaults to the Web3Forms API) and `NUXT_PUBLIC_WEB3FORMS_ACCESS_KEY`.
 - Data access: `useContentfulQuery` (one query) and `useContentfulCollection` (lists, paginated, max 100 items) wrap `useAsyncData` with a stable key. Entity composables (`useWorkshops`, `useArticles`…) build on them and return mapped data.
 - Errors are **fatal**: a failed Contentful request throws, so `nuxt generate` fails (`nitro.prerender.failOnError`) instead of shipping a broken page. Components have no loading, error or retry states.
 - Query complexity limit is 11000. Rich text `links` cost ~1000 per item unless the field limits embedded assets; use `pageSize` in `useContentfulCollection` to stay under it.
@@ -117,7 +118,7 @@ nuxt.config.ts
 - Semantic HTML: one `<h1>` per page, logical heading order, `<main>`, `<nav>`, `<article>`, `<header>`, `<footer>`, `<time datetime>`.
 - Use `<NuxtLink>` for internal links (descriptive anchor text, no "click here"). Every page reachable via internal links.
 - `sitemap.xml` comes from `@nuxtjs/sitemap` (prerendered pages); `robots.txt` is a prerendered server route. Only indexable pages in the sitemap.
-- Site identity (name, description, URL) lives in `site` in `nuxt.config.ts` (`useSiteConfig()` in the app, `getSiteConfig(event)` on the server). Static until SEO fields come from Contentful (see `TODO.md`).
+- Site identity (name, description, URL) lives in `site` in `nuxt.config.ts` (`useSiteConfig()` in the app, `getSiteConfig(event)` on the server).
 - Performance is SEO: optimize LCP/CLS/INP. Use `@nuxt/image` (set width/height, lazy-load below the fold, preload the LCP image), self-host fonts (`@nuxt/fonts`) with `font-display: swap`, no render-blocking third-party scripts.
 - Clean, lowercase, hyphenated URLs. No duplicate content; always set a canonical.
 - Custom 404 page with `noindex`.

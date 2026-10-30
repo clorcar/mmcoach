@@ -1,20 +1,39 @@
-const LLMS_WORKSHOPS_QUERY = `
-  query LlmsWorkshops {
+const LLMS_QUERY = `
+  query Llms {
     talleresCollection(limit: 100, order: [fecha_ASC]) {
       items {
         titulo
         url
         fecha
-        localizacion
+        direccion {
+          titulo
+          ciudad
+        }
+      }
+    }
+    articulosCollection(limit: 100, order: [fechaPublicacion_DESC]) {
+      items {
+        titulo
+        url
+        fechaPublicacion
+        resumen
       }
     }
   }
 `
 
-interface LlmsWorkshopsResponse {
+interface LlmsResponse {
   data?: {
     talleresCollection: {
-      items: { titulo: string; url: string; fecha: string; localizacion: string }[]
+      items: {
+        titulo: string
+        url: string
+        fecha: string
+        direccion: { titulo: string; ciudad: string }
+      }[]
+    } | null
+    articulosCollection: {
+      items: { titulo: string; url: string; fechaPublicacion: string; resumen: string }[]
     } | null
   }
   errors?: { message: string }[]
@@ -26,8 +45,8 @@ interface LlmsWorkshopsResponse {
 export default defineEventHandler(async (event) => {
   const { url, name, description } = getSiteConfig(event)
 
-  const response = await fetchContentful(event, { query: LLMS_WORKSHOPS_QUERY })
-  const body = response._data as LlmsWorkshopsResponse | undefined
+  const response = await fetchContentful(event, { query: LLMS_QUERY })
+  const body = response._data as LlmsResponse | undefined
   if (!response.ok || body?.errors?.length) {
     throw createError({
       statusCode: 502,
@@ -41,7 +60,12 @@ export default defineEventHandler(async (event) => {
   })
   const workshops = (body?.data?.talleresCollection?.items ?? []).map(
     (w) =>
-      `- [${w.titulo}](${url}/talleres/${w.url}): ${dateFormatter.format(new Date(w.fecha))}, ${w.localizacion}`,
+      `- [${w.titulo}](${url}/talleres/${w.url}): ${dateFormatter.format(new Date(w.fecha))}, ${w.direccion.titulo} (${w.direccion.ciudad})`,
+  )
+
+  const articles = (body?.data?.articulosCollection?.items ?? []).map(
+    (a) =>
+      `- [${a.titulo}](${url}/articulos/${a.url}): ${dateFormatter.format(new Date(a.fechaPublicacion))}. ${a.resumen}`,
   )
 
   const lines = [
@@ -53,10 +77,17 @@ export default defineEventHandler(async (event) => {
     '',
     `- [Talleres](${url}/talleres): próximos talleres y actividades de formación`,
     `- [Artículos](${url}/articulos): artículos sobre autoexigencia y gestión emocional`,
+    `- [Servicios](${url}/servicios): servicios de coaching personal`,
+    `- [Testimonios](${url}/testimonios): opiniones de personas que han trabajado conmigo`,
+    `- [Contacto](${url}/contacto): formulario para pedir información o hacer una consulta`,
     '',
     '## Talleres',
     '',
     ...(workshops.length ? workshops : ['- No hay talleres programados.']),
+    '',
+    '## Artículos',
+    '',
+    ...(articles.length ? articles : ['- No hay artículos publicados.']),
   ]
 
   setResponseHeader(event, 'Content-Type', 'text/plain; charset=utf-8')

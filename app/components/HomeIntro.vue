@@ -1,6 +1,5 @@
 <script setup lang="ts">
-const { coachFirstName } = useRuntimeConfig().public
-const site = useSiteConfig()
+const { coachFirstName, coachFullName } = useRuntimeConfig().public
 </script>
 
 <template>
@@ -8,7 +7,7 @@ const site = useSiteConfig()
     <div class="intro__card">
       <img
         src="/images/coach.webp"
-        :alt="`Retrato de ${site.name}`"
+        :alt="`Retrato de ${coachFullName}`"
         width="540"
         height="540"
         class="intro__photo"
@@ -26,8 +25,12 @@ const site = useSiteConfig()
           amable contigo.
         </p>
         <div class="intro__actions">
-          <a href="#servicios" class="intro__button intro__button--primary">Conoce mis servicios</a>
-          <a href="#contacta" class="intro__button intro__button--outline">Escríbeme</a>
+          <NuxtLink to="/servicios" class="intro__button intro__button--primary"
+            >Conoce mis servicios</NuxtLink
+          >
+          <NuxtLink :to="contactLink()" class="intro__button intro__button--outline"
+            >Escríbeme</NuxtLink
+          >
         </div>
       </div>
     </div>

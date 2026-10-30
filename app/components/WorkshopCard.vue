@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import type { Workshop } from '~/types/content'
 
-defineProps<{
-  workshop: Workshop
-  /** Heading level: h3 inside a home section, h2 on the workshops page */
-  headingLevel?: 'h2' | 'h3'
-}>()
-
-const EXCERPT_LENGTH = 140
+defineProps<{ workshop: Workshop }>()
 </script>
 
 <template>
@@ -23,12 +17,10 @@ const EXCERPT_LENGTH = 140
     <div class="workshop-card__body">
       <p class="workshop-card__meta">
         <time :datetime="workshop.date">{{ formatDate(workshop.date) }}</time>
-        · {{ workshop.location }}
+        · {{ workshop.location.name }}
       </p>
-      <component :is="headingLevel ?? 'h3'" class="workshop-card__title">{{
-        workshop.title
-      }}</component>
-      <p class="workshop-card__excerpt">{{ truncate(workshop.descriptionText, EXCERPT_LENGTH) }}</p>
+      <h3 class="workshop-card__title">{{ workshop.title }}</h3>
+      <MarkdownContent :source="workshop.summary" class="workshop-card__excerpt" />
       <NuxtLink :to="`/talleres/${workshop.slug}`" class="workshop-card__link">
         Más información<span class="workshop-card__link-context"> sobre {{ workshop.title }}</span>
         <span aria-hidden="true"> →</span>
