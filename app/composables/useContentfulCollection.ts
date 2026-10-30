@@ -12,6 +12,11 @@ export interface UseContentfulCollectionOptions {
    * 11000 complexity limit (rich text with `links` costs ~1000 per item, so use 10 there).
    */
   pageSize?: number
+  /**
+   * Fixed payload key. Required when variables change between builds and visits (e.g. a date
+   * filter), so the client finds the prerendered data instead of fetching again.
+   */
+  key?: string
 }
 
 export interface ContentfulCollectionResult<TItem> {
@@ -58,7 +63,9 @@ export async function useContentfulCollection<TItem>(
     return data[collectionKey] ?? { total: 0, limit, skip, items: [] }
   }
 
-  const cacheKey = createQueryKey(query, { ...baseVariables, skip: startSkip, maxItems, pageSize })
+  const cacheKey =
+    collectionOptions?.key ??
+    createQueryKey(query, { ...baseVariables, skip: startSkip, maxItems, pageSize })
 
   const { data, error } = await useAsyncData(cacheKey, async () => {
     const firstPage = await fetchPage(startSkip, pageSize)

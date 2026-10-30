@@ -42,6 +42,7 @@ export interface Article {
   summary: string
   image: Image | null
   content: RichTextContent
+  readingMinutes: number
 }
 
 export type ServiceModality = 'Presencial' | 'Online'

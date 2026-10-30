@@ -76,7 +76,12 @@ export function mapWorkshop(entry: Talleres): Workshop {
   }
 }
 
+const READING_WORDS_PER_MINUTE = 200
+
 export function mapArticle(entry: Articulos): Article {
+  const content = mapRichText(entry.contenido)
+  const wordCount = richTextToPlainText(content.document).split(' ').filter(Boolean).length
+
   return {
     id: entry.sys.id,
     title: entry.titulo,
@@ -85,7 +90,8 @@ export function mapArticle(entry: Articulos): Article {
     updatedAt: entry.sys.publishedAt ?? null,
     summary: entry.resumen,
     image: mapImage(entry.imagenPrincipal, entry.titulo),
-    content: mapRichText(entry.contenido),
+    content,
+    readingMinutes: Math.max(1, Math.round(wordCount / READING_WORDS_PER_MINUTE)),
   }
 }
 

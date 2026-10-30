@@ -42,7 +42,12 @@ useSchemaOrg([
     </NuxtLink>
 
     <div class="workshop__image">
-      <WorkshopImage :image="workshop.image" sizes="100vw tablet-portrait:800px" priority />
+      <ContentImage
+        placeholder="workshop"
+        :image="workshop.image"
+        sizes="100vw tablet-portrait:800px"
+        priority
+      />
     </div>
 
     <header class="workshop__header">
@@ -72,10 +77,10 @@ useSchemaOrg([
 <style lang="scss" scoped>
 .workshop {
   @include container($container-width-narrow);
-  padding-block: $space-6;
+  padding-block: $space-6 $space-10;
 
   @include bp(tablet-portrait) {
-    padding-block: $space-7;
+    padding-top: $space-8;
   }
 }
 
@@ -84,19 +89,13 @@ useSchemaOrg([
   display: inline-flex;
   gap: $space-2;
   margin-bottom: $space-6;
-  color: $color-text-muted;
-  text-decoration: none;
-
-  &:hover {
-    color: $color-primary;
-  }
 }
 
 .workshop__image {
   overflow: hidden;
   aspect-ratio: 3 / 2;
-  background-color: $color-surface-alt;
-  border-radius: $radius-xl;
+  background-color: $color-primary-soft;
+  border-radius: $radius-2xl;
 
   @include bp(tablet-portrait) {
     aspect-ratio: 16 / 9;
@@ -108,11 +107,11 @@ useSchemaOrg([
 }
 
 .workshop__title {
-  @include f-32-700;
+  @include f-32-500;
   margin-bottom: $space-4;
 
   @include bp(tablet-portrait) {
-    @include f-40-700;
+    @include f-40-500;
   }
 }
 

@@ -52,6 +52,7 @@ export default defineEventHandler(async (event) => {
     '## Páginas',
     '',
     `- [Talleres](${url}/talleres): próximos talleres y actividades de formación`,
+    `- [Artículos](${url}/articulos): artículos sobre autoexigencia y gestión emocional`,
     '',
     '## Talleres',
     '',

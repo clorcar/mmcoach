@@ -4,11 +4,20 @@ import { fileURLToPath } from 'node:url'
 // Absolute so the styles resolve the same way when this project is used as a Nuxt layer
 const scssDir = fileURLToPath(new URL('./app/assets/scss', import.meta.url))
 
+// Identity values come from the environment (see .env.example). The name defaults to the design
+// placeholders so the site still builds without them; social profiles are omitted when empty.
+const COACH_NAME = process.env.NUXT_PUBLIC_COACH_NAME || '[Nombre Apellido]'
+const COACH_FIRST_NAME = process.env.NUXT_PUBLIC_COACH_FIRST_NAME || '[Nombre]'
+const INSTAGRAM_URL = process.env.NUXT_PUBLIC_INSTAGRAM_URL || ''
+const FACEBOOK_URL = process.env.NUXT_PUBLIC_FACEBOOK_URL || ''
+
+const SITE_DESCRIPTION = 'Coaching personal en autoexigencia y gestión emocional.'
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
-  modules: ['@nuxt/eslint', '@nuxt/image', '@nuxtjs/sitemap', 'nuxt-schema-org'],
+  modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxt/image', '@nuxtjs/sitemap', 'nuxt-schema-org'],
 
   // Enable SSR for Nuxt 4 Static Site Generation (SSG) mode compatibility
   ssr: true,
@@ -22,16 +31,34 @@ export default defineNuxtConfig({
   // Site identity shared by sitemap, Schema.org and SEO meta.
   // `url` comes from NUXT_PUBLIC_SITE_URL; static values until SEO data comes from Contentful (see TODO.md)
   site: {
-    name: 'MM Coach',
-    description: 'Coaching, talleres y acompañamiento personalizado para alcanzar tus metas.',
+    name: COACH_NAME,
+    description: SITE_DESCRIPTION,
     defaultLocale: 'es',
   },
 
   schemaOrg: {
     identity: {
       type: 'Person',
-      name: 'MM Coach',
+      name: COACH_NAME,
+      description: SITE_DESCRIPTION,
+      sameAs: [INSTAGRAM_URL, FACEBOOK_URL].filter(Boolean),
     },
+  },
+
+  // Self-hosted at build time (no requests to Google from the browser)
+  fonts: {
+    defaults: {
+      subsets: ['latin', 'latin-ext'],
+    },
+    families: [
+      {
+        name: 'Lora',
+        provider: 'google',
+        weights: [400, 500, 600, 700],
+        styles: ['normal', 'italic'],
+      },
+      { name: 'Karla', provider: 'google', weights: [300, 400, 500, 600, 700], styles: ['normal'] },
+    ],
   },
 
   image: {
@@ -68,10 +95,17 @@ export default defineNuxtConfig({
     },
   },
 
-  // Server-only: Contentful is queried through /api/contentful, so credentials never reach the client
   runtimeConfig: {
+    // Server-only: Contentful is queried through /api/contentful, so credentials never reach the client
     contentfulSpaceId: process.env.CONTENTFUL_SPACE_ID || '',
     contentfulEnvironment: process.env.CONTENTFUL_ENVIRONMENT || 'master',
     contentfulDeliveryToken: process.env.CONTENTFUL_DELIVERY_TOKEN || '',
+
+    // Public, non-secret values rendered into the static pages
+    public: {
+      coachFirstName: COACH_FIRST_NAME,
+      instagramUrl: INSTAGRAM_URL,
+      facebookUrl: FACEBOOK_URL,
+    },
   },
 })

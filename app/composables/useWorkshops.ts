@@ -8,12 +8,14 @@ import type { Talleres, TalleresQueryResponse } from '~/types/talleres'
  * Fetches a list of workshops from Contentful (capped at 100).
  *
  * @param options Optional query options (limit, skip, order, where).
+ * @param key Fixed payload key, needed when `where` depends on the build date.
  */
-export async function useWorkshops(options?: GetContentfulOptions) {
+export async function useWorkshops(options?: GetContentfulOptions, key?: string) {
   const { items, total } = await useContentfulCollection<Talleres>(
     GET_TALLERES_QUERY,
     'talleresCollection',
     options,
+    { key },
   )
 
   return {

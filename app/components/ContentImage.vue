@@ -1,9 +1,16 @@
 <script setup lang="ts">
 import type { Image } from '~/types/content'
 
+const PLACEHOLDERS = {
+  workshop: { src: '/images/default-workshop.svg', width: 400, height: 200 },
+  article: { src: '/images/default-article.svg', width: 240, height: 240 },
+} as const
+
 const props = withDefaults(
   defineProps<{
     image: Image | null
+    /** Illustration shown when the entry has no image */
+    placeholder: keyof typeof PLACEHOLDERS
     /** @nuxt/image `sizes`, using the screens in nuxt.config.ts */
     sizes: string
     /** Above-the-fold image (LCP): load eagerly with high priority and preload it */
@@ -14,7 +21,7 @@ const props = withDefaults(
   },
 )
 
-const DEFAULT_IMAGE = '/images/default-workshop.svg'
+const fallback = computed(() => PLACEHOLDERS[props.placeholder])
 </script>
 
 <template>
@@ -28,23 +35,23 @@ const DEFAULT_IMAGE = '/images/default-workshop.svg'
     :loading="props.priority ? 'eager' : 'lazy'"
     :fetchpriority="props.priority ? 'high' : 'auto'"
     :preload="props.priority"
-    class="workshop-image"
+    class="content-image"
   />
-  <!-- Decorative placeholder: the workshop title is already next to it -->
+  <!-- Decorative placeholder: the entry title is already next to it -->
   <img
     v-else
-    :src="DEFAULT_IMAGE"
+    :src="fallback.src"
     alt=""
-    width="600"
-    height="400"
+    :width="fallback.width"
+    :height="fallback.height"
     :loading="props.priority ? 'eager' : 'lazy'"
-    class="workshop-image"
+    class="content-image"
   />
 </template>
 
 <style lang="scss" scoped>
-.workshop-image,
-.workshop-image :deep(img) {
+.content-image,
+.content-image :deep(img) {
   width: 100%;
   height: 100%;
   object-fit: cover;

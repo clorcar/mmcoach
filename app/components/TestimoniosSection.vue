@@ -81,7 +81,7 @@ const MAX_RATING = 5
 }
 
 .testimonials__title {
-  @include f-32-700;
+  @include f-32-500;
 }
 
 .testimonials__subtitle {
@@ -128,14 +128,14 @@ const MAX_RATING = 5
 
 .testimonial-card__avatar {
   flex-shrink: 0;
-  width: $space-7;
-  height: $space-7;
+  width: $avatar-size-sm;
+  height: $avatar-size-sm;
   object-fit: cover;
   border-radius: $radius-full;
 }
 
 .testimonial-card__avatar--initial {
-  @include f-20-700;
+  @include f-20-600;
   display: flex;
   align-items: center;
   justify-content: center;

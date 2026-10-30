@@ -100,7 +100,7 @@ const RichTextContent = () => props.content.document.content.map(renderNode)
 
 <style lang="scss" scoped>
 .rich-text {
-  @include f-16-400;
+  @include f-17-400;
   color: $color-text;
 
   :deep(:where(p, ul, ol, blockquote, table)) {
@@ -112,11 +112,11 @@ const RichTextContent = () => props.content.document.content.map(renderNode)
   }
 
   :deep(h2) {
-    @include f-24-700;
+    @include f-24-500;
   }
 
   :deep(h3) {
-    @include f-20-600;
+    @include f-22-500;
   }
 
   :deep(:where(ul, ol)) {

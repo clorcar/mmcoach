@@ -1,9 +1,11 @@
 <template>
   <div class="layout">
     <a href="#main-content" class="layout__skip-link">Saltar al contenido principal</a>
+    <SiteHeader />
     <main id="main-content" tabindex="-1" class="layout__main">
       <slot />
     </main>
+    <SiteFooter />
   </div>
 </template>
 
@@ -27,7 +29,18 @@
   }
 }
 
-.layout__main:focus {
-  outline: none;
+// Keeps the footer at the bottom of the window on short pages
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.layout__main {
+  flex-grow: 1;
+
+  &:focus {
+    outline: none;
+  }
 }
 </style>

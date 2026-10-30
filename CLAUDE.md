@@ -81,11 +81,12 @@ nuxt.config.ts
 
 - Use **SCSS syntax** with `@use` / `@forward`. **Never use `@import`** (deprecated).
 - Tokens are defined **once** in `app/assets/scss/abstracts/_tokens.scss` and are the only place raw values live.
-  - **Palette**: `$grey10` … `$grey50`, `$blue10` …: max 5 tones per color, `10` = lightest, higher = darker.
-  - **Semantic colors** map palette tones to roles (`$color-primary`, `$color-text`, `$color-text-muted`, `$color-heading`, `$color-surface`, `$color-surface-alt`, `$color-border`, `$color-success`, `$color-danger`…). **Components use semantic colors**, not palette tones.
+  - **Palette** (from the home page design): `$sand10`…`$sand50`, `$brown10`…`$brown50`, `$terracotta10`…`$terracotta30`, `$gold20`, plus green/red for status. Max 5 tones per color, `10` = lightest, higher = darker. The design accent `#A5603F` is darkened to `#9E5C3C` (`terracotta20`) to pass AA as small text on the page background.
+  - **Semantic colors** map palette tones to roles (`$color-primary`, `$color-link`, `$color-text`, `$color-text-muted`, `$color-text-subtle`, `$color-heading`, `$color-background`, `$color-surface`, `$color-border`, `$color-inverse-*` for the footer…). **Components use semantic colors**, not palette tones.
   - Every color variable points at a **CSS custom property** (`$color-text: var(--color-text)`), emitted in `base/_root.scss`. A theme (e.g. dark mode) only remaps `--color-*` to other palette tones.
-  - **Typography**: use the `f-<size>-<weight>` mixins (`@include f-16-400`, `@include f-24-700`), which set font size, weight and line height. Sizes: 12, 14, 16, 18, 20, 24, 32, 40. Weights: 300–700. To add a size, extend `$font-scale` and add its mixins.
-  - Also: spacing scale (`$space-1` … `$space-8`), radii, shadows, durations, container widths and z-index layers.
+  - **Typography**: Lora (headings, weight 500 in the design) and Karla (body, 17px), self-hosted with `@nuxt/fonts` (families and weights in `nuxt.config.ts`). Use the `f-<size>-<weight>` mixins (`@include f-17-400`, `@include f-32-500`), which set font size, weight and line height. Sizes: 12, 13, 14, 16, 17, 18, 20, 22, 24, 32, 40. Weights: 300–700. To add a size, extend `$font-scale` and add its mixins.
+  - Also: spacing scale (`$space-1` … `$space-10`), radii, shadows, durations, container and card widths, text measures and z-index layers.
+- Shared mixins: `eyebrow`, `button(primary | outline)`, `link-arrow`, `card`, `auto-grid` (card grids that reflow without breakpoints), `container`.
 - Abstracts are injected globally through Vite `additionalData` (with `loadPaths`) in `nuxt.config.ts`, so component `<style lang="scss" scoped>` blocks can use tokens and mixins without importing them.
 - **Never hard-code** colors, font sizes, spacing or breakpoints in components. If a value is missing, add a token first.
 - Use `scoped` styles in components. Keep selectors flat (BEM-like class names, max 2 levels of nesting).
@@ -98,6 +99,7 @@ nuxt.config.ts
 - **GraphQL** Content Delivery API, no SDK. Queries live in `app/queries/`; request only the fields the mappers use.
 - Requests go through `server/api/contentful.post.ts` so the token stays server-side. With `nuxt generate` everything is fetched while prerendering; the static site only ships payloads.
 - Credentials are **server-only** `runtimeConfig` (see `.env.example`): `CONTENTFUL_SPACE_ID`, `CONTENTFUL_ENVIRONMENT` (default `master`), `CONTENTFUL_DELIVERY_TOKEN`. No preview API for now. `NUXT_PUBLIC_SITE_URL` sets the public site URL. Never commit secrets.
+- Coach identity is public, non-secret env config (no hard-coded names or profile URLs in components): `NUXT_PUBLIC_COACH_NAME` (becomes `site.name`, so `useSiteConfig().name`), `NUXT_PUBLIC_COACH_FIRST_NAME`, `NUXT_PUBLIC_INSTAGRAM_URL`, `NUXT_PUBLIC_FACEBOOK_URL` (empty hides the link). Read them with `useRuntimeConfig().public`; they also feed `schemaOrg.identity` (`sameAs`).
 - Data access: `useContentfulQuery` (one query) and `useContentfulCollection` (lists, paginated, max 100 items) wrap `useAsyncData` with a stable key. Entity composables (`useWorkshops`, `useArticles`…) build on them and return mapped data.
 - Errors are **fatal**: a failed Contentful request throws, so `nuxt generate` fails (`nitro.prerender.failOnError`) instead of shipping a broken page. Components have no loading, error or retry states.
 - Query complexity limit is 11000. Rich text `links` cost ~1000 per item unless the field limits embedded assets; use `pageSize` in `useContentfulCollection` to stay under it.
