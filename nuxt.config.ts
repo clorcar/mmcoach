@@ -15,6 +15,11 @@ const COACH_DESCRIPTION =
 const INSTAGRAM_URL = process.env.NUXT_PUBLIC_INSTAGRAM_URL || ''
 const FACEBOOK_URL = process.env.NUXT_PUBLIC_FACEBOOK_URL || ''
 
+// Owner details for the legal pages; each one is left out of the page when empty
+const LEGAL_TAX_ID = process.env.NUXT_PUBLIC_LEGAL_TAX_ID || ''
+const LEGAL_ADDRESS = process.env.NUXT_PUBLIC_LEGAL_ADDRESS || ''
+const CONTACT_EMAIL = process.env.NUXT_PUBLIC_CONTACT_EMAIL || ''
+
 // Contact form endpoint (Web3Forms). The access key is meant to be public: it only identifies the form
 const WEB3FORMS_URL = process.env.NUXT_PUBLIC_WEB3FORMS_URL || 'https://api.web3forms.com/submit'
 const WEB3FORMS_ACCESS_KEY = process.env.NUXT_PUBLIC_WEB3FORMS_ACCESS_KEY || ''
@@ -129,6 +134,9 @@ export default defineNuxtConfig({
       coachDescription: COACH_DESCRIPTION,
       instagramUrl: INSTAGRAM_URL,
       facebookUrl: FACEBOOK_URL,
+      legalTaxId: LEGAL_TAX_ID,
+      legalAddress: LEGAL_ADDRESS,
+      contactEmail: CONTACT_EMAIL,
       web3formsUrl: WEB3FORMS_URL,
       web3formsAccessKey: WEB3FORMS_ACCESS_KEY,
     },

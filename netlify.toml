@@ -4,4 +4,16 @@
 
 [build.environment]
   # Public site config is meant to appear in the HTML; only the Contentful token stays secret
-  SECRETS_SCAN_OMIT_KEYS = "NUXT_PUBLIC_WEB3FORMS_URL,NUXT_PUBLIC_WEB3FORMS_ACCESS_KEY,NUXT_PUBLIC_WEBSITE_NAME,NUXT_PUBLIC_COACH_DESCRIPTION,NUXT_PUBLIC_COACH_FIRST_NAME,NUXT_PUBLIC_COACH_FULL_NAME,NUXT_PUBLIC_INSTAGRAM_URL,NUXT_PUBLIC_FACEBOOK_URL,CONTENTFUL_SPACE_ID"
+  SECRETS_SCAN_OMIT_KEYS = "NUXT_PUBLIC_WEB3FORMS_URL,NUXT_PUBLIC_WEB3FORMS_ACCESS_KEY,NUXT_PUBLIC_WEBSITE_NAME,NUXT_PUBLIC_COACH_DESCRIPTION,NUXT_PUBLIC_COACH_FIRST_NAME,NUXT_PUBLIC_COACH_FULL_NAME,NUXT_PUBLIC_INSTAGRAM_URL,NUXT_PUBLIC_FACEBOOK_URL,NUXT_PUBLIC_LEGAL_TAX_ID,NUXT_PUBLIC_LEGAL_ADDRESS,NUXT_PUBLIC_CONTACT_EMAIL,CONTENTFUL_SPACE_ID"
+
+# Security headers. script-src and style-src keep 'unsafe-inline' because Nuxt inlines its runtime
+# config script and Vue/@nuxt/image emit style attributes. Fonts are self-hosted, images come from
+# Contentful, and the contact form posts to Web3Forms: add any new third-party host here.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://images.ctfassets.net; font-src 'self'; connect-src 'self' https://api.web3forms.com; form-action 'self' https://api.web3forms.com; base-uri 'self'; object-src 'none'; frame-ancestors 'none'"
+    Strict-Transport-Security = "max-age=31536000"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"

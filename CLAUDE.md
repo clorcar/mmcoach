@@ -100,14 +100,14 @@ nuxt.config.ts
 - Requests go through `server/api/contentful.post.ts` so the token stays server-side. With `nuxt generate` everything is fetched while prerendering; the static site only ships payloads.
 - Credentials are **server-only** `runtimeConfig` (see `.env.example`): `CONTENTFUL_SPACE_ID`, `CONTENTFUL_ENVIRONMENT` (default `master`), `CONTENTFUL_DELIVERY_TOKEN`. No preview API for now. `NUXT_PUBLIC_SITE_URL` sets the public site URL. Never commit secrets.
 - Coach identity is public, non-secret env config (no hard-coded names or profile URLs in components): `NUXT_PUBLIC_WEBSITE_NAME` (becomes `site.name`, so `useSiteConfig().name`), `NUXT_PUBLIC_COACH_FULL_NAME` (article author, Person identity), `NUXT_PUBLIC_COACH_DESCRIPTION` (author bio, Person description), `NUXT_PUBLIC_COACH_FIRST_NAME`, `NUXT_PUBLIC_INSTAGRAM_URL`, `NUXT_PUBLIC_FACEBOOK_URL` (empty hides the link). Read them with `useRuntimeConfig().public`; they also feed `schemaOrg.identity` (`sameAs`).
-- The contact form is sent to Web3Forms from the browser. Endpoint and access key are public env config: `NUXT_PUBLIC_WEB3FORMS_URL` (defaults to the Web3Forms API) and `NUXT_PUBLIC_WEB3FORMS_ACCESS_KEY`.
+- The contact form (with its privacy-consent checkbox) is sent to Web3Forms from the browser. Endpoint and access key are public env config: `NUXT_PUBLIC_WEB3FORMS_URL` (defaults to the Web3Forms API) and `NUXT_PUBLIC_WEB3FORMS_ACCESS_KEY`.
 - Data access: `useContentfulQuery` (one query) and `useContentfulCollection` (lists, paginated, max 100 items) wrap `useAsyncData` with a stable key. Entity composables (`useWorkshops`, `useArticles`…) build on them and return mapped data.
 - Errors are **fatal**: a failed Contentful request throws, so `nuxt generate` fails (`nitro.prerender.failOnError`) instead of shipping a broken page. Components have no loading, error or retry states.
 - Query complexity limit is 11000. Rich text `links` cost ~1000 per item unless the field limits embedded assets; use `pageSize` in `useContentfulCollection` to stay under it.
 - Map Contentful responses to our own lean TypeScript types in one place (`app/utils/contentful-mappers.ts`); components never consume raw Contentful responses.
 - Prerender all dynamic routes: build the route list from Contentful slugs (e.g. in `nitro.prerender.routes` or a build hook) so every page is generated and included in the sitemap.
 - Rich text: render with one shared component (`RichText.vue`, Vue render functions, no `v-html`). Content headings start at `<h2>`. Images: alt text is the asset's `description` (entry title as fallback, in `mapImage`); render with `@nuxt/image` (`contentful` provider, AVIF/WebP), always with width/height.
-- Content updates: a Contentful webhook triggers a new build/deploy on the host. Do not rely on client-side fetching for content.
+- Content updates: a Contentful webhook calls a Netlify build hook, which rebuilds and deploys the site (already configured). Do not rely on client-side fetching for content.
 
 ## SEO
 
@@ -122,6 +122,13 @@ nuxt.config.ts
 - Performance is SEO: optimize LCP/CLS/INP. Use `@nuxt/image` (set width/height, lazy-load below the fold, preload the LCP image), self-host fonts (`@nuxt/fonts`) with `font-display: swap`, no render-blocking third-party scripts.
 - Clean, lowercase, hyphenated URLs. No duplicate content; always set a canonical.
 - Custom 404 page with `noindex`.
+
+## Hosting, legal and security
+
+- Hosted on **Netlify** (`netlify.toml`: build command, publish dir, secrets-scan allowlist, security headers). Environment variables are set in the Netlify build environment. A new public `NUXT_PUBLIC_*` variable must also be added to `SECRETS_SCAN_OMIT_KEYS`.
+- Security headers (CSP, HSTS, `nosniff`, referrer and permissions policies) live in `netlify.toml`. The CSP allowlists only Contentful images (`images.ctfassets.net`) and Web3Forms (`api.web3forms.com`): **adding any third-party script, embed, font or endpoint requires updating the CSP**, and a new service that sets cookies or tracks visitors also requires the privacy text and a consent mechanism.
+- Legal pages (Spanish law: LSSI-CE, RGPD/LOPDGDD): `/aviso-legal` and `/politica-de-privacidad`, static pages built on `LegalPage.vue` and linked from the footer. Owner details come from the public env vars `NUXT_PUBLIC_LEGAL_TAX_ID`, `NUXT_PUBLIC_LEGAL_ADDRESS` and `NUXT_PUBLIC_CONTACT_EMAIL` (plus `NUXT_PUBLIC_COACH_FULL_NAME`) via `useLegalOwner`; empty ones are omitted. The privacy policy lists the processors (Web3Forms, Netlify, Contentful) and states that no cookies are used: keep it in sync with reality and bump the `updated` date when the text changes.
+- The contact form has a required privacy-consent checkbox linking to the policy. Any new form that collects personal data needs the same.
 
 ## GEO (Generative Engine Optimization)
 
@@ -144,7 +151,7 @@ The aim is for AI assistants and answer engines to understand, trust and cite th
 ## Git and workflow
 
 - Small, focused commits. Conventional Commits (`feat:`, `fix:`, `chore:`, `refactor:`, `docs:`).
-- Branch per feature; never commit directly to `main`.
+- Do not create new branches by default; work on the current branch. Create one only when asked.
 - Do not commit `.env`, `.nuxt/`, `.output/`, or `node_modules/`.
 - When a task is non-trivial, outline the plan first and wait for approval before large changes.
 
