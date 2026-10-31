@@ -3,12 +3,21 @@ const site = useSiteConfig()
 const route = useRoute()
 
 const menuOpen = ref(false)
+const toggle = useTemplateRef<HTMLButtonElement>('toggle')
+const closeButton = useTemplateRef<HTMLButtonElement>('closeButton')
 
 // Navigating (or pressing Escape) closes the mobile menu
 watch(
   () => route.fullPath,
   () => (menuOpen.value = false),
 )
+
+// Keyboard focus follows the panel: into it when it opens, back to the burger when it closes
+watch(menuOpen, async (open) => {
+  await nextTick()
+  if (open) closeButton.value?.focus()
+  else if (document.activeElement === document.body) toggle.value?.focus()
+})
 </script>
 
 <template>
@@ -19,25 +28,58 @@ watch(
         <span class="site-header__name">{{ site.name }}</span>
       </NuxtLink>
 
-      <ul
+      <div
         id="site-menu"
-        class="site-header__links"
-        :class="{ 'site-header__links--open': menuOpen }"
+        class="site-header__panel"
+        :class="{ 'site-header__panel--open': menuOpen }"
       >
-        <li><NuxtLink to="/talleres" class="site-header__link">Talleres</NuxtLink></li>
-        <li><NuxtLink to="/articulos" class="site-header__link">Artículos</NuxtLink></li>
-        <li><NuxtLink to="/servicios" class="site-header__link">Servicios</NuxtLink></li>
-      </ul>
+        <div class="site-header__panel-bar">
+          <NuxtLink to="/" class="site-header__brand">
+            <img src="/images/logo.webp" alt="" width="42" height="56" class="site-header__logo" />
+            <span class="site-header__name">{{ site.name }}</span>
+          </NuxtLink>
+
+          <button
+            ref="closeButton"
+            type="button"
+            class="site-header__toggle"
+            aria-label="Cerrar menú"
+            @click="menuOpen = false"
+          >
+            <svg
+              aria-hidden="true"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+        </div>
+
+        <ul class="site-header__links">
+          <li><NuxtLink to="/talleres" class="site-header__link">Talleres</NuxtLink></li>
+          <li><NuxtLink to="/articulos" class="site-header__link">Artículos</NuxtLink></li>
+          <li><NuxtLink to="/servicios" class="site-header__link">Servicios</NuxtLink></li>
+        </ul>
+
+        <NuxtLink :to="contactLink()" class="site-header__panel-cta">Contacto</NuxtLink>
+      </div>
 
       <NuxtLink :to="contactLink()" class="site-header__cta">Contacta</NuxtLink>
 
       <button
+        ref="toggle"
         type="button"
         class="site-header__toggle"
         aria-controls="site-menu"
         :aria-expanded="menuOpen"
-        :aria-label="menuOpen ? 'Cerrar menú' : 'Abrir menú'"
-        @click="menuOpen = !menuOpen"
+        aria-label="Abrir menú"
+        @click="menuOpen = true"
       >
         <svg
           aria-hidden="true"
@@ -49,8 +91,7 @@ watch(
           stroke-width="2"
           stroke-linecap="round"
         >
-          <path v-if="menuOpen" d="M6 6l12 12M18 6L6 18" />
-          <path v-else d="M4 7h16M4 12h16M4 17h16" />
+          <path d="M4 7h16M4 12h16M4 17h16" />
         </svg>
       </button>
     </nav>
@@ -68,7 +109,7 @@ watch(
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: $space-3;
+  gap: $space-2;
   padding-block: $space-3;
 
   @include bp(tablet-portrait) {
@@ -80,8 +121,12 @@ watch(
 .site-header__brand {
   display: flex;
   align-items: center;
-  gap: $space-3;
+  gap: $space-2;
   margin-right: auto;
+
+  @include bp(tablet-portrait) {
+    gap: $space-3;
+  }
 
   &:hover {
     text-decoration: none;
@@ -99,26 +144,77 @@ watch(
   color: $color-text;
 }
 
-// Phones: a full-width list below the bar, hidden until the menu button opens it
-.site-header__links {
-  @include f-16-500;
-  display: none;
-  flex-basis: 100%;
+// Phones: a full-screen panel (brand + close button, then the links), hidden until the burger opens it
+.site-header__panel {
+  position: fixed;
+  inset: 0;
+  z-index: $z-modal;
+  display: flex;
   flex-direction: column;
-  order: 1;
-  padding: 0;
-  list-style: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  visibility: hidden;
+  background-color: $color-background;
+  transform: translateX(100%);
+
+  @include motion-safe {
+    // Visibility switches at the end of the slide-out so the panel is not focusable while hidden
+    transition:
+      transform $duration-slow ease,
+      visibility 0s linear $duration-slow;
+  }
 
   &--open {
-    display: flex;
+    visibility: visible;
+    transform: none;
+
+    @include motion-safe {
+      transition:
+        transform $duration-slow ease,
+        visibility 0s;
+    }
   }
 
   @include bp(tablet-portrait) {
-    display: flex;
-    flex-basis: auto;
+    display: contents;
+    visibility: visible;
+  }
+}
+
+.site-header__panel-cta {
+  @include button(primary);
+  @include f-16-500;
+  margin: $space-3 $space-4 $space-4;
+
+  @include bp(tablet-portrait) {
+    display: none;
+  }
+}
+
+.site-header__panel-bar {
+  display: flex;
+  align-items: center;
+  padding: $space-3 $space-4;
+  border-bottom: $border-width solid $color-border;
+
+  @include bp(tablet-portrait) {
+    display: none;
+  }
+}
+
+.site-header__links {
+  @include f-20-500;
+  display: flex;
+  flex-direction: column;
+  padding: $space-4;
+  margin: 0;
+  list-style: none;
+
+  @include bp(tablet-portrait) {
+    @include f-16-500;
     flex-direction: row;
     gap: $space-6;
-    order: 0;
+    padding: 0;
   }
 }
 

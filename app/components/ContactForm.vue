@@ -160,6 +160,14 @@ function reset() {
       />
     </div>
 
+    <div class="contact-form__consent">
+      <input id="privacidad" name="privacidad" type="checkbox" required />
+      <label for="privacidad">
+        He leído y acepto la
+        <NuxtLink to="/politica-de-privacidad" target="_blank">política de privacidad</NuxtLink>
+      </label>
+    </div>
+
     <p v-if="status === 'error'" class="contact-form__error" role="alert">
       No se ha podido enviar tu mensaje. Inténtalo de nuevo en unos minutos.
     </p>
@@ -233,6 +241,25 @@ function reset() {
   color: $color-primary;
   pointer-events: none;
   transform: translateY(-50%);
+}
+
+.contact-form__consent {
+  display: flex;
+  gap: $space-3;
+  align-items: flex-start;
+  color: $color-text-muted;
+
+  input {
+    flex-shrink: 0;
+    width: $space-5;
+    height: $space-5;
+    accent-color: $color-primary;
+    cursor: pointer;
+  }
+
+  a {
+    text-decoration: underline;
+  }
 }
 
 .contact-form__error {

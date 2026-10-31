@@ -38,9 +38,17 @@ const year = new Date().getFullYear()
     </div>
 
     <div class="site-footer__bottom">
-      <p class="site-footer__copyright">
-        © {{ year }} {{ site.name }} · Todos los derechos reservados
-      </p>
+      <div class="site-footer__bottom-content">
+        <p class="site-footer__copyright">
+          © {{ year }} {{ site.name }} · Todos los derechos reservados
+        </p>
+        <nav aria-label="Información legal" class="site-footer__legal">
+          <NuxtLink to="/aviso-legal" class="site-footer__legal-link">Aviso legal</NuxtLink>
+          <NuxtLink to="/politica-de-privacidad" class="site-footer__legal-link">
+            Política de privacidad
+          </NuxtLink>
+        </nav>
+      </div>
     </div>
   </footer>
 </template>
@@ -114,10 +122,29 @@ const year = new Date().getFullYear()
   border-top: $border-width solid $color-inverse-border;
 }
 
-.site-footer__copyright {
+.site-footer__bottom-content {
   @include container;
   @include f-14-400;
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2 $space-5;
+  justify-content: space-between;
   padding-block: $space-5;
   color: $color-inverse-text-muted;
+}
+
+.site-footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2 $space-5;
+}
+
+.site-footer__legal-link {
+  color: $color-inverse-text;
+  text-decoration: underline;
+
+  &:hover {
+    color: $color-inverse-heading;
+  }
 }
 </style>
