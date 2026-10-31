@@ -62,7 +62,7 @@ function renderEmbeddedImage(node: Block): VNodeChild {
   // NuxtImg's generic provider typing doesn't fit h()'s overloads; the props below are valid
   return h('figure', { class: 'rich-text__figure' }, [
     h(NuxtImg as Component, {
-      src: image.url,
+      src: toRenderableImageUrl(image.url),
       alt: '',
       width: image.width,
       height: image.height,

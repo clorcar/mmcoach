@@ -86,7 +86,7 @@ export default defineNuxtConfig({
   },
 
   image: {
-    provider: 'contentful',
+    provider: 'netlify',
     format: ['avif', 'webp'],
     // Same breakpoints as $breakpoints in app/assets/scss/abstracts/_tokens.scss (keep in sync)
     screens: {
