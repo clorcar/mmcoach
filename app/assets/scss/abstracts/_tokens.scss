@@ -141,9 +141,17 @@ $font-scale: (
     size: 1.625rem,
     line-height: 1.18,
   ),
+  30: (
+    size: 1.875rem,
+    line-height: 1.22,
+  ),
   32: (
     size: 2rem,
     line-height: 1.25,
+  ),
+  36: (
+    size: 2.25rem,
+    line-height: 1.18,
   ),
   38: (
     size: 2.375rem,
@@ -222,10 +230,10 @@ $card-min-width-wide: 20rem;
 // Comfortable line lengths for running text
 $text-measure-sm: 21.25rem;
 $text-measure: 40rem;
+$page-title-measure: 58.75rem;
 
 $footer-about-width: 20.5rem;
 
-$site-banner-height: 250px;
 // Home: hero, coach portrait column
 $hero-min-height: 44rem;
 $hero-title-measure: 41.25rem;
@@ -260,9 +268,10 @@ $contact-form-basis: 28.75rem;
 $workshop-main-basis: 35rem;
 $workshop-aside-basis: 18.75rem;
 $content-measure: 45rem;
-// The featured article places image and text side by side when both bases fit
-$featured-basis: 26.25rem;
-$featured-image-min-height: 20rem;
+// Articles page: image sizes of the entries (archive rows and highlighted articles)
+$article-row-image-width: 13.75rem;
+$article-row-image-height: 13.125rem;
+$article-featured-image-height: 18.75rem;
 
 $focus-ring-width: 3px;
 

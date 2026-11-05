@@ -215,6 +215,12 @@
 @mixin f-64-400 {
   @include font(64, 400);
 }
+@mixin f-30-400 {
+  @include font(30, 400);
+}
+@mixin f-36-400 {
+  @include font(36, 400);
+}
 
 // ---------------------------------------------------------------------------
 // Motion: animations and transforms only for users who have not asked to reduce motion

@@ -1,18 +1,25 @@
 <script setup lang="ts">
-// Days an article keeps the "Nuevo" pill
-const NEW_ARTICLE_DAYS = 15
+// Articles published in the last days are highlighted, up to MAX_FRESH
+const FRESH_ARTICLE_DAYS = 15
+const MAX_FRESH = 2
 
 const { articles } = await useArticles({ order: 'fechaPublicacion_DESC' })
 
-// Fixed at build time and kept in the payload: the pill must not change between the static HTML
-// and hydration (a rebuild is triggered whenever content is published)
+// Fixed at build time and kept in the payload: the highlighted list must not change between the
+// static HTML and hydration (a rebuild is triggered whenever content is published)
 const now = useState('articles-build-time', () => Date.now())
 
-const featured = computed(() => articles.value[0])
-const others = computed(() => articles.value.slice(1))
-const isFeaturedNew = computed(() =>
-  featured.value ? isRecent(featured.value.publishedAt, now.value, NEW_ARTICLE_DAYS) : false,
+const fresh = computed(() =>
+  articles.value
+    .filter((article) => isRecent(article.publishedAt, now.value, FRESH_ARTICLE_DAYS))
+    .slice(0, MAX_FRESH),
 )
+const older = computed(() => articles.value.filter((article) => !fresh.value.includes(article)))
+
+const freshSummary = computed(() => {
+  const count = fresh.value.length
+  return `Publicados en los últimos ${FRESH_ARTICLE_DAYS} días · ${count} ${count === 1 ? 'artículo' : 'artículos'}`
+})
 
 usePageSeo({
   title: 'Artículos',
@@ -28,57 +35,179 @@ useSchemaOrg([
 </script>
 
 <template>
-  <div class="articles-page">
+  <div>
     <PageHeader
       eyebrow="Artículos"
       title="Lecturas para tratarte con más calma"
       summary="Reflexiones y herramientas sobre autoexigencia, emociones y descanso, para leer sin prisa."
     />
 
-    <section v-if="featured" class="articles-page__featured" aria-label="Último artículo">
-      <ArticleFeatured :article="featured" :is-new="isFeaturedNew" />
-    </section>
-    <p v-else class="articles-page__empty">Muy pronto publicaré los primeros artículos.</p>
+    <section v-if="fresh.length" class="fresh" aria-labelledby="fresh-articles-title">
+      <div class="fresh__content">
+        <div class="fresh__heading">
+          <h2 id="fresh-articles-title" class="fresh__title">Recién publicado</h2>
+          <p class="fresh__summary">{{ freshSummary }}</p>
+        </div>
 
-    <section v-if="others.length" class="articles-page__more" aria-labelledby="more-articles-title">
-      <h2 id="more-articles-title" class="articles-page__more-title">Más artículos</h2>
-      <div class="articles-page__grid">
-        <ArticleCard v-for="article in others" :key="article.id" :article="article" />
+        <div class="fresh__list" :class="{ 'fresh__list--single': fresh.length === 1 }">
+          <ArticleEntry
+            v-for="article in fresh"
+            :key="article.id"
+            :article="article"
+            :row="fresh.length === 1"
+            featured
+          />
+        </div>
       </div>
     </section>
+
+    <section v-if="older.length" class="older" aria-labelledby="older-articles-title">
+      <div class="older__heading">
+        <div class="older__text">
+          <h2 id="older-articles-title" class="older__title">Más artículos</h2>
+          <p class="older__summary">Lecturas anteriores, que merecen un poco de calma.</p>
+        </div>
+        <p class="older__count">
+          {{ older.length }} {{ older.length === 1 ? 'artículo' : 'artículos' }}
+        </p>
+      </div>
+
+      <div class="older__list">
+        <ArticleEntry v-for="article in older" :key="article.id" :article="article" row />
+      </div>
+
+      <p class="older__end">Estás al día. Vuelve cuando tengas un momento.</p>
+    </section>
+
+    <p v-if="!articles.length" class="articles-empty">
+      Muy pronto publicaré los primeros artículos.
+    </p>
+
+    <PageCta
+      title="¿No sabes por dónde empezar?"
+      summary="Cuéntame qué te está pasando y te recomiendo el formato que mejor puede ayudarte."
+      action="Escríbeme"
+    />
   </div>
 </template>
 
 <style lang="scss" scoped>
-.articles-page {
-  padding-bottom: $space-10;
+.fresh {
+  background-color: $color-surface-sage;
 }
 
-.articles-page__featured {
+.fresh__content {
   @include container;
-  padding-block: $space-8 $space-5;
-}
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+  padding-block: $space-8;
 
-.articles-page__more {
-  @include container;
-  padding-block: $space-7 $space-5;
-}
-
-.articles-page__more-title {
-  @include f-24-400;
-  margin-bottom: $space-5;
-  color: $color-heading;
-
-  @include bp(tablet-portrait) {
-    @include f-32-400;
+  @include bp(tablet-landscape) {
+    gap: $space-7;
+    padding-block: $space-9;
   }
 }
 
-.articles-page__grid {
-  @include auto-grid;
+.fresh__heading {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
 }
 
-.articles-page__empty {
+.fresh__title,
+.older__title {
+  @include f-32-400;
+  letter-spacing: $letter-spacing-tight;
+
+  @include bp(tablet-portrait) {
+    @include f-36-400;
+  }
+}
+
+.fresh__summary {
+  @include f-14-400;
+  color: $color-primary;
+}
+
+.fresh__list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-7;
+
+  @include bp(tablet-portrait) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $space-6;
+  }
+}
+
+.fresh__list--single {
+  @include bp(tablet-portrait) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.older {
+  @include container;
+  display: flex;
+  flex-direction: column;
+  gap: $space-7;
+  padding-block: $space-8;
+
+  @include bp(tablet-landscape) {
+    padding-block: $space-9;
+  }
+}
+
+.older__heading {
+  display: flex;
+  gap: $space-3;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.older__text {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.older__summary {
+  color: $color-text-muted;
+}
+
+.older__count,
+.older__end {
+  @include f-14-400;
+  color: $color-text-muted;
+}
+
+.older__count {
+  white-space: nowrap;
+}
+
+.older__end {
+  text-align: center;
+}
+
+.older__list {
+  display: grid;
+  gap: $space-6;
+
+  @include bp(laptop) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: $space-7;
+  }
+}
+
+// Each entry sits under a fine rule, so the archive reads as rows
+.older__list > :deep(.entry) {
+  padding-top: $space-5;
+  border-top: $border-width solid $color-border;
+}
+
+.articles-empty {
   @include container;
   padding-block: $space-8;
   color: $color-text-muted;

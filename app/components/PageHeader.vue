@@ -9,30 +9,24 @@ defineProps<{
 
 <template>
   <header class="page-header">
-    <div class="page-header__content">
-      <p class="page-header__eyebrow">{{ eyebrow }}</p>
-      <h1 class="page-header__title">{{ title }}</h1>
-      <p class="page-header__summary">{{ summary }}</p>
-    </div>
+    <p class="page-header__eyebrow">{{ eyebrow }}</p>
+    <h1 class="page-header__title">{{ title }}</h1>
+    <p class="page-header__summary">{{ summary }}</p>
   </header>
 </template>
 
 <style lang="scss" scoped>
 .page-header {
-  display: flex;
-  align-items: center;
-  // Same height as the home banner; grows only when the text needs more room
-  min-height: $site-banner-height;
-  background-color: $color-primary-soft;
-}
-
-.page-header__content {
   @include container;
   display: flex;
   flex-direction: column;
-  gap: $space-3;
-  width: 100%;
-  padding-block: $space-6;
+  gap: $space-4;
+  padding-block: $space-8;
+
+  @include bp(tablet-landscape) {
+    gap: $space-5;
+    padding-block: $space-9;
+  }
 }
 
 .page-header__eyebrow {
@@ -40,12 +34,13 @@ defineProps<{
 }
 
 .page-header__title {
-  @include f-32-400;
+  @include f-44-400;
+  letter-spacing: $letter-spacing-tight;
   max-width: $text-measure;
-  color: $color-heading;
 
-  @include bp(tablet-portrait) {
-    @include f-40-400;
+  @include bp(tablet-landscape) {
+    @include f-56-400;
+    max-width: $page-title-measure;
   }
 }
 
