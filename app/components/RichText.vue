@@ -116,12 +116,12 @@ const RichTextContent = () => props.content.document.content.map(renderNode)
   }
 
   :deep(h2) {
-    @include f-24-500;
+    @include f-24-400;
     color: $color-heading;
   }
 
   :deep(h3) {
-    @include f-22-500;
+    @include f-22-400;
     color: $color-heading;
   }
 

@@ -171,11 +171,11 @@ useSchemaOrg([
 }
 
 .article__title {
-  @include f-32-500;
+  @include f-32-400;
   color: $color-heading;
 
   @include bp(tablet-portrait) {
-    @include f-40-500;
+    @include f-40-400;
   }
 }
 
@@ -262,7 +262,7 @@ useSchemaOrg([
 }
 
 .article__about-name {
-  @include f-22-500;
+  @include f-22-400;
   font-family: var(--font-family-heading);
   color: $color-heading;
 }

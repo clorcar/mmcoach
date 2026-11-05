@@ -4,24 +4,20 @@
 
 // ---------------------------------------------------------------------------
 // Palette: up to 5 tones per color, 10 = lightest, higher = darker
-// Text pairs are checked against WCAG 2.2 AA (4.5:1). terracotta20 is the design accent
-// (#A5603F) darkened slightly so it passes as 14px text on sand20 (4.55:1).
+// Text pairs are checked against WCAG 2.2 AA (4.5:1): ink30 on sage20 is 4.7:1 and on blush20 4.7:1.
 // ---------------------------------------------------------------------------
 $palette: (
   'white': #ffffff,
-  'sand10': #fffbf6,
-  'sand20': #f6efe6,
-  'sand30': #e8d8c4,
-  'sand40': #ead3be,
-  'sand50': #b98c6e,
-  'brown10': #f3e6d8,
-  'brown20': #7a5e50,
-  'brown30': #6b5044,
-  'brown40': #4a3328,
-  'brown50': #3f2a21,
-  'terracotta10': #f3dcc4,
-  'terracotta20': #9e5c3c,
-  'terracotta30': #7a4a33,
+  'cream10': #fffbf6,
+  'forest20': #455e50,
+  'forest30': #364a3e,
+  'sage10': #eef2ed,
+  'sage20': #dde5dc,
+  'sage30': #d8dcd2,
+  'sage40': #7f957f,
+  'blush20': #efdfd8,
+  'ink20': #303b33,
+  'ink30': #5b645d,
   'gold20': #e0b97c,
   'green10': #ecfdf5,
   'green30': #047857,
@@ -30,19 +26,16 @@ $palette: (
 );
 
 $white: var(--white);
-$sand10: var(--sand10);
-$sand20: var(--sand20);
-$sand30: var(--sand30);
-$sand40: var(--sand40);
-$sand50: var(--sand50);
-$brown10: var(--brown10);
-$brown20: var(--brown20);
-$brown30: var(--brown30);
-$brown40: var(--brown40);
-$brown50: var(--brown50);
-$terracotta10: var(--terracotta10);
-$terracotta20: var(--terracotta20);
-$terracotta30: var(--terracotta30);
+$cream10: var(--cream10);
+$forest20: var(--forest20);
+$forest30: var(--forest30);
+$sage10: var(--sage10);
+$sage20: var(--sage20);
+$sage30: var(--sage30);
+$sage40: var(--sage40);
+$blush20: var(--blush20);
+$ink20: var(--ink20);
+$ink30: var(--ink30);
 $gold20: var(--gold20);
 $green10: var(--green10);
 $green30: var(--green30);
@@ -53,27 +46,23 @@ $red30: var(--red30);
 // Semantic colors: what components use. Themes remap these to other palette tones.
 // ---------------------------------------------------------------------------
 $semantic-colors: (
-  'primary': 'terracotta20',
-  'primary-hover': 'terracotta30',
-  'primary-soft': 'terracotta10',
-  'on-primary': 'white',
-  'link': 'terracotta30',
-  'link-hover': 'brown40',
-  'text': 'brown40',
-  'text-muted': 'brown30',
-  'text-subtle': 'brown20',
-  'heading': 'brown50',
-  'background': 'sand20',
-  'surface': 'sand10',
-  'surface-alt': 'sand40',
-  'border': 'sand30',
-  'border-strong': 'sand50',
-  'inverse-surface': 'brown40',
-  'inverse-heading': 'sand10',
-  'inverse-text': 'brown10',
-  'inverse-text-muted': 'sand40',
-  'inverse-accent': 'gold20',
-  'inverse-border': 'brown30',
+  'primary': 'forest20',
+  'primary-hover': 'forest30',
+  'primary-soft': 'sage20',
+  'on-primary': 'cream10',
+  'link': 'forest20',
+  'link-hover': 'forest30',
+  'text': 'ink20',
+  'text-muted': 'ink30',
+  'text-subtle': 'ink30',
+  'heading': 'ink20',
+  'background': 'cream10',
+  'surface': 'white',
+  'surface-alt': 'sage10',
+  'surface-sage': 'sage20',
+  'surface-blush': 'blush20',
+  'border': 'sage30',
+  'border-strong': 'sage40',
   'success': 'green30',
   'success-soft': 'green10',
   'danger': 'red30',
@@ -94,14 +83,10 @@ $color-heading: var(--color-heading);
 $color-background: var(--color-background);
 $color-surface: var(--color-surface);
 $color-surface-alt: var(--color-surface-alt);
+$color-surface-sage: var(--color-surface-sage);
+$color-surface-blush: var(--color-surface-blush);
 $color-border: var(--color-border);
 $color-border-strong: var(--color-border-strong);
-$color-inverse-surface: var(--color-inverse-surface);
-$color-inverse-heading: var(--color-inverse-heading);
-$color-inverse-text: var(--color-inverse-text);
-$color-inverse-text-muted: var(--color-inverse-text-muted);
-$color-inverse-accent: var(--color-inverse-accent);
-$color-inverse-border: var(--color-inverse-border);
 $color-success: var(--color-success);
 $color-success-soft: var(--color-success-soft);
 $color-danger: var(--color-danger);
@@ -152,19 +137,45 @@ $font-scale: (
     size: 1.5rem,
     line-height: 1.3,
   ),
+  26: (
+    size: 1.625rem,
+    line-height: 1.18,
+  ),
   32: (
     size: 2rem,
     line-height: 1.25,
   ),
+  38: (
+    size: 2.375rem,
+    line-height: 1.18,
+  ),
   40: (
     size: 2.5rem,
     line-height: 1.2,
+  ),
+  42: (
+    size: 2.625rem,
+    line-height: 1.18,
+  ),
+  44: (
+    size: 2.75rem,
+    line-height: 1.18,
+  ),
+  56: (
+    size: 3.5rem,
+    line-height: 1.18,
+  ),
+  64: (
+    size: 4rem,
+    line-height: 1.18,
   ),
 );
 
 $font-weights: (300, 400, 500, 600, 700);
 
 $letter-spacing-wide: 0.08em;
+// Display and section headings (Lora)
+$letter-spacing-tight: -0.02em;
 
 // ---------------------------------------------------------------------------
 // Spacing, radii, shadows, motion, layout
@@ -180,8 +191,8 @@ $space-8: 3.5rem;
 $space-9: 4rem;
 $space-10: 4.5rem;
 
-// Vertical padding of the compact header button on phones
-$space-button-compact: 0.35rem;
+// Vertical padding of buttons
+$space-button: 0.875rem;
 
 $radius-sm: 0.25rem;
 $radius-md: 0.5rem;
@@ -212,17 +223,29 @@ $card-min-width-wide: 20rem;
 $text-measure-sm: 21.25rem;
 $text-measure: 40rem;
 
-$footer-column-width: 13.75rem;
-$footer-column-width-narrow: 12.5rem;
+$footer-about-width: 20.5rem;
 
 $site-banner-height: 250px;
-// Share of the palette colors kept over the home banner photo (the rest lets the photo through)
+// Home: hero, coach portrait column
+$hero-min-height: 44rem;
+$hero-title-measure: 41.25rem;
+$hero-title-measure-narrow: 34.375rem;
+$hero-summary-measure: 29.375rem;
+$about-portrait-width: 16.5rem;
+$about-portrait-width-wide: 26.25rem;
 $logo-size: 56px;
 $avatar-size-sm: 48px;
 $avatar-size-md: 96px;
 $article-image-height: 25rem;
-$avatar-size-lg: 180px;
-$card-image-height: 190px;
+$card-image-height: 14rem;
+$card-image-height-wide: 15.5rem;
+// Home: workshops photo (full width on small screens, fixed column beside the list on wide ones)
+$workshops-image-height: 17.625rem;
+$workshops-image-width: 29rem;
+$workshops-image-height-wide: 24rem;
+// Home articles: image beside the text on tablets
+$article-inline-image-width: 16.5rem;
+$article-inline-image-height: 15rem;
 // Workshop list cards place image and text side by side when both bases fit
 $workshop-list-image-basis: 18.75rem;
 $workshop-list-body-basis: 27.5rem;

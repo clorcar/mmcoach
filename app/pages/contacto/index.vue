@@ -76,11 +76,11 @@ useSchemaOrg([
 }
 
 .contact__title {
-  @include f-32-500;
+  @include f-32-400;
   color: $color-heading;
 
   @include bp(tablet-portrait) {
-    @include f-40-500;
+    @include f-40-400;
   }
 }
 

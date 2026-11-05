@@ -53,10 +53,10 @@ useSchemaOrg([
 }
 
 .testimonials-page__title {
-  @include f-32-500;
+  @include f-32-400;
 
   @include bp(tablet-portrait) {
-    @include f-40-500;
+    @include f-40-400;
   }
 }
 

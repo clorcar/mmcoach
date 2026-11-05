@@ -304,11 +304,11 @@ function reset() {
 }
 
 .contact-form__sent-title {
-  @include f-24-500;
+  @include f-24-400;
   color: $color-heading;
 
   @include bp(tablet-portrait) {
-    @include f-32-500;
+    @include f-32-400;
   }
 }
 

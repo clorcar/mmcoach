@@ -40,12 +40,12 @@ defineProps<{
 }
 
 .page-header__title {
-  @include f-32-500;
+  @include f-32-400;
   max-width: $text-measure;
   color: $color-heading;
 
   @include bp(tablet-portrait) {
-    @include f-40-500;
+    @include f-40-400;
   }
 }
 

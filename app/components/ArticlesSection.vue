@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = withDefaults(defineProps<{ limit?: number }>(), { limit: 2 })
+const props = withDefaults(defineProps<{ limit?: number }>(), { limit: 3 })
 
 const { articles } = await useArticles({ limit: props.limit, order: 'fechaPublicacion_DESC' })
 </script>
@@ -13,8 +13,8 @@ const { articles } = await useArticles({ limit: props.limit, order: 'fechaPublic
       :link="{ to: '/articulos', label: 'Leer todos' }"
     />
 
-    <div v-if="articles.length" class="articles__grid">
-      <ArticleCard v-for="article in articles" :key="article.id" :article="article" />
+    <div v-if="articles.length" class="articles__list">
+      <ArticleCard v-for="article in articles" :key="article.id" :article="article" inline />
     </div>
     <p v-else class="articles__empty">Muy pronto publicaré los primeros artículos.</p>
   </section>
@@ -23,11 +23,27 @@ const { articles } = await useArticles({ limit: props.limit, order: 'fechaPublic
 <style lang="scss" scoped>
 .articles {
   @include container;
-  padding-block: $space-8 $space-5;
+  padding-block: $space-8;
+
+  @include bp(tablet-landscape) {
+    padding-block: $space-10;
+  }
 }
 
-.articles__grid {
-  @include auto-grid;
+.articles__list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-7;
+
+  @include bp(tablet-portrait) {
+    gap: $space-6;
+  }
+
+  @include bp(tablet-landscape) {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: $space-6;
+  }
 }
 
 .articles__empty {

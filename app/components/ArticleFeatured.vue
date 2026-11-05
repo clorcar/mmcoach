@@ -88,7 +88,7 @@ defineProps<{
 }
 
 .article-featured__title {
-  @include f-32-500;
+  @include f-32-400;
   color: $color-heading;
 }
 

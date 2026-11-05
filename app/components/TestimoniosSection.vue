@@ -25,7 +25,11 @@ const { testimonials, total } = await useTestimonials({
 <style lang="scss" scoped>
 .testimonials {
   @include container;
-  padding-block: $space-8 $space-5;
+  padding-block: $space-8;
+
+  @include bp(tablet-landscape) {
+    padding-block: $space-10;
+  }
 }
 
 .testimonials__grid {

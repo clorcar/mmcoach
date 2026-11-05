@@ -197,6 +197,24 @@
 @mixin f-40-700 {
   @include font(40, 700);
 }
+@mixin f-26-400 {
+  @include font(26, 400);
+}
+@mixin f-38-400 {
+  @include font(38, 400);
+}
+@mixin f-42-400 {
+  @include font(42, 400);
+}
+@mixin f-44-400 {
+  @include font(44, 400);
+}
+@mixin f-56-400 {
+  @include font(56, 400);
+}
+@mixin f-64-400 {
+  @include font(64, 400);
+}
 
 // ---------------------------------------------------------------------------
 // Motion: animations and transforms only for users who have not asked to reduce motion
@@ -233,21 +251,23 @@
 
 // Small uppercase label above headings ("Próximos talleres", "Del blog"...)
 @mixin eyebrow($color: $color-primary) {
-  @include f-14-600;
+  @include f-13-600;
   letter-spacing: $letter-spacing-wide;
   text-transform: uppercase;
   color: $color;
 }
 
-// Pill-shaped call to action. Variants: primary (filled) and outline
+// Call to action with subtle corners. Variants: primary (filled) and outline
 @mixin button($variant: primary) {
   @include f-16-600;
   display: inline-flex;
+  gap: $space-5;
   align-items: center;
   justify-content: center;
-  padding: $space-3 $space-5;
+  padding: $space-button $space-5;
   text-decoration: none;
-  border-radius: $radius-full;
+  border: $border-width solid transparent;
+  border-radius: $radius-sm;
 
   @if $variant == primary {
     color: $color-on-primary;
@@ -259,13 +279,13 @@
       background-color: $color-primary-hover;
     }
   } @else if $variant == outline {
-    color: $color-text;
-    border: $border-width-strong solid $color-border-strong;
+    color: $color-primary;
+    border-color: $color-primary;
 
     &:hover {
-      color: $color-text;
+      color: $color-primary;
       text-decoration: none;
-      background-color: $color-surface;
+      background-color: $color-primary-soft;
     }
   } @else {
     @error 'Unknown button variant "#{$variant}". Use primary or outline';
@@ -290,11 +310,22 @@
   }
 }
 
-// Text link followed by an arrow ("Leer artículo →")
+// Text link underlined by a fine rule and followed by an arrow ("Leer artículo →")
 @mixin link-arrow {
-  @include f-17-600;
+  @include f-16-500;
+  display: inline-flex;
+  gap: $space-3;
+  align-items: center;
   align-self: flex-start;
-  padding-block: $space-2;
+  padding-bottom: 0.3125rem;
+  color: $color-primary;
+  border-bottom: $border-width solid $color-primary;
+
+  &:hover {
+    color: $color-primary-hover;
+    text-decoration: none;
+    border-color: $color-primary-hover;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -322,5 +353,5 @@
   overflow: hidden;
   background-color: $color-surface;
   border: $border-width solid $color-border;
-  border-radius: $radius-2xl;
+  border-radius: $radius-sm;
 }

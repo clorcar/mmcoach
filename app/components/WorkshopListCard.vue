@@ -119,7 +119,7 @@ const month = computed(() => formatDate(props.workshop.date, { month: 'short' })
 }
 
 .workshop-list-card__day {
-  @include f-24-500;
+  @include f-24-400;
   font-family: var(--font-family-heading);
   color: $color-heading;
 }
@@ -153,7 +153,7 @@ const month = computed(() => formatDate(props.workshop.date, { month: 'short' })
 }
 
 .workshop-list-card__title {
-  @include f-24-500;
+  @include f-24-400;
   color: $color-heading;
 }
 
@@ -177,7 +177,7 @@ const month = computed(() => formatDate(props.workshop.date, { month: 'short' })
 }
 
 .workshop-list-card__price {
-  @include f-24-500;
+  @include f-24-400;
   color: $color-heading;
 }
 

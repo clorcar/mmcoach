@@ -83,7 +83,7 @@ defineProps<{ service: Service }>()
 }
 
 .service-card__title {
-  @include f-24-500;
+  @include f-24-400;
   color: $color-heading;
 }
 
@@ -125,7 +125,7 @@ defineProps<{ service: Service }>()
 }
 
 .service-card__price {
-  @include f-24-500;
+  @include f-24-400;
   color: $color-heading;
 }
 

@@ -70,7 +70,10 @@ watch(menuOpen, async (open) => {
         <NuxtLink :to="contactLink()" class="site-header__panel-cta">Contacto</NuxtLink>
       </div>
 
-      <NuxtLink :to="contactLink()" class="site-header__cta">Contacta</NuxtLink>
+      <NuxtLink :to="contactLink()" class="site-header__cta">
+        Contacta
+        <BaseArrow direction="up-right" />
+      </NuxtLink>
 
       <button
         ref="toggle"
@@ -81,10 +84,11 @@ watch(menuOpen, async (open) => {
         aria-label="Abrir menú"
         @click="menuOpen = true"
       >
+        <span class="site-header__toggle-label" aria-hidden="true">Menú</span>
         <svg
           aria-hidden="true"
-          width="24"
-          height="24"
+          width="22"
+          height="22"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -101,7 +105,6 @@ watch(menuOpen, async (open) => {
 <style lang="scss" scoped>
 .site-header {
   background-color: $color-background;
-  border-bottom: $border-width solid $color-border;
 }
 
 .site-header__nav {
@@ -139,7 +142,7 @@ watch(menuOpen, async (open) => {
 }
 
 .site-header__name {
-  @include f-20-500;
+  @include f-22-400;
   font-family: var(--font-family-heading);
   color: $color-text;
 }
@@ -183,12 +186,15 @@ watch(menuOpen, async (open) => {
 
 .site-header__panel-cta {
   @include button(primary);
-  @include f-16-500;
   margin: $space-3 $space-4 $space-4;
 
   @include bp(tablet-portrait) {
     display: none;
   }
+}
+
+.site-header__toggle-label {
+  @include f-16-500;
 }
 
 .site-header__panel-bar {
@@ -213,13 +219,18 @@ watch(menuOpen, async (open) => {
   @include bp(tablet-portrait) {
     @include f-16-500;
     flex-direction: row;
-    gap: $space-6;
+    gap: $space-5;
     padding: 0;
+  }
+
+  @include bp(tablet-landscape) {
+    gap: $space-6;
   }
 }
 
 .site-header__link {
   display: block;
+  color: $color-text;
   padding-block: $space-3;
 
   @include bp(tablet-portrait) {
@@ -227,41 +238,31 @@ watch(menuOpen, async (open) => {
   }
 }
 
-// Phones: flat, inverted colors so it stands out less; filled from tablet up
+// Phones: the contact button lives in the panel; from tablet up it sits in the bar
 .site-header__cta {
-  @include button(primary);
-  @include f-16-500;
-  padding: $space-button-compact $space-5;
-  color: $color-primary;
-  background-color: transparent;
-  border: $border-width solid $color-primary;
-
-  &:hover {
-    color: $color-primary;
-    background-color: $color-primary-soft;
-  }
+  @include button(outline);
+  display: none;
 
   @include bp(tablet-portrait) {
-    padding-block: $space-3;
-    color: $color-on-primary;
-    background-color: $color-primary;
-    border-color: transparent;
+    display: inline-flex;
+    padding: $space-3 $space-4;
+  }
 
-    &:hover {
-      color: $color-on-primary;
-      background-color: $color-primary-hover;
-    }
+  @include bp(tablet-landscape) {
+    padding-inline: $space-5;
+  }
 
-    &[aria-current='page'] {
-      background-color: $color-heading;
-    }
+  &[aria-current='page'] {
+    background-color: $color-primary-soft;
   }
 }
 
 .site-header__toggle {
   display: inline-flex;
+  gap: $space-2;
+  align-items: center;
   padding: $space-3;
-  color: $color-heading;
+  color: $color-primary;
   background: none;
   border: 0;
   border-radius: $radius-md;

@@ -34,7 +34,7 @@ defineProps<{
   }
 
   :deep(h2) {
-    @include f-24-500;
+    @include f-24-400;
     max-width: $text-measure;
     margin: $space-7 0 $space-3;
     color: $color-heading;

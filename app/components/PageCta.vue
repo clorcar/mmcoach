@@ -18,29 +18,32 @@ const titleId = useId()
         <h2 :id="titleId" class="page-cta__title">{{ title }}</h2>
         <p class="page-cta__summary">{{ summary }}</p>
       </div>
-      <NuxtLink :to="contactLink(reason)" class="page-cta__button">{{ action }}</NuxtLink>
+      <NuxtLink :to="contactLink(reason)" class="page-cta__button">
+        {{ action }}
+        <BaseArrow direction="up-right" />
+      </NuxtLink>
     </div>
   </section>
 </template>
 
 <style lang="scss" scoped>
 .page-cta {
-  @include container;
-  padding-block: $space-7 0;
+  margin-top: $space-8;
+  background-color: $color-surface-blush;
 }
 
 .page-cta__box {
+  @include container;
   display: flex;
   flex-wrap: wrap;
+  gap: $space-6;
   align-items: center;
   justify-content: space-between;
-  gap: $space-5;
-  padding: $space-6;
-  background-color: $color-primary-soft;
-  border-radius: $radius-3xl;
+  padding-block: $space-8;
 
-  @include bp(tablet-portrait) {
-    padding: $space-7;
+  @include bp(tablet-landscape) {
+    gap: $space-9;
+    padding-block: $space-9;
   }
 }
 
@@ -48,15 +51,17 @@ const titleId = useId()
   display: flex;
   flex: 999 1 $card-min-width-wide;
   flex-direction: column;
-  gap: $space-2;
+  gap: $space-4;
+  max-width: $text-measure;
 }
 
 .page-cta__title {
-  @include f-24-500;
+  @include f-32-400;
+  letter-spacing: $letter-spacing-tight;
   color: $color-heading;
 
-  @include bp(tablet-portrait) {
-    @include f-32-500;
+  @include bp(tablet-landscape) {
+    @include f-42-400;
   }
 }
 

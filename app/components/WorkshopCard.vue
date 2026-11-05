@@ -55,7 +55,7 @@ defineProps<{ workshop: Workshop }>()
 }
 
 .workshop-card__title {
-  @include f-22-500;
+  @include f-22-400;
 }
 
 .workshop-card__excerpt {

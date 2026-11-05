@@ -65,12 +65,12 @@ useSchemaOrg([
 }
 
 .articles-page__more-title {
-  @include f-24-500;
+  @include f-24-400;
   margin-bottom: $space-5;
   color: $color-heading;
 
   @include bp(tablet-portrait) {
-    @include f-32-500;
+    @include f-32-400;
   }
 }
 
