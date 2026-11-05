@@ -98,6 +98,11 @@ export default defineNuxtConfig({
     },
   },
 
+  // The Netlify Image CDN only exists on Netlify: in dev, images load straight from Contentful
+  $development: {
+    image: { provider: 'none' },
+  },
+
   css: [`${scssDir}/main.scss`],
 
   vite: {
