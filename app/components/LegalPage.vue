@@ -9,53 +9,47 @@ defineProps<{
 </script>
 
 <template>
-  <div>
+  <div class="legal">
     <PageHeader eyebrow="Legal" :title="title" :summary="summary" />
 
-    <article class="legal-page">
-      <p class="legal-page__updated">
+    <article class="legal__article">
+      <p class="legal__updated">
         Última actualización: <time :datetime="updated">{{ formatDate(updated) }}</time>
       </p>
-      <slot />
+      <div class="legal__text">
+        <slot />
+      </div>
     </article>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.legal-page {
+.legal {
+  border-bottom: $border-width solid $color-border;
+}
+
+.legal__article {
   @include container;
-  @include f-17-400;
-  padding-block: $space-8 $space-10;
-  color: $color-text-muted;
+  padding-bottom: $space-8;
 
-  :deep(:where(p, ul)) {
-    max-width: $text-measure;
-    margin-bottom: $space-4;
-  }
-
-  :deep(h2) {
-    @include f-24-400;
-    max-width: $text-measure;
-    margin: $space-7 0 $space-3;
-    color: $color-heading;
-  }
-
-  :deep(ul) {
-    padding-left: $space-5;
-  }
-
-  :deep(strong) {
-    font-weight: 600;
-    color: $color-heading;
-  }
-
-  :deep(a) {
-    text-decoration: underline;
+  @include bp(tablet-portrait) {
+    padding-bottom: $space-10;
   }
 }
 
-.legal-page__updated {
+.legal__updated {
   @include f-14-400;
-  color: $color-text-subtle;
+  margin-bottom: $space-5-5;
+  color: $color-text-muted;
+}
+
+.legal__text {
+  @include prose;
+  max-width: $article-body-width;
+
+  // The first heading follows the "updated" line, which already leaves the space
+  > :deep(:first-child) {
+    margin-top: 0;
+  }
 }
 </style>
