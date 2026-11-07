@@ -149,7 +149,7 @@ function reset() {
     </div>
 
     <div class="contact-form__field">
-      <label for="comentario" class="contact-form__label">Comentario</label>
+      <label for="comentario" class="contact-form__label">Mensaje</label>
       <textarea
         id="comentario"
         name="comentario"
