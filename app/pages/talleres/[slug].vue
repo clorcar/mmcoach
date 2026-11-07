@@ -15,22 +15,6 @@ const timeRange = computed(() =>
 const calendarLink = computed(() =>
   workshop.value ? buildCalendarLink(workshop.value, `${site.url ?? ''}${route.path}`) : '',
 )
-const reminder = computed(() => {
-  if (!workshop.value) return { when: '', where: '' }
-  const { date, durationMinutes, location, price } = workshop.value
-
-  return {
-    when: `${formatLongDate(date)} · ${timeRange.value} h`,
-    where: [
-      location.name,
-      durationMinutes ? formatDuration(durationMinutes) : '',
-      formatPrice(price),
-    ]
-      .filter(Boolean)
-      .join(' · '),
-  }
-})
-
 usePageSeo(() => ({
   title: workshop.value?.title ?? 'Taller',
   description: workshop.value?.descriptionText,
@@ -142,16 +126,6 @@ useSchemaOrg([
 
       <div class="workshop__main">
         <RichText :content="workshop.description" />
-
-        <section class="reminder" aria-labelledby="reminder-title">
-          <h2 id="reminder-title" class="reminder__title">Haz un hueco para lo que importa.</h2>
-          <p class="reminder__detail">{{ reminder.when }}</p>
-          <p class="reminder__detail">{{ reminder.where }}</p>
-          <NuxtLink :to="contactLink('talleres')" class="booking__cta reminder__cta">
-            Reservar plaza
-            <BaseArrow />
-          </NuxtLink>
-        </section>
 
         <BaseBackLink to="/talleres">Volver a talleres</BaseBackLink>
       </div>
@@ -365,31 +339,5 @@ useSchemaOrg([
 
 .booking__sr {
   @include visually-hidden;
-}
-
-.reminder {
-  display: flex;
-  flex-direction: column;
-  gap: $space-4-5;
-  align-items: flex-start;
-  padding-block: $space-5-5;
-  border-block: $border-width solid $color-border;
-}
-
-.reminder__title {
-  @include f-26-400;
-
-  @include bp(tablet-portrait) {
-    @include f-28-400;
-  }
-}
-
-.reminder__detail {
-  @include f-16-500;
-  color: $color-primary;
-}
-
-.reminder__cta {
-  width: auto;
 }
 </style>
