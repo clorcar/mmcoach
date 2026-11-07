@@ -1,6 +1,11 @@
 <script setup lang="ts">
 const { testimonials } = await useTestimonials({ order: 'sys_firstPublishedAt_DESC' })
 
+const count = computed(() => {
+  const total = testimonials.value.length
+  return `${total} ${total === 1 ? 'opinión' : 'opiniones'}`
+})
+
 usePageSeo({
   title: 'Testimonios',
   description:
@@ -15,61 +20,87 @@ useSchemaOrg([
 </script>
 
 <template>
-  <div class="testimonials-page">
-    <header class="testimonials-page__header">
-      <p class="testimonials-page__eyebrow">Testimonios</p>
-      <h1 class="testimonials-page__title">Lo que dicen quienes han trabajado conmigo</h1>
-      <p class="testimonials-page__summary">
-        Opiniones de personas que han pasado por mis talleres y sesiones.
-      </p>
-    </header>
+  <div>
+    <PageHeader
+      eyebrow="Testimonios"
+      title="Lo que dicen quienes han trabajado conmigo"
+      summary="Opiniones de personas que han pasado por mis talleres y sesiones."
+    />
 
-    <div v-if="testimonials.length" class="testimonials-page__grid">
-      <TestimonialCard v-for="item in testimonials" :key="item.id" :testimonial="item" />
-    </div>
-    <p v-else class="testimonials-page__empty">Muy pronto compartiré los primeros testimonios.</p>
+    <section class="testimonials" aria-labelledby="testimonials-title">
+      <div class="testimonials__content">
+        <div class="testimonials__heading">
+          <h2 id="testimonials-title" class="testimonials__title">
+            Palabras de quienes estuvieron
+          </h2>
+          <p v-if="testimonials.length" class="testimonials__count">{{ count }}</p>
+        </div>
+
+        <div v-if="testimonials.length" class="testimonials__grid">
+          <TestimonialCard v-for="item in testimonials" :key="item.id" :testimonial="item" />
+        </div>
+        <p v-else class="testimonials__empty">Muy pronto compartiré los primeros testimonios.</p>
+      </div>
+    </section>
+
+    <PageCta
+      title="¿Te apetece empezar tu propio camino?"
+      summary="Cuéntame qué te está pasando y te recomiendo el formato que mejor puede ayudarte."
+      action="Escríbeme"
+      flush
+    />
   </div>
 </template>
 
 <style lang="scss" scoped>
-.testimonials-page {
-  @include container;
-  padding-block: $space-7 $space-10;
-
-  @include bp(tablet-portrait) {
-    padding-top: $space-9;
-  }
+.testimonials {
+  background-color: $color-surface-sage;
 }
 
-.testimonials-page__header {
+.testimonials__content {
+  @include container;
   display: flex;
   flex-direction: column;
-  gap: $space-2;
-  margin-bottom: $space-7;
-}
+  gap: $space-5-5;
+  padding-block: $space-section;
 
-.testimonials-page__eyebrow {
-  @include eyebrow;
-}
-
-.testimonials-page__title {
-  @include f-32-400;
-
-  @include bp(tablet-portrait) {
-    @include f-40-400;
+  @include bp(tablet-landscape) {
+    gap: $space-section-sm;
+    padding-block: $space-9;
   }
 }
 
-.testimonials-page__summary {
-  max-width: $text-measure;
-  color: $color-text-muted;
+.testimonials__heading {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  @include bp(tablet-landscape) {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
 }
 
-.testimonials-page__grid {
+.testimonials__title {
+  @include f-30-400;
+  letter-spacing: $letter-spacing-tight;
+
+  @include bp(tablet-portrait) {
+    @include f-36-400;
+  }
+}
+
+.testimonials__count {
+  @include f-14-400;
+  color: $color-primary;
+}
+
+.testimonials__grid {
   @include auto-grid;
 }
 
-.testimonials-page__empty {
+.testimonials__empty {
   color: $color-text-muted;
 }
 </style>
