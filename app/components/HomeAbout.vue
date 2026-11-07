@@ -9,7 +9,7 @@ const { coachFullName } = useRuntimeConfig().public
         src="/images/coach.webp"
         :alt="`Retrato de ${coachFullName}`"
         width="928"
-        height="1152"
+        height="1164"
         loading="lazy"
         class="about__photo"
       />
