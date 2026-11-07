@@ -174,6 +174,7 @@ function reset() {
 
     <button type="submit" class="contact-form__submit" :disabled="status === 'sending'">
       {{ status === 'sending' ? 'Enviando…' : 'Enviar mensaje' }}
+      <BaseArrow />
     </button>
   </form>
 </template>
@@ -200,8 +201,7 @@ function reset() {
 }
 
 .contact-form__label {
-  @include f-17-600;
-  color: $color-heading;
+  @include f-16-600;
 }
 
 .contact-form__control {
@@ -210,8 +210,8 @@ function reset() {
   padding-inline: $space-4;
   color: $color-heading;
   background-color: $white;
-  border: $border-width-strong solid $color-border-strong;
-  border-radius: $radius-lg;
+  border: $border-width solid $color-border-strong;
+  border-radius: $radius-sm;
 
   &::placeholder {
     color: $color-text-subtle;
@@ -272,8 +272,6 @@ function reset() {
 .contact-form__submit {
   @include button(primary);
   align-self: flex-start;
-  min-height: $input-height;
-  padding-inline: $space-6;
   cursor: pointer;
   border: 0;
 

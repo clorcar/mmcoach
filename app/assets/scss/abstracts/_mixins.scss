@@ -221,6 +221,18 @@
 @mixin f-36-400 {
   @include font(36, 400);
 }
+@mixin f-28-400 {
+  @include font(28, 400);
+}
+@mixin f-34-400 {
+  @include font(34, 400);
+}
+@mixin f-46-400 {
+  @include font(46, 400);
+}
+@mixin f-48-400 {
+  @include font(48, 400);
+}
 
 // ---------------------------------------------------------------------------
 // Motion: animations and transforms only for users who have not asked to reduce motion
@@ -295,24 +307,6 @@
     }
   } @else {
     @error 'Unknown button variant "#{$variant}". Use primary or outline';
-  }
-}
-
-// Small pill for facts on a card (duration, place, date). Variants: soft (filled) and outline
-@mixin chip($variant: soft) {
-  @include f-14-400;
-  display: inline-flex;
-  align-items: center;
-  gap: $space-2;
-  padding: $space-1 $space-3;
-  border-radius: $radius-full;
-
-  @if $variant == soft {
-    background-color: $color-primary-soft;
-  } @else if $variant == outline {
-    border: $border-width solid $color-border-strong;
-  } @else {
-    @error 'Unknown chip variant "#{$variant}". Use soft or outline';
   }
 }
 

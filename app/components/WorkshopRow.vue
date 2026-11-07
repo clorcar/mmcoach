@@ -5,11 +5,13 @@ const props = defineProps<{ workshop: Workshop }>()
 
 const meta = computed(() => {
   const { date, durationMinutes, location, price } = props.workshop
-  const time = formatDate(date, { hour: '2-digit', minute: '2-digit' })
-  const end = addMinutes(date, durationMinutes)
-  const schedule = end ? `${time}–${formatDate(end, { hour: '2-digit', minute: '2-digit' })}` : time
 
-  return [formatDate(date, { weekday: 'long' }), schedule, location.name, formatPrice(price)]
+  return [
+    formatDate(date, { weekday: 'long' }),
+    formatTimeRange(date, durationMinutes),
+    location.name,
+    formatPrice(price),
+  ]
     .filter(Boolean)
     .join(' · ')
 })

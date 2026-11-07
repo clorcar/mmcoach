@@ -1,6 +1,4 @@
 <script setup lang="ts">
-const OTHER_WORKSHOPS = 3
-
 const route = useRoute()
 const site = useSiteConfig()
 const { coachFullName } = useRuntimeConfig().public
@@ -11,23 +9,27 @@ if (!workshop.value) {
   throw createError({ statusCode: 404, statusMessage: 'Taller no encontrado', fatal: true })
 }
 
-// Upcoming at build time; a fixed key per workshop keeps the prerendered payload valid
-const today = new Date().toISOString().slice(0, 10)
-const { workshops: otherWorkshops } = await useWorkshops(
-  {
-    limit: OTHER_WORKSHOPS,
-    order: 'fecha_ASC',
-    where: { fecha_gte: today, url_not: route.params.slug },
-  },
-  `other-workshops-${route.params.slug}`,
-)
-
-const startTime = computed(() =>
-  workshop.value ? formatDate(workshop.value.date, { hour: '2-digit', minute: '2-digit' }) : '',
+const timeRange = computed(() =>
+  workshop.value ? formatTimeRange(workshop.value.date, workshop.value.durationMinutes) : '',
 )
 const calendarLink = computed(() =>
   workshop.value ? buildCalendarLink(workshop.value, `${site.url ?? ''}${route.path}`) : '',
 )
+const reminder = computed(() => {
+  if (!workshop.value) return { when: '', where: '' }
+  const { date, durationMinutes, location, price } = workshop.value
+
+  return {
+    when: `${formatLongDate(date)} · ${timeRange.value} h`,
+    where: [
+      location.name,
+      durationMinutes ? formatDuration(durationMinutes) : '',
+      formatPrice(price),
+    ]
+      .filter(Boolean)
+      .join(' · '),
+  }
+})
 
 usePageSeo(() => ({
   title: workshop.value?.title ?? 'Taller',
@@ -76,231 +78,114 @@ useSchemaOrg([
 </script>
 
 <template>
-  <div v-if="workshop" class="workshop">
-    <header class="workshop__header">
-      <nav aria-label="Ruta de navegación">
-        <ol class="workshop__breadcrumb">
-          <li><NuxtLink to="/">Inicio</NuxtLink></li>
-          <li><NuxtLink to="/talleres">Talleres</NuxtLink></li>
-          <li aria-current="page">{{ workshop.title }}</li>
-        </ol>
-      </nav>
-    </header>
+  <div v-if="workshop">
+    <div class="workshop__opening">
+      <BaseBackLink to="/talleres">Volver a talleres</BaseBackLink>
 
-    <div class="workshop__content">
-      <div class="workshop__main">
-        <header class="workshop__intro">
-          <p class="workshop__eyebrow">Taller</p>
-          <h1 class="workshop__title">{{ workshop.title }}</h1>
-
-          <p class="workshop__chips">
-            <span class="workshop__chip workshop__chip--date">
-              <svg
-                aria-hidden="true"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <rect x="3" y="5" width="18" height="16" rx="2" />
-                <path d="M3 10h18M8 3v4M16 3v4" />
-              </svg>
-              <time :datetime="workshop.date">
-                {{ formatLongDate(workshop.date) }} · {{ startTime }} h
-              </time>
-            </span>
-            <span class="workshop__chip workshop__chip--location">
-              <svg
-                aria-hidden="true"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z" />
-                <circle cx="12" cy="10" r="2.5" />
-              </svg>
-              {{ workshop.location.name }}
-            </span>
-          </p>
-        </header>
-
-        <RichText :content="workshop.description" />
-      </div>
-
-      <aside class="workshop__booking" aria-label="Reserva">
-        <div class="workshop__image">
-          <ContentImage
-            placeholder="workshop"
-            :image="workshop.image"
-            sizes="100vw tablet-portrait:50vw laptop:380px"
-          />
-        </div>
-
-        <div class="workshop__booking-body">
-          <p v-if="workshop.price !== null" class="workshop__price">
-            {{ formatPrice(workshop.price) }}
-          </p>
-
-          <dl class="workshop__facts">
-            <div class="workshop__fact">
-              <svg
-                aria-hidden="true"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <rect x="3" y="5" width="18" height="16" rx="2" />
-                <path d="M3 10h18M8 3v4M16 3v4" />
-              </svg>
-              <div>
-                <dt>Fecha</dt>
-                <dd>{{ formatLongDate(workshop.date) }}</dd>
-              </div>
-            </div>
-            <div class="workshop__fact">
-              <svg
-                aria-hidden="true"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 7v5l3 2" />
-              </svg>
-              <div>
-                <dt>Hora de inicio</dt>
-                <dd>
-                  {{ startTime }} h
-                  <template v-if="workshop.durationMinutes"
-                    >· {{ formatDuration(workshop.durationMinutes) }}</template
-                  >
-                </dd>
-              </div>
-            </div>
-            <div class="workshop__fact">
-              <svg
-                aria-hidden="true"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z" />
-                <circle cx="12" cy="10" r="2.5" />
-              </svg>
-              <div>
-                <dt>Lugar</dt>
-                <dd>
-                  {{ workshop.location.name }}<br />
-                  <address class="workshop__address">
-                    {{ formatAddress(workshop.location) }}
-                  </address>
-                  <a
-                    :href="buildMapsLink(workshop.location)"
-                    class="workshop__map"
-                    target="_blank"
-                    rel="noopener"
-                  >
-                    Ver en Google Maps<span class="workshop__sr">
-                      (se abre en una pestaña nueva)</span
-                    >
-                  </a>
-                </dd>
-              </div>
-            </div>
-          </dl>
-
-          <NuxtLink :to="contactLink('talleres')" class="workshop__cta">Reservar plaza</NuxtLink>
-          <a :href="calendarLink" :download="`${workshop.slug}.ics`" class="workshop__calendar">
-            <svg
-              aria-hidden="true"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <rect x="3" y="5" width="18" height="16" rx="2" />
-              <path d="M3 10h18M12 13v5M9.5 15.5h5" />
-            </svg>
-            Añadir al calendario
-          </a>
-          <p class="workshop__help">
-            ¿Tienes dudas? <NuxtLink :to="contactLink('talleres')">Escríbeme</NuxtLink> y te
-            respondo.
-          </p>
-        </div>
-      </aside>
+      <header class="workshop__intro">
+        <p class="workshop__eyebrow">Taller</p>
+        <h1 class="workshop__title">{{ workshop.title }}</h1>
+        <p class="workshop__author">Con {{ coachFullName }}</p>
+      </header>
     </div>
 
-    <section v-if="otherWorkshops.length" class="workshop__others" aria-labelledby="others-title">
-      <SectionHeader
-        title-id="others-title"
-        title="Otros talleres"
-        :link="{ to: '/talleres', label: 'Ver todos' }"
-      />
-      <div class="workshop__others-grid">
-        <WorkshopCard v-for="other in otherWorkshops" :key="other.id" :workshop="other" />
+    <div class="workshop__layout">
+      <aside class="booking" aria-labelledby="booking-title">
+        <h2 id="booking-title" class="booking__title">Un espacio para ti</h2>
+
+        <dl class="booking__facts">
+          <div class="booking__fact">
+            <dt>Fecha</dt>
+            <dd>
+              <time :datetime="workshop.date">{{ formatLongDate(workshop.date) }}</time>
+            </dd>
+          </div>
+          <div class="booking__fact">
+            <dt>Hora</dt>
+            <dd>{{ timeRange }} h</dd>
+          </div>
+          <div v-if="workshop.durationMinutes" class="booking__fact">
+            <dt>Duración</dt>
+            <dd>{{ formatDuration(workshop.durationMinutes) }}</dd>
+          </div>
+          <div class="booking__fact">
+            <dt>Lugar</dt>
+            <dd>
+              {{ workshop.location.name }}
+              <address class="booking__address">{{ formatAddress(workshop.location) }}</address>
+              <a
+                :href="buildMapsLink(workshop.location)"
+                class="booking__link"
+                target="_blank"
+                rel="noopener"
+              >
+                Ver en Google Maps<span class="booking__sr"> (se abre en una pestaña nueva)</span>
+              </a>
+            </dd>
+          </div>
+        </dl>
+
+        <div class="booking__action">
+          <p v-if="workshop.price !== null" class="booking__price">
+            <span class="booking__price-label">Precio del taller</span>
+            <span class="booking__price-value">{{ formatPrice(workshop.price) }}</span>
+          </p>
+          <NuxtLink :to="contactLink('talleres')" class="booking__cta">
+            Reservar plaza
+            <BaseArrow />
+          </NuxtLink>
+          <a :href="calendarLink" :download="`${workshop.slug}.ics`" class="booking__link">
+            Añadir al calendario
+          </a>
+        </div>
+      </aside>
+
+      <div class="workshop__main">
+        <RichText :content="workshop.description" />
+
+        <section class="reminder" aria-labelledby="reminder-title">
+          <h2 id="reminder-title" class="reminder__title">Haz un hueco para lo que importa.</h2>
+          <p class="reminder__detail">{{ reminder.when }}</p>
+          <p class="reminder__detail">{{ reminder.where }}</p>
+          <NuxtLink :to="contactLink('talleres')" class="booking__cta reminder__cta">
+            Reservar plaza
+            <BaseArrow />
+          </NuxtLink>
+        </section>
+
+        <BaseBackLink to="/talleres">Volver a talleres</BaseBackLink>
       </div>
-    </section>
+    </div>
+
+    <PageCta
+      title="¿Tienes dudas sobre este taller?"
+      summary="Escríbeme y te cuento todo lo que necesites para decidir si es para ti."
+      action="Escríbeme"
+      reason="talleres"
+      flush
+    />
   </div>
 </template>
 
 <style lang="scss" scoped>
-.workshop {
-  padding-bottom: $space-10;
-}
-
-.workshop__header {
+.workshop__opening {
   @include container;
-  padding-top: $space-6;
-}
-
-.workshop__breadcrumb {
-  @include f-14-400;
   display: flex;
-  flex-wrap: wrap;
-  gap: $space-2;
-  padding: 0;
-  color: $color-text-subtle;
-  list-style: none;
+  flex-direction: column;
+  gap: $space-6;
+  padding-block: $space-5 $space-5-5;
 
-  li + li::before {
-    margin-right: $space-2;
-    content: '/';
+  @include bp(tablet-portrait) {
+    gap: $space-section;
+    padding-block: $space-7 $space-section;
   }
 }
 
 .workshop__intro {
   display: flex;
   flex-direction: column;
-  gap: $space-4;
+  gap: $space-4-5;
+  max-width: 56.25rem;
 }
 
 .workshop__eyebrow {
@@ -308,139 +193,203 @@ useSchemaOrg([
 }
 
 .workshop__title {
-  @include f-32-400;
-  max-width: $text-measure;
-  color: $color-heading;
+  @include f-38-400;
+  letter-spacing: $letter-spacing-tight;
 
   @include bp(tablet-portrait) {
-    @include f-40-400;
+    @include f-46-400;
+  }
+
+  @include bp(laptop) {
+    @include f-56-400;
   }
 }
 
-.workshop__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $space-2;
+.workshop__author {
+  @include f-16-500;
+  color: $color-primary;
 }
 
-.workshop__chip--date {
-  @include chip(soft);
-}
-
-.workshop__chip--location {
-  @include chip(outline);
-}
-
-.workshop__image {
-  height: $card-image-height;
-  background-color: $color-primary-soft;
-}
-
-.workshop__content {
+.workshop__layout {
   @include container;
-  display: flex;
-  flex-wrap: wrap;
-  gap: $space-8;
-  align-items: flex-start;
-  padding-block: $space-6 $space-5;
+  display: grid;
+  grid-template-areas:
+    'booking'
+    'main';
+  gap: $space-7;
+  padding-bottom: $space-8;
+
+  @include bp(tablet-portrait) {
+    gap: $space-section;
+    padding-bottom: $space-10;
+  }
+
+  @include bp(tablet-landscape) {
+    grid-template-areas: 'main booking';
+    grid-template-columns: minmax(0, $article-body-width) minmax(0, 1fr);
+    gap: $space-9;
+    align-items: start;
+  }
 }
 
 .workshop__main {
   display: flex;
-  flex: 999 1 $workshop-main-basis;
   flex-direction: column;
-  gap: $space-6;
-  min-width: 0;
-  max-width: $content-measure;
+  grid-area: main;
+  gap: $space-section-sm;
+  max-width: $article-body-width;
+
+  @include bp(tablet-portrait) {
+    gap: $space-section;
+  }
 }
 
-.workshop__booking {
-  @include card;
+.booking {
+  display: grid;
+  grid-area: booking;
+  gap: $space-5;
+  padding: $space-5;
+  background-color: $color-surface-sage;
+
+  @include bp(tablet-portrait) {
+    grid-template-columns: 20rem minmax(0, 1fr);
+    gap: $space-5 $space-7;
+    align-items: end;
+    padding: $space-6;
+  }
+
+  @include bp(tablet-landscape) {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+    max-width: 25rem;
+  }
+}
+
+.booking__title {
+  @include f-28-400;
+  grid-column: 1 / -1;
+  letter-spacing: $letter-spacing-tight;
+}
+
+.booking__facts {
   display: flex;
-  flex: 1 1 $workshop-aside-basis;
   flex-direction: column;
-  min-width: 0;
+
+  @include bp(tablet-portrait) {
+    gap: $space-3;
+  }
+
+  @include bp(tablet-landscape) {
+    gap: 0;
+  }
 }
 
-.workshop__booking-body {
+.booking__fact {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  padding-block: $space-3;
+  border-top: $border-width solid $color-primary;
+
+  dt {
+    @include f-14-400;
+    color: $color-primary;
+  }
+
+  dd {
+    @include f-16-500;
+    margin: 0;
+  }
+
+  @include bp(tablet-portrait) {
+    padding-block: 0;
+    border-top: 0;
+  }
+
+  @include bp(tablet-landscape) {
+    padding-block: $space-3;
+    border-top: $border-width solid $color-primary;
+  }
+}
+
+.booking__address {
+  @include f-14-400;
+  font-style: normal;
+  color: $color-text-muted;
+}
+
+.booking__action {
   display: flex;
   flex-direction: column;
   gap: $space-4;
-  padding: $space-5;
 }
 
-.workshop__price {
+.booking__price {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4-5;
+
+  @include bp(tablet-landscape) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.booking__price-label {
+  @include f-14-400;
+  color: $color-primary;
+
+  @include bp(tablet-landscape) {
+    @include f-16-500;
+  }
+}
+
+.booking__price-value {
   @include f-32-400;
   font-family: var(--font-family-heading);
   color: $color-heading;
 }
 
-.workshop__facts {
-  display: flex;
-  flex-direction: column;
-  gap: $space-4;
+.booking__cta {
+  @include button(primary);
+  width: 100%;
 }
 
-.workshop__fact {
-  @include f-16-400;
-  display: flex;
-  gap: $space-3;
-
-  svg {
-    flex: none;
-    margin-top: $space-1;
-    color: $color-primary;
-  }
-
-  dt {
-    font-weight: 600;
-    color: $color-heading;
-  }
-
-  dd {
-    margin: 0;
-    color: $color-text-muted;
-  }
-}
-
-.workshop__address {
-  font-style: normal;
-}
-
-.workshop__map {
+.booking__link {
   @include f-14-400;
-  color: $color-link;
+  align-self: flex-start;
+  color: $color-primary;
   text-decoration: underline;
 }
 
-.workshop__sr {
+.booking__sr {
   @include visually-hidden;
 }
 
-.workshop__cta {
-  @include button(primary);
+.reminder {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4-5;
+  align-items: flex-start;
+  padding-block: $space-5-5;
+  border-block: $border-width solid $color-border;
 }
 
-.workshop__calendar {
-  @include button(outline);
-  gap: $space-2;
-}
+.reminder__title {
+  @include f-26-400;
 
-.workshop__help {
-  @include f-14-400;
-  color: $color-text-subtle;
-
-  a {
-    text-decoration: underline;
+  @include bp(tablet-portrait) {
+    @include f-28-400;
   }
 }
 
-.workshop__others {
-  @include container;
-  padding-block: $space-7 0;
+.reminder__detail {
+  @include f-16-500;
+  color: $color-primary;
 }
 
-.workshop__others-grid {
-  @include auto-grid;
+.reminder__cta {
+  width: auto;
 }
 </style>

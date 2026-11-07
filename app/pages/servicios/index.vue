@@ -1,6 +1,11 @@
 <script setup lang="ts">
 const { services } = await useServices({ order: 'titulo_ASC' })
 
+const count = computed(() => {
+  const total = services.value.length
+  return `${total} ${total === 1 ? 'servicio' : 'servicios'}`
+})
+
 usePageSeo({
   title: 'Servicios',
   description:
@@ -15,46 +20,90 @@ useSchemaOrg([
 </script>
 
 <template>
-  <div class="services-page">
+  <div>
     <PageHeader
       eyebrow="Servicios"
       title="Formas de acompañarte, a tu ritmo"
       summary="Elige el formato que mejor encaje contigo. Si tienes dudas, escríbeme y lo vemos juntas sin compromiso."
     />
 
-    <section class="services-page__list" aria-label="Listado de servicios">
-      <div v-if="services.length" class="services-page__grid">
-        <ServiceCard v-for="service in services" :key="service.id" :service="service" />
+    <section class="services" aria-labelledby="services-title">
+      <div class="services__content">
+        <div class="services__heading">
+          <h2 id="services-title" class="services__title">Formas de trabajar juntas</h2>
+          <p v-if="services.length" class="services__count">{{ count }} · Coaching individual</p>
+        </div>
+
+        <div v-if="services.length" class="services__list">
+          <ServiceCard v-for="service in services" :key="service.id" :service="service" />
+        </div>
+        <p v-else class="services__empty">
+          Muy pronto encontrarás aquí mis servicios. Mientras tanto, escríbeme y lo hablamos.
+        </p>
       </div>
-      <p v-else class="services-page__empty">
-        Muy pronto encontrarás aquí mis servicios. Mientras tanto, escríbeme y lo hablamos.
-      </p>
     </section>
 
     <PageCta
-      title="¿No sabes por dónde empezar?"
-      summary="Cuéntame qué te está pasando y te recomiendo el formato que mejor puede ayudarte."
-      action="Escríbeme"
+      eyebrow="¿Te apetece explorarlo?"
+      title="Haz espacio para tu siguiente paso."
+      summary="Si no sabes qué servicio encaja contigo, o quieres hablar de lo que tienes en mente, me encantará leerte."
+      action="Consultar sobre coaching"
+      note="Cuéntame brevemente qué buscas y te responderé con el siguiente paso."
       reason="servicios"
+      flush
     />
   </div>
 </template>
 
 <style lang="scss" scoped>
-.services-page {
-  padding-bottom: $space-10;
+.services {
+  background-color: $color-surface-sage;
 }
 
-.services-page__list {
+.services__content {
   @include container;
-  padding-block: $space-8 $space-5;
+  display: flex;
+  flex-direction: column;
+  gap: $space-5-5;
+  padding-block: $space-section;
+
+  @include bp(tablet-landscape) {
+    gap: $space-section-sm;
+    padding-block: $space-9;
+  }
 }
 
-.services-page__grid {
-  @include auto-grid($card-min-width-wide);
+.services__heading {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  @include bp(tablet-landscape) {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
 }
 
-.services-page__empty {
+.services__title {
+  @include f-30-400;
+  letter-spacing: $letter-spacing-tight;
+
+  @include bp(tablet-portrait) {
+    @include f-36-400;
+  }
+}
+
+.services__count {
+  @include f-14-400;
+  color: $color-primary;
+}
+
+.services__list {
+  border-bottom: $border-width solid $color-primary;
+}
+
+.services__empty {
   color: $color-text-muted;
 }
 </style>

@@ -13,40 +13,36 @@ const year = new Date().getFullYear()
         <p class="site-footer__description">{{ site.description }}</p>
       </div>
 
-      <div class="site-footer__nav">
-        <nav aria-label="Explora" class="site-footer__links">
-          <NuxtLink to="/talleres" class="site-footer__link">Talleres</NuxtLink>
-          <NuxtLink to="/articulos" class="site-footer__link">Artículos</NuxtLink>
-          <NuxtLink to="/servicios" class="site-footer__link">Servicios</NuxtLink>
-          <NuxtLink to="/testimonios" class="site-footer__link">Testimonios</NuxtLink>
-          <NuxtLink :to="contactLink()" class="site-footer__link">Contacta</NuxtLink>
-        </nav>
-
-        <ul v-if="socialLinks.length" aria-label="Sígueme" class="site-footer__social">
-          <li v-for="social in socialLinks" :key="social.name">
-            <a
-              :href="social.url"
-              class="site-footer__link site-footer__link--social"
-              rel="me noopener"
-            >
-              <SocialIcon :name="social.icon" />
-              {{ social.name }}
-            </a>
-          </li>
-        </ul>
-      </div>
+      <nav aria-label="Explora" class="site-footer__links">
+        <NuxtLink to="/servicios" class="site-footer__link">Servicios</NuxtLink>
+        <NuxtLink to="/talleres" class="site-footer__link">Talleres</NuxtLink>
+        <NuxtLink to="/articulos" class="site-footer__link">Artículos</NuxtLink>
+        <NuxtLink to="/testimonios" class="site-footer__link">Testimonios</NuxtLink>
+        <NuxtLink :to="contactLink()" class="site-footer__link">Contacta</NuxtLink>
+      </nav>
     </div>
 
     <div class="site-footer__bottom">
       <p class="site-footer__copyright">
         © {{ year }} {{ site.name }} · Todos los derechos reservados
       </p>
-      <nav aria-label="Información legal" class="site-footer__legal">
-        <NuxtLink to="/aviso-legal" class="site-footer__legal-link">Aviso legal</NuxtLink>
-        <NuxtLink to="/politica-de-privacidad" class="site-footer__legal-link">
-          Política de privacidad
-        </NuxtLink>
-      </nav>
+
+      <div class="site-footer__extra">
+        <nav aria-label="Información legal" class="site-footer__group">
+          <NuxtLink to="/aviso-legal" class="site-footer__small-link">Aviso legal</NuxtLink>
+          <NuxtLink to="/politica-de-privacidad" class="site-footer__small-link">
+            Política de privacidad
+          </NuxtLink>
+        </nav>
+
+        <ul v-if="socialLinks.length" aria-label="Sígueme" class="site-footer__group">
+          <li v-for="social in socialLinks" :key="social.name">
+            <a :href="social.url" class="site-footer__small-link" rel="me noopener">
+              {{ social.name }}
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
   </footer>
 </template>
@@ -54,15 +50,23 @@ const year = new Date().getFullYear()
 <style lang="scss" scoped>
 .site-footer {
   @include container;
+  display: flex;
+  flex-direction: column;
+  gap: $space-5-5;
   // The layout is a flex column and the auto side margins would shrink the footer to its content
   width: 100%;
-  padding-block: $space-8 $space-5;
+  padding-block: $space-7 $space-5;
+
+  @include bp(tablet-landscape) {
+    gap: $space-section-sm;
+    padding-block: $space-section $space-5;
+  }
 }
 
 .site-footer__content {
   display: flex;
   flex-direction: column;
-  gap: $space-6;
+  gap: $space-5;
 
   @include bp(tablet-landscape) {
     flex-direction: row;
@@ -77,6 +81,10 @@ const year = new Date().getFullYear()
   flex-direction: column;
   gap: $space-2;
   max-width: $footer-about-width;
+
+  @include bp(tablet-landscape) {
+    max-width: none;
+  }
 }
 
 .site-footer__name {
@@ -90,27 +98,13 @@ const year = new Date().getFullYear()
   color: $color-text-muted;
 }
 
-.site-footer__nav {
-  display: flex;
-  flex-direction: column;
-  gap: $space-3;
-
-  @include bp(tablet-landscape) {
-    align-items: flex-end;
-  }
-}
-
-.site-footer__links,
-.site-footer__social {
+.site-footer__links {
   display: flex;
   flex-wrap: wrap;
-  gap: $space-2 $space-5;
-  padding: 0;
-  margin: 0;
-  list-style: none;
+  gap: $space-1 $space-5;
 
-  @include bp(tablet-landscape) {
-    gap: $space-2 $space-6;
+  @include bp(tablet-portrait) {
+    column-gap: $space-6;
   }
 }
 
@@ -125,33 +119,40 @@ const year = new Date().getFullYear()
   }
 }
 
-.site-footer__link--social {
-  display: flex;
-  gap: $space-2;
-  align-items: center;
-}
-
 .site-footer__bottom {
   @include f-14-400;
   display: flex;
-  flex-wrap: wrap;
-  gap: $space-3 $space-5;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: $space-4;
   padding-top: $space-5;
-  margin-top: $space-6;
   color: $color-text-muted;
   border-top: $border-width solid $color-border;
+
+  @include bp(tablet-landscape) {
+    flex-direction: row;
+    gap: $space-5;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
 }
 
-.site-footer__legal {
+.site-footer__extra {
   display: flex;
   flex-wrap: wrap;
-  gap: $space-2 $space-5;
+  gap: $space-3 $space-5;
 }
 
-.site-footer__legal-link {
+.site-footer__group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-3 $space-5;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.site-footer__small-link {
   color: $color-text-muted;
-  text-decoration: underline;
 
   &:hover {
     color: $color-primary;

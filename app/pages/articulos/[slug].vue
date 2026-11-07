@@ -1,9 +1,9 @@
 <script setup lang="ts">
-const MORE_ARTICLES = 3
+const MORE_ARTICLES = 2
 
 const route = useRoute()
 const site = useSiteConfig()
-const { coachFullName, coachDescription } = useRuntimeConfig().public
+const { coachFullName } = useRuntimeConfig().public
 const { article } = await useArticleByUrl(route.params.slug as string)
 
 // Unknown slugs render a 404 (and fail prerendering instead of shipping an empty page)
@@ -56,233 +56,233 @@ useSchemaOrg([
 <template>
   <div v-if="article" class="article-page">
     <article>
-      <header class="article__header">
-        <nav aria-label="Ruta de navegación">
-          <ol class="article__breadcrumb">
-            <li><NuxtLink to="/">Inicio</NuxtLink></li>
-            <li><NuxtLink to="/articulos">Artículos</NuxtLink></li>
-          </ol>
-        </nav>
+      <div class="article__opening">
+        <BaseBackLink to="/articulos">Volver a artículos</BaseBackLink>
 
-        <time :datetime="article.publishedAt" class="article__date">
-          {{ formatDate(article.publishedAt) }}
-        </time>
-        <h1 class="article__title">{{ article.title }}</h1>
-        <MarkdownContent :source="article.summary" class="article__summary" />
+        <header class="article__intro">
+          <p class="article__eyebrow">{{ article.readingMinutes }} min de lectura</p>
+          <h1 class="article__title">{{ article.title }}</h1>
+          <MarkdownContent :source="article.summary" class="article__summary" />
 
-        <p class="article__author">
-          <img
-            src="/images/coach.webp"
-            alt=""
-            width="48"
-            height="48"
-            class="article__author-photo"
-          />
-          <span>
-            Por <strong>{{ coachFullName }}</strong> · {{ article.readingMinutes }} min de lectura
+          <p class="article__meta">
+            <span class="article__author">Por {{ coachFullName }}</span>
+            <span aria-hidden="true">·</span>
+            <time :datetime="article.publishedAt">{{ formatDate(article.publishedAt) }}</time>
             <template v-if="updatedAt">
-              · Actualizado el <time :datetime="updatedAt">{{ formatDate(updatedAt) }}</time>
+              <span aria-hidden="true">·</span>
+              <span>
+                Actualizado el <time :datetime="updatedAt">{{ formatDate(updatedAt) }}</time>
+              </span>
             </template>
-          </span>
-        </p>
-      </header>
+          </p>
+        </header>
 
-      <div class="article__media">
-        <div class="article__image">
-          <ContentImage
-            :image="article.image"
-            placeholder="article"
-            sizes="100vw tablet-portrait:1000px"
-            priority
-          />
-        </div>
+        <figure class="article__hero">
+          <div class="article__image">
+            <ContentImage
+              :image="article.image"
+              placeholder="article"
+              sizes="100vw tablet-portrait:700px laptop:1040px"
+              priority
+            />
+          </div>
+          <figcaption v-if="article.image?.alt" class="article__caption">
+            {{ article.image.alt }}
+          </figcaption>
+        </figure>
       </div>
 
       <div class="article__content">
         <RichText :content="article.content" />
-        <ArticleShare :url="pageUrl" />
+        <footer class="article__end">
+          <ArticleShare :url="pageUrl" />
+          <BaseBackLink to="/articulos">Volver a artículos</BaseBackLink>
+        </footer>
       </div>
     </article>
 
-    <section class="article__about" aria-label="Sobre la autoría">
-      <div class="article__about-card">
-        <img
-          src="/images/coach.webp"
-          alt=""
-          width="96"
-          height="96"
-          loading="lazy"
-          class="article__about-photo"
-        />
-        <div class="article__about-text">
-          <p class="article__about-name">{{ coachFullName }}</p>
-          <p class="article__about-bio">
-            {{ coachDescription }} Si este artículo te ha resonado, podemos hablarlo con calma.
+    <section v-if="moreArticles.length" class="article__more" aria-labelledby="more-title">
+      <div class="article__more-content">
+        <div class="article__more-heading">
+          <h2 id="more-title" class="article__more-title">Sigue leyendo</h2>
+          <p class="article__more-summary">
+            Algunas lecturas más para llevarte contigo, a tu ritmo.
           </p>
-          <NuxtLink to="/servicios" class="article__about-cta">Ver servicios</NuxtLink>
+        </div>
+        <div class="article__more-grid">
+          <ArticleEntry v-for="more in moreArticles" :key="more.id" :article="more" featured />
         </div>
       </div>
     </section>
 
-    <section v-if="moreArticles.length" class="article__more" aria-labelledby="more-title">
-      <SectionHeader
-        title-id="more-title"
-        title="Sigue leyendo"
-        :link="{ to: '/articulos', label: 'Todos los artículos' }"
-      />
-      <div class="article__more-grid">
-        <ArticleCard v-for="more in moreArticles" :key="more.id" :article="more" />
-      </div>
-    </section>
+    <PageCta
+      title="¿No sabes por dónde empezar?"
+      summary="Cuéntame qué te está pasando y te recomiendo el formato que mejor puede ayudarte."
+      action="Escríbeme"
+      flush
+    />
   </div>
 </template>
 
 <style lang="scss" scoped>
-.article-page {
-  padding-bottom: $space-10;
-}
-
-.article__header {
-  @include container($container-width-narrow);
+.article__opening {
+  @include container;
   display: flex;
   flex-direction: column;
-  gap: $space-4;
-  padding-top: $space-6;
-}
+  gap: $space-6;
+  padding-block: $space-5 $space-7;
 
-.article__breadcrumb {
-  @include f-14-400;
-  display: flex;
-  flex-wrap: wrap;
-  gap: $space-2;
-  padding: 0;
-  color: $color-text-subtle;
-  list-style: none;
-
-  li + li::before {
-    margin-right: $space-2;
-    content: '/';
+  @include bp(tablet-portrait) {
+    gap: $space-section;
+    padding-block: $space-7 $space-9;
   }
 }
 
-.article__date {
+.article__intro {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+  width: 100%;
+  max-width: $article-intro-width;
+  margin-inline: auto;
+}
+
+.article__eyebrow {
   @include eyebrow;
-  margin-top: $space-4;
 }
 
 .article__title {
-  @include f-32-400;
-  color: $color-heading;
+  @include f-38-400;
+  letter-spacing: $letter-spacing-tight;
 
   @include bp(tablet-portrait) {
-    @include f-40-400;
+    @include f-46-400;
+  }
+
+  @include bp(laptop) {
+    @include f-56-400;
   }
 }
 
 .article__summary {
   @include f-20-400;
-  font-family: var(--font-family-heading);
+  color: $color-text-muted;
+}
+
+.article__meta {
+  @include f-14-400;
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-3;
+  align-items: center;
   color: $color-text-muted;
 }
 
 .article__author {
-  @include f-16-400;
+  @include f-16-500;
+  color: $color-text;
+}
+
+.article__hero {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: $space-3;
-  padding-top: $space-2;
-  color: $color-text-muted;
-
-  strong {
-    font-weight: 600;
-    color: $color-heading;
-  }
-}
-
-.article__author-photo {
-  flex: none;
-  width: $avatar-size-sm;
-  height: $avatar-size-sm;
-  object-fit: cover;
-  border-radius: $radius-full;
-}
-
-.article__media {
-  @include container($container-width-narrow);
-  margin-top: $space-7;
+  width: 100%;
+  max-width: $article-hero-width;
+  margin-inline: auto;
 }
 
 .article__image {
-  height: $card-image-height;
+  height: $article-hero-height;
   overflow: hidden;
   background-color: $color-surface-alt;
-  border-radius: $radius-3xl;
+  border-radius: $radius-sm;
 
   @include bp(tablet-portrait) {
-    height: $article-image-height;
+    height: $article-hero-height-tablet;
+  }
+
+  @include bp(laptop) {
+    height: $article-hero-height-laptop;
   }
 }
 
-.article__content {
-  @include container($container-width-narrow);
-  display: flex;
-  flex-direction: column;
-  gap: $space-5;
-  padding-block: $space-8 $space-5;
-}
-
-.article__about {
-  @include container($container-width-narrow);
-  padding-top: $space-5;
-}
-
-.article__about-card {
-  @include card;
-  display: flex;
-  flex-wrap: wrap;
-  gap: $space-5;
-  align-items: center;
-  padding: $space-5;
-}
-
-.article__about-photo {
-  flex: none;
-  width: $avatar-size-md;
-  height: $avatar-size-md;
-  object-fit: cover;
-  border-radius: $radius-full;
-}
-
-.article__about-text {
-  display: flex;
-  flex: 999 1 $card-min-width;
-  flex-direction: column;
-  gap: $space-2;
-  min-width: 0;
-}
-
-.article__about-name {
-  @include f-22-400;
-  font-family: var(--font-family-heading);
-  color: $color-heading;
-}
-
-.article__about-bio {
+.article__caption {
+  @include f-14-400;
   color: $color-text-muted;
 }
 
-.article__about-cta {
-  @include button(primary);
-  align-self: flex-start;
-  margin-top: $space-1;
+.article__content {
+  @include container;
+  padding-bottom: $space-8;
+
+  > * {
+    max-width: $article-body-width;
+    margin-inline: auto;
+  }
+
+  @include bp(tablet-portrait) {
+    padding-bottom: $space-10;
+  }
+}
+
+.article__end {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+  padding-top: $space-5-5;
+  margin-top: $space-section-sm;
+  border-top: $border-width solid $color-border;
+
+  @include bp(tablet-portrait) {
+    margin-top: $space-section;
+  }
 }
 
 .article__more {
+  background-color: $color-surface-sage;
+}
+
+.article__more-content {
   @include container;
-  padding-top: $space-9;
+  display: flex;
+  flex-direction: column;
+  gap: $space-section-sm;
+  padding-block: $space-section;
+
+  @include bp(laptop) {
+    padding-block: $space-9;
+  }
+}
+
+.article__more-heading {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.article__more-title {
+  @include f-28-400;
+  letter-spacing: $letter-spacing-tight;
+
+  @include bp(tablet-portrait) {
+    @include f-34-400;
+  }
+}
+
+.article__more-summary {
+  color: $color-text-muted;
 }
 
 .article__more-grid {
-  @include auto-grid;
+  display: flex;
+  flex-direction: column;
+  gap: $space-7;
+
+  @include bp(tablet-portrait) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $space-6;
+  }
 }
 </style>

@@ -62,7 +62,7 @@ function renderEmbeddedImage(node: Block): VNodeChild {
   // NuxtImg's generic provider typing doesn't fit h()'s overloads; the props below are valid
   return h('figure', { class: 'rich-text__figure' }, [
     h(NuxtImg as Component, {
-      src: toRenderableImageUrl(image.url),
+      src: toRenderableImageUrl(image.url, image.width),
       alt: '',
       width: image.width,
       height: image.height,
@@ -104,25 +104,53 @@ const RichTextContent = () => props.content.document.content.map(renderNode)
 
 <style lang="scss" scoped>
 .rich-text {
-  @include f-18-400;
-  color: $color-text-muted;
+  @include f-17-400;
+  color: $color-text;
 
   :deep(:where(p, ul, ol, blockquote, table)) {
-    margin-bottom: $space-4;
+    margin-bottom: $space-5;
   }
 
   :deep(:where(h2, h3, h4, h5, h6)) {
-    margin: $space-6 0 $space-3;
+    margin: $space-5 0;
   }
 
   :deep(h2) {
-    @include f-24-400;
-    color: $color-heading;
+    @include f-28-400;
+    margin-top: $space-section-sm;
+    letter-spacing: $letter-spacing-tight;
+
+    @include bp(tablet-portrait) {
+      @include f-34-400;
+      margin-top: $space-section;
+    }
   }
 
   :deep(h3) {
+    @include f-24-400;
+    margin-top: $space-5-5;
+    letter-spacing: $letter-spacing-tight;
+
+    @include bp(tablet-portrait) {
+      @include f-28-400;
+    }
+  }
+
+  :deep(h4) {
     @include f-22-400;
-    color: $color-heading;
+    letter-spacing: $letter-spacing-tight;
+  }
+
+  :deep(h5) {
+    @include f-20-500;
+    margin-bottom: $space-4-5;
+    letter-spacing: $letter-spacing-tight;
+  }
+
+  :deep(h6) {
+    @include f-18-500;
+    margin-bottom: $space-4;
+    letter-spacing: $letter-spacing-tight;
   }
 
   :deep(:where(ul, ol)) {
@@ -130,45 +158,62 @@ const RichTextContent = () => props.content.document.content.map(renderNode)
   }
 
   :deep(strong) {
-    font-weight: 600;
-    color: $color-heading;
+    font-weight: 700;
   }
 
   :deep(a) {
+    color: $color-link;
     text-decoration: underline;
   }
 
   :deep(blockquote) {
-    @include f-20-400;
-    padding: $space-5 $space-6;
+    @include f-24-400;
+    padding: $space-2 0 $space-2 $space-4-5;
     font-family: var(--font-family-heading);
     font-style: italic;
-    color: $color-heading;
-    background-color: $color-primary-soft;
-    border-radius: $radius-xl;
+    color: $color-primary;
+    border-left: $border-width-accent solid $color-primary;
+
+    @include bp(tablet-portrait) {
+      @include f-28-400;
+      padding-left: $space-5-5;
+    }
   }
 
   :deep(hr) {
-    margin-block: $space-5;
+    height: 0;
+    margin-block: $space-section-sm;
     border: 0;
     border-top: $border-width solid $color-border;
+
+    @include bp(tablet-portrait) {
+      margin-block: $space-section;
+    }
   }
 
   :deep(.rich-text__figure) {
-    margin: $space-5 0;
+    margin: $space-section-sm 0;
+
+    @include bp(tablet-portrait) {
+      margin-block: $space-section;
+    }
   }
 
   :deep(.rich-text__image) {
     width: 100%;
-    height: auto;
-    border-radius: $radius-lg;
+    height: $article-figure-height;
+    object-fit: cover;
+    border-radius: $radius-sm;
+
+    @include bp(tablet-portrait) {
+      height: $article-figure-height-tablet;
+    }
   }
 
   :deep(.rich-text__caption) {
     @include f-14-400;
-    margin-top: $space-2;
-    color: $color-text-subtle;
-    text-align: center;
+    margin-top: $space-3;
+    color: $color-text-muted;
   }
 }
 </style>

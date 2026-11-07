@@ -1,27 +1,37 @@
 <script setup lang="ts">
 defineProps<{
+  /** Small uppercase label above the title */
+  eyebrow?: string
   title: string
   summary: string
+  /** Short line under the button */
+  note?: string
   /** Label of the button that opens the contact page */
   action: string
   /** Reason preselected in the contact form */
   reason?: ContactReason
+  /** Sits directly under a full-width section, without the usual top margin */
+  flush?: boolean
 }>()
 
 const titleId = useId()
 </script>
 
 <template>
-  <section class="page-cta" :aria-labelledby="titleId">
+  <section class="page-cta" :class="{ 'page-cta--flush': flush }" :aria-labelledby="titleId">
     <div class="page-cta__box">
       <div class="page-cta__text">
+        <p v-if="eyebrow" class="page-cta__eyebrow">{{ eyebrow }}</p>
         <h2 :id="titleId" class="page-cta__title">{{ title }}</h2>
         <p class="page-cta__summary">{{ summary }}</p>
       </div>
-      <NuxtLink :to="contactLink(reason)" class="page-cta__button">
-        {{ action }}
-        <BaseArrow direction="up-right" />
-      </NuxtLink>
+      <div class="page-cta__actions">
+        <NuxtLink :to="contactLink(reason)" class="page-cta__button">
+          {{ action }}
+          <BaseArrow direction="up-right" />
+        </NuxtLink>
+        <p v-if="note" class="page-cta__note">{{ note }}</p>
+      </div>
     </div>
   </section>
 </template>
@@ -30,6 +40,10 @@ const titleId = useId()
 .page-cta {
   margin-top: $space-8;
   background-color: $color-surface-blush;
+}
+
+.page-cta--flush {
+  margin-top: 0;
 }
 
 .page-cta__box {
@@ -69,7 +83,23 @@ const titleId = useId()
   color: $color-text-muted;
 }
 
+.page-cta__eyebrow {
+  @include eyebrow;
+}
+
+.page-cta__actions {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  align-items: flex-start;
+  max-width: $text-measure-sm;
+}
+
 .page-cta__button {
   @include button(primary);
+}
+
+.page-cta__note {
+  @include f-14-400;
 }
 </style>

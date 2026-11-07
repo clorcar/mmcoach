@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const socialLinks = useSocialLinks()
 
+const socialNames = computed(() => socialLinks.map((social) => social.name).join(' o '))
+
 usePageSeo({
   title: 'Contacto',
   description:
@@ -16,118 +18,106 @@ useSchemaOrg([
 </script>
 
 <template>
-  <div class="contact">
-    <section class="contact__intro" aria-labelledby="contact-title">
-      <p class="contact__eyebrow">Contacta</p>
-      <h1 id="contact-title" class="contact__title">Hablemos con calma</h1>
-      <p class="contact__summary">
-        Cuéntame qué te trae por aquí: si quieres información sobre un servicio o un taller, o
-        simplemente tienes una pregunta. Leo cada mensaje con atención y te responderé lo antes
-        posible.
-      </p>
+  <div class="contact-page">
+    <PageHeader
+      eyebrow="Contacta"
+      title="Hablemos con calma"
+      summary="Cuéntame qué te trae por aquí: si quieres información sobre un servicio o un taller, o simplemente tienes una pregunta. Leo cada mensaje con atención y te responderé lo antes posible."
+    />
 
-      <div v-if="socialLinks.length" class="contact__social">
-        <p class="contact__social-title">También puedes encontrarme en</p>
-        <p class="contact__social-links">
-          <a
-            v-for="social in socialLinks"
-            :key="social.name"
-            :href="social.url"
-            class="contact__social-link"
-            rel="me noopener"
-          >
-            <SocialIcon :name="social.icon" :size="18" />
-            {{ social.name }}
-          </a>
+    <div class="contact">
+      <section class="contact__form" aria-label="Formulario de contacto">
+        <ContactForm />
+      </section>
+
+      <aside v-if="socialLinks.length" class="social" aria-labelledby="social-title">
+        <p class="social__eyebrow">Redes sociales</p>
+        <h2 id="social-title" class="social__title">Otra forma de conectar.</h2>
+        <p class="social__summary">
+          Si lo prefieres, también puedes escribirme por {{ socialNames }}.
         </p>
-      </div>
-    </section>
 
-    <section class="contact__form" aria-label="Formulario de contacto">
-      <ContactForm />
-    </section>
+        <ul class="social__list">
+          <li v-for="social in socialLinks" :key="social.name">
+            <a :href="social.url" class="social__link" rel="me noopener">
+              <SocialIcon :name="social.icon" :size="20" />
+              <span class="social__name">{{ social.name }}</span>
+              <BaseArrow direction="up-right" />
+            </a>
+          </li>
+        </ul>
+      </aside>
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.contact-page {
+  border-bottom: $border-width solid $color-border;
+}
+
 .contact {
   @include container;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: $space-8;
-  align-items: flex-start;
-  padding-block: $space-8 $space-10;
+  padding-bottom: $space-8;
 
   @include bp(tablet-portrait) {
-    padding-top: $space-9;
+    padding-bottom: $space-10;
+  }
+
+  @include bp(tablet-landscape) {
+    grid-template-columns: minmax(0, 46.25rem) minmax(0, 1fr);
+    gap: $space-9;
+    align-items: start;
   }
 }
 
-.contact__intro {
+.social {
   display: flex;
-  flex: 1 1 $contact-intro-basis;
   flex-direction: column;
-  gap: $space-4;
-  min-width: 0;
+  gap: $space-4-5;
+  padding: $space-6;
+  background-color: $color-surface-sage;
+  border-radius: $radius-sm;
 }
 
-.contact__eyebrow {
+.social__eyebrow {
   @include eyebrow;
 }
 
-.contact__title {
-  @include f-32-400;
-  color: $color-heading;
-
-  @include bp(tablet-portrait) {
-    @include f-40-400;
-  }
+.social__title {
+  @include f-30-400;
+  letter-spacing: $letter-spacing-tight;
 }
 
-.contact__summary {
+.social__summary {
   color: $color-text-muted;
 }
 
-.contact__social {
+.social__list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  border-top: $border-width solid $color-border-strong;
+}
+
+.social__link {
+  @include f-16-500;
   display: flex;
-  flex-direction: column;
   gap: $space-3;
-  padding: $space-5;
-  margin-top: $space-2;
-  background-color: $color-primary-soft;
-  border-radius: $radius-2xl;
-}
-
-.contact__social-title {
-  @include f-17-600;
-  color: $color-heading;
-}
-
-.contact__social-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $space-3;
-}
-
-.contact__social-link {
-  display: inline-flex;
-  gap: $space-2;
   align-items: center;
-  padding: $space-3 $space-4;
-  color: $color-text;
-  background-color: $color-surface;
-  border-radius: $radius-full;
+  padding-block: $space-4-5;
+  color: $color-primary;
+  border-bottom: $border-width solid $color-border-strong;
+
+  &:hover {
+    color: $color-primary-hover;
+    text-decoration: none;
+  }
 }
 
-.contact__form {
-  @include card;
-  flex: 999 1 $contact-form-basis;
-  min-width: 0;
-  padding: $space-5;
-  border-radius: $radius-3xl;
-
-  @include bp(tablet-portrait) {
-    padding: $space-7;
-  }
+.social__name {
+  flex: 1;
 }
 </style>

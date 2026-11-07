@@ -1,12 +1,7 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{ limit?: number }>(), { limit: 2 })
 
-// Upcoming at build time; a fixed key keeps the prerendered payload valid on later visits
-const today = new Date().toISOString().slice(0, 10)
-const { workshops } = await useWorkshops(
-  { limit: props.limit, order: 'fecha_ASC', where: { fecha_gte: today } },
-  'home-upcoming-workshops',
-)
+const { workshops } = await useUpcomingWorkshops('home-upcoming-workshops', props.limit)
 </script>
 
 <template>

@@ -64,8 +64,6 @@ async function copyLink() {
   flex-wrap: wrap;
   align-items: center;
   gap: $space-3;
-  padding-top: $space-5;
-  border-top: $border-width solid $color-border;
 }
 
 .share__label {

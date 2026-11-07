@@ -141,6 +141,10 @@ $font-scale: (
     size: 1.625rem,
     line-height: 1.18,
   ),
+  28: (
+    size: 1.75rem,
+    line-height: 1.28,
+  ),
   30: (
     size: 1.875rem,
     line-height: 1.22,
@@ -148,6 +152,10 @@ $font-scale: (
   32: (
     size: 2rem,
     line-height: 1.25,
+  ),
+  34: (
+    size: 2.125rem,
+    line-height: 1.28,
   ),
   36: (
     size: 2.25rem,
@@ -167,6 +175,14 @@ $font-scale: (
   ),
   44: (
     size: 2.75rem,
+    line-height: 1.18,
+  ),
+  48: (
+    size: 3rem,
+    line-height: 1.18,
+  ),
+  46: (
+    size: 2.875rem,
     line-height: 1.18,
   ),
   56: (
@@ -212,6 +228,7 @@ $radius-full: 9999px;
 
 $border-width: 1px;
 $border-width-strong: 1.5px;
+$border-width-accent: 2px;
 
 $shadow-sm: 0 1px 3px rgb(0 0 0 / 5%);
 $shadow-md: 0 8px 20px rgb(0 0 0 / 8%);
@@ -221,7 +238,6 @@ $duration-base: 0.2s;
 $duration-slow: 0.4s;
 
 $container-width: 1160px;
-$container-width-narrow: 800px;
 
 // Minimum card widths for auto-fit grids (cards reflow without breakpoints)
 $card-min-width: 17.5rem;
@@ -244,7 +260,6 @@ $about-portrait-width-wide: 26.25rem;
 $logo-size: 56px;
 $avatar-size-sm: 48px;
 $avatar-size-md: 96px;
-$article-image-height: 25rem;
 $card-image-height: 14rem;
 $card-image-height-wide: 15.5rem;
 // Home: workshops photo (full width on small screens, fixed column beside the list on wide ones)
@@ -254,20 +269,23 @@ $workshops-image-height-wide: 24rem;
 // Home articles: image beside the text on tablets
 $article-inline-image-width: 16.5rem;
 $article-inline-image-height: 15rem;
-// Workshop list cards place image and text side by side when both bases fit
-$workshop-list-image-basis: 18.75rem;
-$workshop-list-body-basis: 27.5rem;
-$workshop-list-image-min-height: 15rem;
 $date-badge-width: 4.5rem;
-$input-height: 3.125rem;
+$input-height: 3.375rem;
 $form-field-min-width: 12.5rem;
-// The contact intro and form wrap onto separate rows when both bases do not fit
-$contact-intro-basis: 21.25rem;
-$contact-form-basis: 28.75rem;
-// Workshop detail: text column next to the booking card, wrapping when both do not fit
-$workshop-main-basis: 35rem;
-$workshop-aside-basis: 18.75rem;
-$content-measure: 45rem;
+// Article page: intro column, reading column and hero image, plus the image heights per screen
+$article-intro-width: 51.25rem;
+$article-body-width: 42.5rem;
+$article-hero-width: 65rem;
+$article-hero-height: 15rem;
+$article-hero-height-tablet: 22.5rem;
+$article-hero-height-laptop: 30rem;
+$article-figure-height: 15rem;
+$article-figure-height-tablet: 25rem;
+// In-between spacing for long-form layouts (article body, listings): sections and sub-blocks
+$space-section: 3rem;
+$space-section-sm: 2.25rem;
+$space-5-5: 1.75rem;
+$space-4-5: 1.25rem;
 // Articles page: image sizes of the entries (archive rows and highlighted articles)
 $article-row-image-width: 13.75rem;
 $article-row-image-height: 13.125rem;

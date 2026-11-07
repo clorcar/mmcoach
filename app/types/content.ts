@@ -37,6 +37,7 @@ export interface Workshop {
   durationMinutes: number | null
   location: Address
   price: number | null
+  /** @deprecated The new design does not require it (the workshops list no longer shows images). */
   image: Image | null
   /** Markdown, shown on cards */
   summary: string

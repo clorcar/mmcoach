@@ -6,135 +6,119 @@ defineProps<{ service: Service }>()
 
 <template>
   <article class="service-card">
-    <header class="service-card__header">
-      <h2 class="service-card__title">{{ service.title }}</h2>
+    <header class="service-card__intro">
+      <h3 class="service-card__title">{{ service.title }}</h3>
       <p class="service-card__subtitle">{{ service.subtitle }}</p>
     </header>
 
-    <p class="service-card__chips">
-      <span class="service-card__chip service-card__chip--duration">
-        <svg
-          aria-hidden="true"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <circle cx="12" cy="12" r="9" />
-          <path d="M12 7v5l3 2" />
-        </svg>
-        {{ formatDuration(service.durationMinutes) }}
-      </span>
-      <span class="service-card__chip service-card__chip--modality">
-        <svg
-          aria-hidden="true"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <template v-if="service.modality === 'Online'">
-            <rect x="3" y="4" width="18" height="12" rx="2" />
-            <path d="M8 20h8M12 16v4" />
-          </template>
-          <template v-else>
-            <path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z" />
-            <circle cx="12" cy="10" r="2.5" />
-          </template>
-        </svg>
-        {{ service.modality }}
-      </span>
-    </p>
-
     <MarkdownContent :source="service.description" class="service-card__description" />
 
-    <footer class="service-card__footer">
-      <p v-if="service.price !== null" class="service-card__price">
-        {{ formatPrice(service.price) }}
-      </p>
-      <NuxtLink :to="contactLink('servicios')" class="service-card__cta">
-        Reservar<span class="service-card__cta-context"> {{ service.title }}</span>
-      </NuxtLink>
-    </footer>
+    <dl class="service-card__practical">
+      <div class="service-card__detail">
+        <dt class="service-card__label">Modalidad</dt>
+        <dd class="service-card__value">{{ service.modality }}</dd>
+      </div>
+      <div class="service-card__detail">
+        <dt class="service-card__label">Duración</dt>
+        <dd class="service-card__value">{{ formatDuration(service.durationMinutes) }}</dd>
+      </div>
+      <div v-if="service.price !== null" class="service-card__detail">
+        <dt class="service-card__label">Precio</dt>
+        <dd class="service-card__price">{{ formatPrice(service.price) }}</dd>
+      </div>
+    </dl>
   </article>
 </template>
 
 <style lang="scss" scoped>
 .service-card {
-  @include card;
-  display: flex;
-  flex-direction: column;
-  gap: $space-4;
-  padding: $space-6;
+  display: grid;
+  grid-template-areas:
+    'intro'
+    'description'
+    'practical';
+  gap: $space-5;
+  padding-block: $space-6;
+  border-top: $border-width solid $color-primary;
+
+  @include bp(tablet-portrait) {
+    grid-template-areas:
+      'intro intro'
+      'description practical';
+    grid-template-columns: minmax(0, 1fr) 13.5rem;
+    column-gap: $space-7;
+    padding-block: $space-7;
+  }
+
+  @include bp(tablet-landscape) {
+    grid-template-areas: 'intro description practical';
+    grid-template-columns: 20rem minmax(0, 1fr) 15rem;
+    column-gap: $space-9;
+    padding-block: $space-section;
+  }
 }
 
-.service-card__header {
+.service-card__intro {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  grid-area: intro;
+
+  @include bp(tablet-landscape) {
+    gap: $space-4;
+  }
+}
+
+.service-card__title {
+  @include f-28-400;
+  letter-spacing: $letter-spacing-tight;
+
+  @include bp(tablet-portrait) {
+    @include f-30-400;
+  }
+}
+
+.service-card__subtitle {
+  @include f-20-400;
+  color: $color-primary;
+}
+
+.service-card__description {
+  grid-area: description;
+  color: $color-text-muted;
+}
+
+.service-card__practical {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+  grid-area: practical;
+  align-content: start;
+
+  @include bp(tablet-portrait) {
+    margin-top: 0;
+  }
+}
+
+.service-card__detail {
   display: flex;
   flex-direction: column;
   gap: $space-1;
 }
 
-.service-card__title {
-  @include f-24-400;
-  color: $color-heading;
+.service-card__label {
+  @include eyebrow;
 }
 
-.service-card__subtitle {
-  @include f-18-400;
-  font-family: var(--font-family-heading);
-  font-style: italic;
-  color: $color-text-subtle;
-}
-
-.service-card__chips {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: $space-2;
-}
-
-.service-card__chip--duration {
-  @include chip(soft);
-}
-
-.service-card__chip--modality {
-  @include chip(outline);
-}
-
-.service-card__description {
-  flex-grow: 1;
-  color: $color-text-muted;
-}
-
-.service-card__footer {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: $space-3;
-  padding-top: $space-4;
-  border-top: $border-width solid $color-border;
+.service-card__value {
+  @include f-16-600;
+  margin: 0;
 }
 
 .service-card__price {
-  @include f-24-400;
+  @include f-30-400;
+  margin: 0;
+  font-family: var(--font-family-heading);
   color: $color-heading;
-}
-
-.service-card__cta {
-  @include button(primary);
-  margin-left: auto;
-}
-
-.service-card__cta-context {
-  @include visually-hidden;
 }
 </style>

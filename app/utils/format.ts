@@ -56,11 +56,29 @@ export function isRecent(isoDate: string, now: number, days: number): boolean {
 }
 
 /**
+ * Whether an event has ended at `now`; without a known length it ends when it starts.
+ */
+export function hasEnded(isoDate: string, minutes: number | null, now: number): boolean {
+  const end = new Date(addMinutes(isoDate, minutes) ?? isoDate).getTime()
+  return end < now
+}
+
+/**
  * ISO 8601 date-time `minutes` after `isoDate`, or undefined when the length is unknown.
  */
 export function addMinutes(isoDate: string, minutes: number | null): string | undefined {
   if (!minutes) return undefined
   return new Date(new Date(isoDate).getTime() + minutes * 60 * 1000).toISOString()
+}
+
+/**
+ * Start and end time of an event, e.g. "10:00–12:00"; only the start when the length is unknown.
+ */
+export function formatTimeRange(isoDate: string, minutes: number | null): string {
+  const time = { hour: '2-digit', minute: '2-digit' } as const
+  const start = formatDate(isoDate, time)
+  const end = addMinutes(isoDate, minutes)
+  return end ? `${start}–${formatDate(end, time)}` : start
 }
 
 export function formatDuration(minutes: number | null): string {

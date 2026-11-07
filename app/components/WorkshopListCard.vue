@@ -1,199 +1,156 @@
 <script setup lang="ts">
 import type { Workshop } from '~/types/content'
 
-const props = defineProps<{ workshop: Workshop }>()
-
-const day = computed(() => formatDate(props.workshop.date, { day: 'numeric' }))
-// Spanish short months may carry a trailing dot ("nov.")
-const month = computed(() => formatDate(props.workshop.date, { month: 'short' }).replace('.', ''))
+defineProps<{ workshop: Workshop }>()
 </script>
 
 <template>
   <article class="workshop-list-card">
-    <div class="workshop-list-card__image">
-      <ContentImage
-        :image="workshop.image"
-        placeholder="workshop"
-        sizes="100vw tablet-portrait:50vw laptop:480px"
-      />
-      <p class="workshop-list-card__badge" aria-hidden="true">
-        <span class="workshop-list-card__day">{{ day }}</span>
-        <span class="workshop-list-card__month">{{ month }}</span>
+    <time :datetime="workshop.date" class="workshop-list-card__date">
+      <span class="workshop-list-card__month">{{
+        formatDate(workshop.date, { month: 'long', year: 'numeric' })
+      }}</span>
+      <span class="workshop-list-card__day">{{
+        formatDate(workshop.date, { day: '2-digit' })
+      }}</span>
+    </time>
+
+    <div class="workshop-list-card__overview">
+      <h3 class="workshop-list-card__title">{{ workshop.title }}</h3>
+      <MarkdownContent :source="workshop.summary" class="workshop-list-card__summary" />
+    </div>
+
+    <div class="workshop-list-card__practical">
+      <p class="workshop-list-card__location">{{ workshop.location.name }}</p>
+      <p v-if="workshop.price !== null" class="workshop-list-card__price">
+        {{ formatPrice(workshop.price) }}
+      </p>
+      <p class="workshop-list-card__schedule">
+        <span>{{ formatDate(workshop.date, { weekday: 'long' }) }}</span>
+        <span>{{ formatTimeRange(workshop.date, workshop.durationMinutes) }}</span>
+        <span v-if="workshop.durationMinutes">{{ formatDuration(workshop.durationMinutes) }}</span>
       </p>
     </div>
 
-    <div class="workshop-list-card__body">
-      <p class="workshop-list-card__chips">
-        <span class="workshop-list-card__chip workshop-list-card__chip--date">
-          <svg
-            aria-hidden="true"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <rect x="3" y="5" width="18" height="16" rx="2" />
-            <path d="M3 10h18M8 3v4M16 3v4" />
-          </svg>
-          <time :datetime="workshop.date">{{ formatDateTime(workshop.date) }}</time>
-        </span>
-        <span class="workshop-list-card__chip workshop-list-card__chip--location">
-          <svg
-            aria-hidden="true"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z" />
-            <circle cx="12" cy="10" r="2.5" />
-          </svg>
-          {{ workshop.location.name }}
-        </span>
-      </p>
-
-      <h2 class="workshop-list-card__title">
-        <NuxtLink :to="`/talleres/${workshop.slug}`" class="workshop-list-card__title-link">
-          {{ workshop.title }}
-        </NuxtLink>
-      </h2>
-
-      <MarkdownContent :source="workshop.summary" class="workshop-list-card__description" />
-
-      <footer class="workshop-list-card__footer">
-        <p v-if="workshop.price !== null" class="workshop-list-card__price">
-          {{ formatPrice(workshop.price) }}
-        </p>
-        <div class="workshop-list-card__actions">
-          <NuxtLink :to="`/talleres/${workshop.slug}`" class="workshop-list-card__details">
-            Ver detalles<span class="workshop-list-card__context"> de {{ workshop.title }}</span>
-          </NuxtLink>
-          <NuxtLink :to="contactLink('talleres')" class="workshop-list-card__cta">
-            Reservar plaza<span class="workshop-list-card__context"> en {{ workshop.title }}</span>
-          </NuxtLink>
-        </div>
-      </footer>
-    </div>
+    <BaseLink :to="`/talleres/${workshop.slug}`" class="workshop-list-card__link">
+      Ver taller<span class="workshop-list-card__context">: {{ workshop.title }}</span>
+    </BaseLink>
   </article>
 </template>
 
 <style lang="scss" scoped>
 .workshop-list-card {
-  @include card;
-  display: flex;
-  flex-wrap: wrap;
-}
+  display: grid;
+  grid-template-areas:
+    'date'
+    'overview'
+    'practical'
+    'link';
+  gap: $space-4-5;
+  padding-block: $space-5-5;
+  border-top: $border-width solid $color-primary;
 
-.workshop-list-card__image {
-  position: relative;
-  flex: 1 1 $workshop-list-image-basis;
-  min-height: $workshop-list-image-min-height;
-  background-color: $color-primary-soft;
+  @include bp(tablet-portrait) {
+    grid-template-areas:
+      'date overview'
+      'date practical'
+      'date link';
+    grid-template-columns: 8rem minmax(0, 1fr);
+    column-gap: $space-6;
+    padding-block: $space-6;
+  }
 
-  :deep(.content-image) {
-    position: absolute;
-    inset: 0;
+  @include bp(tablet-landscape) {
+    grid-template-areas:
+      'date overview practical'
+      'date link practical';
+    grid-template-columns: 10rem minmax(0, 1fr) 15rem;
+    column-gap: $space-7;
+    row-gap: $space-4;
+    padding-block: $space-section-sm;
   }
 }
 
-.workshop-list-card__badge {
-  position: absolute;
-  top: $space-4;
-  left: $space-4;
+.workshop-list-card__date {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: $date-badge-width;
-  padding-block: $space-3;
-  line-height: 1.1;
-  background-color: $color-surface;
-  border-radius: $radius-xl;
-}
-
-.workshop-list-card__day {
-  @include f-24-400;
-  font-family: var(--font-family-heading);
-  color: $color-heading;
+  gap: $space-2;
+  grid-area: date;
 }
 
 .workshop-list-card__month {
   @include eyebrow;
-  @include f-13-600;
 }
 
-.workshop-list-card__body {
+.workshop-list-card__day {
+  @include f-48-400;
+  font-family: var(--font-family-heading);
+  color: $color-heading;
+}
+
+.workshop-list-card__overview {
   display: flex;
-  flex: 999 1 $workshop-list-body-basis;
   flex-direction: column;
   gap: $space-4;
-  min-width: 0;
-  padding: $space-6;
-}
-
-.workshop-list-card__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $space-2;
-}
-
-.workshop-list-card__chip--date {
-  @include chip(soft);
-}
-
-.workshop-list-card__chip--location {
-  @include chip(outline);
+  grid-area: overview;
 }
 
 .workshop-list-card__title {
-  @include f-24-400;
-  color: $color-heading;
+  @include f-28-400;
+  letter-spacing: $letter-spacing-tight;
+
+  @include bp(tablet-landscape) {
+    @include f-30-400;
+  }
 }
 
-.workshop-list-card__title-link {
-  color: inherit;
-}
-
-.workshop-list-card__description {
-  flex-grow: 1;
+.workshop-list-card__summary {
   color: $color-text-muted;
 }
 
-.workshop-list-card__footer {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: $space-3;
-  padding-top: $space-4;
-  border-top: $border-width solid $color-border;
+.workshop-list-card__practical {
+  display: grid;
+  grid-area: practical;
+  grid-template-areas:
+    'location price'
+    'schedule price';
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: $space-2 $space-4;
+  align-content: start;
+
+  @include bp(tablet-landscape) {
+    grid-template-areas:
+      'location price'
+      'schedule schedule';
+    row-gap: $space-3;
+  }
+}
+
+.workshop-list-card__location {
+  @include f-16-600;
+  grid-area: location;
+  color: $color-primary;
 }
 
 .workshop-list-card__price {
-  @include f-24-400;
+  @include f-22-400;
+  grid-area: price;
+  font-family: var(--font-family-heading);
   color: $color-heading;
 }
 
-.workshop-list-card__actions {
+.workshop-list-card__schedule {
+  @include f-16-500;
   display: flex;
-  flex-wrap: wrap;
-  gap: $space-3;
-  margin-left: auto;
+  flex-direction: column;
+  gap: $space-1;
+  grid-area: schedule;
+  color: $color-primary;
 }
 
-.workshop-list-card__details {
-  @include button(outline);
-}
-
-.workshop-list-card__cta {
-  @include button(primary);
+.workshop-list-card__link {
+  grid-area: link;
+  justify-self: start;
 }
 
 .workshop-list-card__context {
