@@ -11,7 +11,7 @@ const MAX_RATING = 5
     <figcaption class="testimonial-card__author">
       <NuxtImg
         v-if="testimonial.photo"
-        :src="toRenderableImageUrl(testimonial.photo.url)"
+        :src="toRenderableImageUrl(testimonial.photo.url, testimonial.photo.width)"
         :alt="testimonial.photo.alt"
         width="48"
         height="48"

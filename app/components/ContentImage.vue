@@ -27,7 +27,7 @@ const fallback = computed(() => PLACEHOLDERS[props.placeholder])
 <template>
   <NuxtPicture
     v-if="props.image"
-    :src="toRenderableImageUrl(props.image.url)"
+    :src="toRenderableImageUrl(props.image.url, props.image.width)"
     :alt="props.image.alt"
     :width="props.image.width"
     :height="props.image.height"
