@@ -19,9 +19,9 @@ withDefaults(defineProps<{ name: string; size?: number }>(), { size: 22 })
       <circle cx="12" cy="12" r="4" />
       <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" />
     </template>
-    <path
-      v-else
-      d="M15 3h-2.5A3.5 3.5 0 0 0 9 6.5V10H6.5v3.5H9V21h3.5v-7.5H15l.5-3.5h-3V7a1 1 0 0 1 1-1H15z"
-    />
+    <template v-else>
+      <path d="M3 21l1.65-4.9A8.5 8.5 0 1 1 8 19.4z" />
+      <path d="M9 8.5c-.3 3.2 2.3 6.2 5.5 6.5l1.2-1.5-2-1-.9.9c-.9-.4-1.6-1.1-2-2l.9-.9-1-2z" />
+    </template>
   </svg>
 </template>

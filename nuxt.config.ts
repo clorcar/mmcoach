@@ -13,7 +13,7 @@ const COACH_DESCRIPTION =
   process.env.NUXT_PUBLIC_COACH_DESCRIPTION ||
   'Coach personal especializada en autoexigencia y gestión emocional. Acompaño a personas que sienten que nada es suficiente a construir un ritmo más amable consigo mismas.'
 const INSTAGRAM_URL = process.env.NUXT_PUBLIC_INSTAGRAM_URL || ''
-const FACEBOOK_URL = process.env.NUXT_PUBLIC_FACEBOOK_URL || ''
+const WHATSAPP_NUMBER = process.env.NUXT_PUBLIC_WHATSAPP_NUMBER || ''
 
 // Owner details for the legal pages; each one is left out of the page when empty
 const LEGAL_TAX_ID = process.env.NUXT_PUBLIC_LEGAL_TAX_ID || ''
@@ -60,7 +60,7 @@ export default defineNuxtConfig({
       name: COACH_FULL_NAME,
       description: COACH_DESCRIPTION,
       image: '/images/coach.webp',
-      sameAs: [INSTAGRAM_URL, FACEBOOK_URL].filter(Boolean),
+      sameAs: [INSTAGRAM_URL].filter(Boolean),
     },
   },
 
@@ -138,7 +138,7 @@ export default defineNuxtConfig({
       coachFirstName: COACH_FIRST_NAME,
       coachDescription: COACH_DESCRIPTION,
       instagramUrl: INSTAGRAM_URL,
-      facebookUrl: FACEBOOK_URL,
+      whatsappNumber: WHATSAPP_NUMBER,
       legalTaxId: LEGAL_TAX_ID,
       legalAddress: LEGAL_ADDRESS,
       contactEmail: CONTACT_EMAIL,

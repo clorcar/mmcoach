@@ -1,11 +1,16 @@
 /**
- * Social profiles from the public runtime config. A profile without a URL is left out.
+ * Social profiles and messaging links from the public runtime config. One without a value is left out.
  */
 export function useSocialLinks() {
-  const { instagramUrl, facebookUrl } = useRuntimeConfig().public
+  const { instagramUrl, whatsappNumber } = useRuntimeConfig().public
+  const whatsappDigits = whatsappNumber.replace(/\D/g, '')
 
   return [
     { name: 'Instagram', url: instagramUrl, icon: 'instagram' },
-    { name: 'Facebook', url: facebookUrl, icon: 'facebook' },
+    {
+      name: 'WhatsApp',
+      url: whatsappDigits && `https://wa.me/${whatsappDigits}`,
+      icon: 'whatsapp',
+    },
   ].filter((social) => social.url)
 }
