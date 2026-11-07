@@ -17,6 +17,7 @@ usePageSeo({
       title="¿No sabes por dónde empezar?"
       summary="Cuéntame qué te está pasando y te recomiendo el formato que mejor puede ayudarte."
       action="Escríbeme"
+      flush
     />
   </div>
 </template>

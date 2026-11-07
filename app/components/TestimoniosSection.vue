@@ -9,21 +9,27 @@ const { testimonials, total } = await useTestimonials({
 
 <template>
   <section v-if="testimonials.length" class="testimonials" aria-labelledby="testimonials-title">
-    <SectionHeader
-      title-id="testimonials-title"
-      eyebrow="Testimonios"
-      title="Lo que dicen quienes han trabajado conmigo"
-      :link="total > limit ? { to: '/testimonios', label: 'Ver más testimonios' } : undefined"
-    />
+    <div class="testimonials__content">
+      <SectionHeader
+        title-id="testimonials-title"
+        eyebrow="Testimonios"
+        title="Lo que dicen quienes han trabajado conmigo"
+        :link="total > limit ? { to: '/testimonios', label: 'Ver más testimonios' } : undefined"
+      />
 
-    <div class="testimonials__grid">
-      <TestimonialCard v-for="item in testimonials" :key="item.id" :testimonial="item" />
+      <div class="testimonials__grid">
+        <TestimonialCard v-for="item in testimonials" :key="item.id" :testimonial="item" />
+      </div>
     </div>
   </section>
 </template>
 
 <style lang="scss" scoped>
 .testimonials {
+  background-color: $color-surface-sage;
+}
+
+.testimonials__content {
   @include container;
   padding-block: $space-8;
 
