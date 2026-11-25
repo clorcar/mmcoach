@@ -24,8 +24,13 @@ watch(menuOpen, async (open) => {
   <header class="site-header" @keydown.esc="menuOpen = false">
     <nav aria-label="Principal" class="site-header__nav">
       <NuxtLink to="/" class="site-header__brand">
-        <img src="/images/logo.webp" alt="" width="42" height="56" class="site-header__logo" />
-        <span class="site-header__name">{{ site.name }}</span>
+        <img
+          src="/images/logo.webp"
+          :alt="site.name"
+          width="114"
+          height="56"
+          class="site-header__logo"
+        />
       </NuxtLink>
 
       <div
@@ -35,8 +40,13 @@ watch(menuOpen, async (open) => {
       >
         <div class="site-header__panel-bar">
           <NuxtLink to="/" class="site-header__brand">
-            <img src="/images/logo.webp" alt="" width="42" height="56" class="site-header__logo" />
-            <span class="site-header__name">{{ site.name }}</span>
+            <img
+              src="/images/logo.webp"
+              :alt="site.name"
+              width="114"
+              height="56"
+              class="site-header__logo"
+            />
           </NuxtLink>
 
           <button
@@ -139,12 +149,6 @@ watch(menuOpen, async (open) => {
 .site-header__logo {
   width: auto;
   height: $logo-size;
-}
-
-.site-header__name {
-  @include f-22-400;
-  font-family: var(--font-family-heading);
-  color: $color-text;
 }
 
 // Phones: a full-screen panel (brand + close button, then the links), hidden until the burger opens it
