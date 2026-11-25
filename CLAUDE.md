@@ -151,7 +151,9 @@ The aim is for AI assistants and answer engines to understand, trust and cite th
 ## Git and workflow
 
 - Small, focused commits. Conventional Commits (`feat:`, `fix:`, `chore:`, `refactor:`, `docs:`).
-- Do not create new branches by default; work on the current branch. Create one only when asked.
+- Do not create new branches by default; work on the current branch. Create one only when asked, or when working on a Jira ticket.
+- **Jira project key:** `MC` (issue keys look like `MC-12`). Branches for tickets are `feature/MC-12-short-slug` (or `fix/`), and the key appears in every commit and PR title: `feat: MC-12 filter workshops by city`. Use the `work-on-ticket` skill (`.claude/skills/work-on-ticket/`) when asked to work on a ticket.
+- Never commit, push, open a PR, comment on a ticket or change its status without being asked; leave changes in the working tree for review first.
 - Do not commit `.env`, `.nuxt/`, `.output/`, or `node_modules/`.
 - When a task is non-trivial, outline the plan first and wait for approval before large changes.
 
