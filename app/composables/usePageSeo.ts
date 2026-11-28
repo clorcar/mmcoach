@@ -18,6 +18,7 @@ const DESCRIPTION_MAX_LENGTH = 160
 export function usePageSeo(options: MaybeRefOrGetter<PageSeoOptions>) {
   const site = useSiteConfig()
   const route = useRoute()
+  const isPreview = useIsPreview()
 
   const canonicalUrl = computed(() => `${site.url}${route.path === '/' ? '' : route.path}`)
   const description = computed(() =>
@@ -44,6 +45,7 @@ export function usePageSeo(options: MaybeRefOrGetter<PageSeoOptions>) {
     twitterTitle: () => toValue(options).title,
     twitterDescription: description,
     twitterImage: imageUrl,
+    robots: () => (isPreview.value ? 'noindex, nofollow' : undefined),
   })
 
   useHead({

@@ -127,13 +127,14 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    // Server-only: Contentful is queried through /api/contentful, so credentials never reach the client
-    contentfulSpaceId: process.env.CONTENTFUL_SPACE_ID || '',
-    contentfulEnvironment: process.env.CONTENTFUL_ENVIRONMENT || 'master',
+    // Server-only: Contentful is queried through /api/contentful, so the token never reaches the client
     contentfulDeliveryToken: process.env.CONTENTFUL_DELIVERY_TOKEN || '',
 
     // Public, non-secret values rendered into the static pages
     public: {
+      // Not secret; the browser needs them to query Contentful's preview API (see usePreviewToken)
+      contentfulSpaceId: process.env.CONTENTFUL_SPACE_ID || '',
+      contentfulEnvironment: process.env.CONTENTFUL_ENVIRONMENT || 'master',
       coachFullName: COACH_FULL_NAME,
       coachFirstName: COACH_FIRST_NAME,
       coachDescription: COACH_DESCRIPTION,

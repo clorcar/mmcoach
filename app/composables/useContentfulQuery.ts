@@ -28,19 +28,35 @@ export function createQueryKey(query: string, variables: Record<string, unknown>
 }
 
 /**
+ * Contentful's GraphQL endpoint, called straight from the browser in preview mode only.
+ */
+function previewEndpoint(): string {
+  const { contentfulSpaceId, contentfulEnvironment } = useRuntimeConfig().public
+  return `https://graphql.contentful.com/content/v1/spaces/${contentfulSpaceId}/environments/${contentfulEnvironment}`
+}
+
+/**
  * Sends one GraphQL request through the proxy and returns its data.
+ * In preview mode (editor token present, browser only) it queries drafts directly instead.
  * Throws on network, HTTP or GraphQL errors (including 4xx payloads such as complexity errors).
  */
 export async function fetchContentfulData<T>(
   query: string,
   variables: Record<string, unknown> = {},
 ): Promise<T> {
+  const previewToken = getPreviewToken()
   let response: GraphQLResponse<T>
   try {
-    response = await $fetch<GraphQLResponse<T>>(CONTENTFUL_API_ROUTE, {
-      method: 'POST',
-      body: { query, variables },
-    })
+    response = previewToken
+      ? await $fetch<GraphQLResponse<T>>(previewEndpoint(), {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${previewToken}` },
+          body: { query, variables: { ...variables, preview: true } },
+        })
+      : await $fetch<GraphQLResponse<T>>(CONTENTFUL_API_ROUTE, {
+          method: 'POST',
+          body: { query, variables },
+        })
   } catch (error) {
     const payload = (error as { data?: GraphQLResponse<T> }).data
     const message = payload?.errors?.map((e) => e.message).join('; ')

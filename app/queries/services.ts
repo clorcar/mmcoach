@@ -11,8 +11,8 @@ const SERVICIO_FIELDS = `
 `
 
 export const GET_SERVICES_QUERY = `
-  query GetServices($limit: Int = 50, $skip: Int, $order: [ServiciosOrder], $where: ServiciosFilter) {
-    serviciosCollection(limit: $limit, skip: $skip, order: $order, where: $where) {
+  query GetServices($limit: Int = 50, $skip: Int, $order: [ServiciosOrder], $where: ServiciosFilter, $preview: Boolean = false) {
+    serviciosCollection(preview: $preview, limit: $limit, skip: $skip, order: $order, where: $where) {
       total
       limit
       skip

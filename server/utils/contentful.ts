@@ -10,8 +10,9 @@ export interface ContentfulGraphQLRequest {
  * Returns the raw response so callers can forward Contentful's status and errors.
  */
 export async function fetchContentful(event: H3Event, request: ContentfulGraphQLRequest) {
-  const { contentfulSpaceId, contentfulEnvironment, contentfulDeliveryToken } =
-    useRuntimeConfig(event)
+  const config = useRuntimeConfig(event)
+  const { contentfulSpaceId, contentfulEnvironment } = config.public
+  const { contentfulDeliveryToken } = config
 
   if (!contentfulSpaceId || !contentfulDeliveryToken) {
     throw createError({

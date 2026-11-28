@@ -31,8 +31,8 @@ const TALLER_FIELDS = `
 `
 
 export const GET_TALLERES_QUERY = `
-  query GetTalleres($limit: Int = 10, $skip: Int, $order: [TalleresOrder], $where: TalleresFilter) {
-    talleresCollection(limit: $limit, skip: $skip, order: $order, where: $where) {
+  query GetTalleres($limit: Int = 10, $skip: Int, $order: [TalleresOrder], $where: TalleresFilter, $preview: Boolean = false) {
+    talleresCollection(preview: $preview, limit: $limit, skip: $skip, order: $order, where: $where) {
       total
       limit
       skip
@@ -44,8 +44,8 @@ export const GET_TALLERES_QUERY = `
 `
 
 export const GET_TALLER_BY_URL_QUERY = `
-  query GetTallerByUrl($url: String!) {
-    talleresCollection(where: { url: $url }, limit: 1) {
+  query GetTallerByUrl($url: String!, $preview: Boolean = false) {
+    talleresCollection(preview: $preview, where: { url: $url }, limit: 1) {
       total
       limit
       skip
