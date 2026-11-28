@@ -19,8 +19,8 @@ const ARTICULO_FIELDS = `
 `
 
 export const GET_ARTICLES_QUERY = `
-  query GetArticles($limit: Int = 50, $skip: Int, $order: [ArticulosOrder], $where: ArticulosFilter) {
-    articulosCollection(limit: $limit, skip: $skip, order: $order, where: $where) {
+  query GetArticles($limit: Int = 50, $skip: Int, $order: [ArticulosOrder], $where: ArticulosFilter, $preview: Boolean = false) {
+    articulosCollection(preview: $preview, limit: $limit, skip: $skip, order: $order, where: $where) {
       total
       limit
       skip
@@ -32,8 +32,8 @@ export const GET_ARTICLES_QUERY = `
 `
 
 export const GET_ARTICLE_BY_URL_QUERY = `
-  query GetArticleByUrl($url: String!) {
-    articulosCollection(where: { url: $url }, limit: 1) {
+  query GetArticleByUrl($url: String!, $preview: Boolean = false) {
+    articulosCollection(preview: $preview, where: { url: $url }, limit: 1) {
       total
       limit
       skip
